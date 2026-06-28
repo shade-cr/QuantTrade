@@ -39,12 +39,12 @@ features:
   gld_volume: false
 
 walk_forward:
-  # Carried over from xau_d1.yaml unchanged.
-  # Reduced from 4 to 3 folds 2026-05-25 to accommodate the lower event count
-  # produced by horizon=40 (vs horizon=20 originally). make_folds requires
-  # n_folds × 100 events in the test pool; 3 folds is the minimum for
-  # meaningful walk-forward. Revisit once we know whether the barrier change
-  # yields positive baselines.
+  # Carried over from xau_d1.yaml unchanged (fold structure applies to ~20y
+  # NVDA D1 history). Reduced from 4 to 3 folds 2026-05-25 to accommodate the
+  # lower event count produced by horizon=40 (vs horizon=20 originally).
+  # make_folds requires n_folds × 100 events in the test pool; 3 folds is the
+  # minimum for meaningful walk-forward. Revisit once we know whether the
+  # barrier change yields positive baselines.
   n_folds: 3
   train_min_bars: 1500
   purge_bars: 20
@@ -65,7 +65,10 @@ hyperparam_search:
   cv_purge_bars: 20
 
 calibration:
-  # sigmoid (Platt) chosen over isotonic — carried over from xau_d1.yaml.
+  # sigmoid (Platt) chosen over isotonic after Phase 1 re-validation:
+  # isotonic produced step-function probabilities → 3 of 4 thresholds in the
+  # grid selected the same trade set → pct_signals_kept collapsed to <5%.
+  # Carried over from xau_d1.yaml.
   method: sigmoid
   cv: prefit
   calib_holdout_pct: 0.15
