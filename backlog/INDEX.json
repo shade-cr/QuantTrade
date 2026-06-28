@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-06-28T17:49:13Z",
+  "updated_at": "2026-06-28T18:07:24Z",
   "entries": [
     {
       "id": "B0001",
@@ -10,6 +10,17 @@
       "updated_at": "2026-06-28",
       "effort": "S",
       "value": "M",
+      "tags": [],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0002",
+      "status": "proposed",
+      "title": "Equity-seed polish: deferred Minor findings from seed final review",
+      "updated_at": "2026-06-28",
+      "effort": "S",
+      "value": "L",
       "tags": [],
       "blocks_count": 0,
       "blocked_by_count": 0
