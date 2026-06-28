@@ -628,7 +628,7 @@ def main() -> int:
     ap.add_argument("--data-path", default=None,
                     help="path to OHLCV CSV (defaults to data/D1_22y/<asset>.csv or data/D1/<asset>.csv)")
     ap.add_argument("--asset-class", required=True,
-                    choices=("fx", "metal", "crypto", "commodity", "equity_index"))
+                    choices=("fx", "metal", "crypto", "commodity", "equity", "equity_index"))
     ap.add_argument("--out", default="signals/regime_stats/")
     args = ap.parse_args()
 

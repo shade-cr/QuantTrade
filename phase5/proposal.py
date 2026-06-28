@@ -22,7 +22,7 @@ from phase5.lookahead_lint import lint_proposal
 
 
 REGIME_IDS = ("BULL_QUIET", "BULL_STRESSED", "BEAR_QUIET", "BEAR_STRESSED")
-ASSET_CLASSES = ("fx", "metal", "crypto", "commodity", "equity_index")
+ASSET_CLASSES = ("fx", "metal", "crypto", "commodity", "equity", "equity_index")
 PRIMARIES = ("ema_cross", "momentum_zscore", "cusum_filter", "bollinger_meanrev", "phase5_custom",
              "supervised_direct")
 M3_CLASSES = ("STABLE", "MARGINAL_2FOLDS", "REGIME_LIMITED", "NOT_PROFITABLE",

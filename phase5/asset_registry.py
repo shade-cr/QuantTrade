@@ -27,7 +27,7 @@ def default_min_bars(frequency: str) -> int:
 @dataclass(frozen=True)
 class AssetSpec:
     ticker: str
-    asset_class: str  # fx | metal | crypto | commodity | equity_index
+    asset_class: str  # fx | metal | crypto | commodity | equity | equity_index
     frequencies: tuple[str, ...]
     feature_pack: tuple[str, ...]  # alt-features to inject into the dossier
     invert_for_own_regime: bool = False  # USDJPY: own close is the dollar's trend
@@ -57,6 +57,7 @@ _METAL_PACK = ("cot_net_noncomm_z52w", "real_yield_5y_z252d",
 _FX_PACK = ("us_5y2y_z252", "vix_level", "vix_chg_5", "breakeven_5y_chg5",
             "dxy_z252", "cs_spread_21")
 _CRYPTO_PACK = ("cs_spread_21",)
+_EQUITY_PACK = ("cs_spread_21",)  # own-bar liquidity; macro pack auto-appended for non-fx
 
 ASSET_REGISTRY: dict[str, AssetSpec] = {
     "XAUUSD": AssetSpec("XAUUSD", "metal", ("D1", "H4"), _METAL_PACK),
@@ -67,6 +68,7 @@ ASSET_REGISTRY: dict[str, AssetSpec] = {
     "BTCUSD": AssetSpec("BTCUSD", "crypto", ("D1", "H4"), _CRYPTO_PACK),
     "ETHUSD": AssetSpec("ETHUSD", "crypto", ("D1", "H4"), _CRYPTO_PACK),
     "SOLUSD": AssetSpec("SOLUSD", "crypto", ("D1", "H4"), _CRYPTO_PACK),
+    "NVDA": AssetSpec("NVDA", "equity", ("D1",), _EQUITY_PACK),
 }
 
 
