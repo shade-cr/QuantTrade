@@ -13,8 +13,8 @@ Dependencies live in `pyproject.toml` and are installed via [uv](https://docs.as
 ```powershell
 uv sync                                                          # install deps into .venv
 copy .env.example .env                                           # then set FRED_API_KEY
-uv run python scripts/run_backtest.py --config configs/backtest.yaml --dry-run   # 1 fold, ~timing extrapolation
-uv run python scripts/run_backtest.py --config configs/backtest.yaml             # full run (~10-30 min CPU)
+uv run python scripts/run_backtest.py --config configs/equity_d1.yaml --dry-run  # 1 fold, ~timing extrapolation
+uv run python scripts/run_backtest.py --config configs/equity_d1.yaml            # full run (~10-30 min CPU)
 uv run pytest -v                                                 # all tests
 uv run pytest tests/test_metrics.py::test_sharpe_annualization_uses_trades_per_year -v   # single test
 ```

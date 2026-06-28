@@ -1,0 +1,113 @@
+asset: NVDA
+timeframe: D1
+# Changed from XAUUSD_D1.csv to NVDA equity daily bars.
+data_path: data/D1/NVDA_D1.csv
+
+date_range:
+  start: "2006-01-01"
+  end: "2026-04-30"
+
+triple_barrier:
+  # Geometry carried over from xau_d1.yaml unchanged (asset-agnostic).
+  # Expert-directed change 2026-05-25: prior config tp=2.0/sl=1.0/h=20 produced
+  # baseline_sharpe negative across all folds, consistent with ~30% win rate
+  # × 1.5-2R payoff = -0.10 to -0.25R expectancy per trade. Asymmetric 3R fixes
+  # the geometry; horizon doubled (calendar-equivalent to H4 doubling 24→48).
+  # horizon=48 was too aggressive on D1 — momentum_zscore had only 642 events,
+  # insufficient for 4-fold walk-forward.
+  horizon: 40
+  tp_atr_mult: 3.0
+  sl_atr_mult: 1.0
+  atr_period: 14
+
+primary:
+  candidates: [ema_cross, momentum_zscore]
+  ema_cross:
+    fast: 20
+    slow: 50
+    dead_zone_atr: 0.25
+  momentum_zscore:
+    lookback: 20
+    threshold: 0.3
+
+features:
+  tier: 2
+  # gld_volume dropped: GLD real-volume (B0147) is gold-ETF-specific alt-data
+  # with no equity relevance. The cache/alt_data/gld_volume.parquet would not
+  # exist in this repo anyway. Set to false so the pipeline does not attempt
+  # to load it and emit a warning.
+  gld_volume: false
+
+walk_forward:
+  # Carried over from xau_d1.yaml unchanged.
+  # Reduced from 4 to 3 folds 2026-05-25 to accommodate the lower event count
+  # produced by horizon=40 (vs horizon=20 originally). make_folds requires
+  # n_folds × 100 events in the test pool; 3 folds is the minimum for
+  # meaningful walk-forward. Revisit once we know whether the barrier change
+  # yields positive baselines.
+  n_folds: 3
+  train_min_bars: 1500
+  purge_bars: 20
+  embargo_pct: 0.01
+
+models:
+  # Carried over from xau_d1.yaml unchanged (B0053 model set).
+  - xgb
+  - lgbm
+  - rf
+  - lr
+
+hyperparam_search:
+  method: random
+  n_iter: 20
+  cv_splits: 3
+  cv_type: purged_time_series
+  cv_purge_bars: 20
+
+calibration:
+  # sigmoid (Platt) chosen over isotonic — carried over from xau_d1.yaml.
+  method: sigmoid
+  cv: prefit
+  calib_holdout_pct: 0.15
+  min_minority_for_isotonic: 50
+
+stacking:
+  baseline: trade_all_primary
+  min_models_beating_baseline: 2
+  min_folds_beating_baseline: 3
+  max_oof_corr: 0.7
+  # Carried over from xau_d1.yaml unchanged.
+  min_trades_per_fold: 30
+  meta_learner: logistic_regression
+  meta_C: 1.0
+  meta_penalty: l2
+  meta_n_folds: 4
+
+metrics:
+  cost_per_trade_bps: 10
+  # D1 equity bars: 252 trading days/year — same as XAU D1. Sharpe annualisation
+  # uses sqrt(trades_per_year) per pipeline invariant (not sqrt(252)); this value
+  # is used only by select_threshold_inner_cv when scoring inner sub-blocks.
+  bars_per_year: 252
+  threshold_grid: [0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62]
+  threshold_selection: inner_cv
+
+threshold_selection:
+  method: inner_cv
+  inner_splits: 3
+  min_trades_per_inner_fold: 20
+
+# Changed from results/clf_xau_d1 to results/clf_equity_d1.
+output_dir: results/clf_equity_d1
+random_seed: 42
+
+# B0002 — decommissioning rule carried over from xau_d1.yaml unchanged.
+shutoff:
+  rolling_window: 6
+  threshold: 0.0
+
+dry_run:
+  enabled_via_cli_flag: true
+  n_iter: 5
+  max_minutes_per_model_warn: 8
+  max_minutes_per_model_abort: 15

@@ -352,3 +352,27 @@ drives the verdict, so the DSR trials count does not widen.
 the rule change does not retroactively reinterpret them. A re-audit of a previously falsified
 proposal under `ev_breakeven_v1` is a NEW audit entry that increments the program-level trials
 count (it is an additional trial, and the DSR bookkeeping must see it as one).
+
+## Event-density floor table (B0155, updated for equity D1)
+
+The walk-forward refusal floor is the minimum **in-regime** event count required before the audit
+will attempt a meaningful per-fold evaluation. Below the floor the fold-Sharpe gate (`n_trades ≥ 30`)
+will be unachievable across most folds and the proposal should not be submitted.
+
+The floor is computed from `pipeline.walk_forward.wf_event_floor` and depends on the config branch:
+
+| asset_class / freq / primary type | floor (in-regime events) | notes |
+|---|---|---|
+| **metal, D1, built-in** (ema_cross, momentum_zscore, ...) | **599** | 22y geometry, n_folds=3; the ~300 heuristic does NOT apply |
+| fx, D1, built-in | **399** | 22y geometry, n_folds=3 |
+| **equity, D1, built-in** | **399** | Starting at FX-D1 parity; tighten from each asset's measured dossier `n_events` baseline once data is in hand |
+| D1, phase5_custom (any asset_class) | **300** | Custom primary may fire more/less selectively — adjust from dossier |
+| crypto, H4 (any primary) | **250** | Shorter history on most crypto assets |
+
+**Equity D1 note**: the 399 floor is a conservative starting point adopted at parity with FX D1. For
+any specific equity (e.g. NVDA), the dossier's measured `primary_baseline_summary.<primary>.n_events`
+per regime provides the actual in-regime baseline. When that baseline is materially above 399 (as
+is likely for liquid mega-cap equities with multi-year histories), the hypothesizer should verify
+the regime-filtered event count against the 1.5× safety margin rule (B0155) before submitting.
+
+The binding requirement for any proposal remains `max(floor, your n_trades_total_min)`.
