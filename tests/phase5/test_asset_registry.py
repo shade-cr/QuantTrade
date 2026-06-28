@@ -25,7 +25,7 @@ def test_keys_are_full_tickers_and_match_id():
         assert key == spec.ticker, f"registry key {key!r} != spec.ticker {spec.ticker!r}"
         # keys must match their spec.ticker exactly; length varies by asset class
         # (FX/metal/crypto use 6-char broker symbols, equities use standard tickers)
-        assert len(key) >= 2, f"{key!r} ticker too short (minimum 2 chars)"
+        assert 4 <= len(key) <= 6, f"{key!r} ticker length must be 4–6 chars"
 
 
 def test_asset_class_valid():
