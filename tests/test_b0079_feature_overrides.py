@@ -28,7 +28,7 @@ def _make_feature_df(cols=("rv_20", "roc_63", "ma_50", "ma_200", "z_r20", "atr_1
 
 
 def _simulate_fo_add_status(feature_df: pd.DataFrame, fo_add: list[str]) -> dict:
-    """B0149: the real helper run_xau_d1._run_one_primary now calls."""
+    """B0149: the real helper run_backtest._run_one_primary now calls."""
     return feature_add_status(fo_add, set(feature_df.columns))
 
 

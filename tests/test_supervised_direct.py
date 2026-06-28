@@ -61,7 +61,7 @@ def _base_cfg(tmp_path) -> dict:
 
 def test_supervised_direct_count_returns_n_bars(tmp_path):
     """count_events_only mode returns all non-NaN in-scope bars, not a sparse subset."""
-    from scripts.run_xau_d1 import _run_one_primary
+    from scripts.run_backtest import _run_one_primary
     ohlcv = _make_ohlcv()
     features = _make_features(ohlcv)
     cfg = _base_cfg(tmp_path)
@@ -78,7 +78,7 @@ def test_supervised_direct_count_returns_n_bars(tmp_path):
 
 def test_supervised_direct_x_has_no_primary_columns(tmp_path, monkeypatch):
     """X matrix must NOT contain primary_side, primary_strength, bars_since_signal."""
-    import scripts.run_xau_d1 as module
+    import scripts.run_backtest as module
     captured_X = {}
 
     def fake_fit(X, y, w, cfg, random_state, models):
@@ -106,7 +106,7 @@ def test_supervised_direct_x_has_no_primary_columns(tmp_path, monkeypatch):
 
 def test_supervised_direct_respects_regime_gate(tmp_path):
     """When regime_mask_path is set, only in-scope bars become events."""
-    from scripts.run_xau_d1 import _run_one_primary
+    from scripts.run_backtest import _run_one_primary
     ohlcv = _make_ohlcv()
     features = _make_features(ohlcv)
     cfg = _base_cfg(tmp_path)
@@ -129,7 +129,7 @@ def test_supervised_direct_respects_regime_gate(tmp_path):
 
 def test_supervised_direct_labels_binary(tmp_path, monkeypatch):
     """Labels returned by supervised mode must be 0 or 1."""
-    import scripts.run_xau_d1 as module
+    import scripts.run_backtest as module
     captured_y = {}
 
     def fake_fit(X, y, w, cfg, random_state, models):
@@ -155,7 +155,7 @@ def test_supervised_direct_labels_binary(tmp_path, monkeypatch):
 
 def test_labeled_mode_unchanged_by_supervised_code(tmp_path):
     """The default labeled mode still produces sparse events (primary-gated)."""
-    from scripts.run_xau_d1 import _run_one_primary
+    from scripts.run_backtest import _run_one_primary
     ohlcv = _make_ohlcv()
     features = _make_features(ohlcv)
     cfg = _base_cfg(tmp_path)
@@ -177,7 +177,7 @@ def test_labeled_mode_unchanged_by_supervised_code(tmp_path):
 
 def test_supervised_direct_zero_events_after_tight_mask(tmp_path):
     """If mask leaves 0 bars, supervised mode returns n_events=0 gracefully."""
-    from scripts.run_xau_d1 import _run_one_primary
+    from scripts.run_backtest import _run_one_primary
     ohlcv = _make_ohlcv()
     features = _make_features(ohlcv)
     cfg = _base_cfg(tmp_path)
@@ -208,7 +208,7 @@ def test_supervised_direct_noncountpath_does_not_raise(tmp_path):
     but did NOT write summary.json or run any training. The distinction is
     tested by test_supervised_direct_noncountpath_writes_summary_json.
     """
-    from scripts.run_xau_d1 import _run_one_primary
+    from scripts.run_backtest import _run_one_primary
     ohlcv = _make_ohlcv()
     features = _make_features(ohlcv)
     cfg = _base_cfg(tmp_path)
@@ -222,7 +222,7 @@ def test_supervised_direct_noncountpath_does_not_raise(tmp_path):
 
 def test_supervised_direct_noncountpath_writes_summary_json(tmp_path):
     """Dry-run non-count path writes summary.json to the output directory."""
-    from scripts.run_xau_d1 import _run_one_primary
+    from scripts.run_backtest import _run_one_primary
     import json as _json
     ohlcv = _make_ohlcv()
     features = _make_features(ohlcv)
@@ -246,11 +246,11 @@ def test_supervised_direct_noncountpath_writes_summary_json(tmp_path):
 
 def test_run_folds_and_report_is_exported(tmp_path):
     """After Task 2 refactor, _run_folds_and_report must exist as a callable
-    in the scripts.run_xau_d1 module (structural contract).
+    in the scripts.run_backtest module (structural contract).
     """
-    import scripts.run_xau_d1 as module
+    import scripts.run_backtest as module
     assert hasattr(module, "_run_folds_and_report"), (
-        "_run_folds_and_report not found in scripts.run_xau_d1 — "
+        "_run_folds_and_report not found in scripts.run_backtest — "
         "extraction not complete (Task 2)"
     )
     assert callable(module._run_folds_and_report), (

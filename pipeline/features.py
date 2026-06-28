@@ -209,7 +209,7 @@ def apply_primary_feature_blacklist(
     and trailing-* wildcard.
 
     Per docs/superpowers/specs/2026-05-26-edge-search-scope-decision.md
-    §Precondición Layer (a). Applied at orchestrator level (scripts/run_xau_d1.py)
+    §Precondición Layer (a). Applied at orchestrator level (scripts/run_backtest.py)
     AFTER the primary's signal() is computed but BEFORE the meta-labeler sees
     the features frame. This way the PRIMARY has access to all features it
     declared in INPUT_COLUMNS (including alt-data like dtwexbgs_close) while

@@ -475,10 +475,10 @@ def test_run_evaluates_at_p_star(tmp_path, monkeypatch):
     assert rec["effective_threshold"] == pytest.approx(0.325)
 
 
-# ---------------------------------------------------------------- run_xau_d1 persistence
+# ---------------------------------------------------------------- run_backtest persistence
 
 def test_persist_audit_pnl_writes_effective_artifact(tmp_path):
-    from scripts.run_xau_d1 import persist_audit_pnl
+    from scripts.run_backtest import persist_audit_pnl
     idx = pd.date_range("2020-01-01", periods=3, freq="D", tz="UTC")
     oof = pd.DataFrame({"xgb": [0.30, 0.60, 0.40]}, index=idx)
     per_trade = np.array([0.01, -0.02, 0.03])
@@ -501,7 +501,7 @@ def test_persist_audit_pnl_writes_effective_artifact(tmp_path):
 
 
 def test_persist_audit_pnl_default_050_writes_only_legacy(tmp_path):
-    from scripts.run_xau_d1 import persist_audit_pnl
+    from scripts.run_backtest import persist_audit_pnl
     idx = pd.date_range("2020-01-01", periods=3, freq="D", tz="UTC")
     oof = pd.DataFrame({"xgb": [0.30, 0.60, 0.40]}, index=idx)
     per_trade = np.array([0.01, -0.02, 0.03])

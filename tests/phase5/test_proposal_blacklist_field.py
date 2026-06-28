@@ -3,7 +3,7 @@
 Per docs/superpowers/plans/2026-05-26-cot-extremes-primary.md Task 6: the
 Proposal dataclass gains a `primary_feature_blacklist: list[str]` field with
 default empty list. Validation is enforced at orchestration time
-(scripts/run_xau_d1.py via assert_primary_inputs_disjoint), NOT in
+(scripts/run_backtest.py via assert_primary_inputs_disjoint), NOT in
 Proposal.validate() — the dataclass only ensures the field shape.
 """
 from __future__ import annotations

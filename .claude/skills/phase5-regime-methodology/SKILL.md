@@ -208,7 +208,7 @@ def signal(ohlcv: pd.DataFrame, features: pd.DataFrame, cfg: dict) -> pd.Series:
     ...
 ```
 
-The proposal JSON's `custom_primary_sha256` field MUST match `sha256(open(path).read())` at proposal-commit time. The dispatcher patch in `scripts/run_xau_d1.py` enforces this.
+The proposal JSON's `custom_primary_sha256` field MUST match `sha256(open(path).read())` at proposal-commit time. The dispatcher patch in `scripts/run_backtest.py` enforces this.
 
 ## Adversarial review contract (devil's advocate)
 

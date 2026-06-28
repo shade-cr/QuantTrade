@@ -48,7 +48,7 @@ def resolve_train_min(train_min_bars: int, n_events: int) -> int:
 
     The orchestrator caps the configured `train_min_bars` at half the available
     events so a sparse primary still leaves a test pool. Centralized here (was
-    inline in scripts/run_xau_d1.py) so the pre-flight floor projection in
+    inline in scripts/run_backtest.py) so the pre-flight floor projection in
     `wf_event_floor` cannot drift from what the audit actually does.
     """
     return min(int(train_min_bars), int(n_events) // 2)

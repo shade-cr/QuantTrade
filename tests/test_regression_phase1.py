@@ -2,7 +2,7 @@
 
 Compares the current pipeline's outputs against a frozen Phase 1 v4 snapshot
 in `tests/fixtures/phase1_v4_baseline.json`. The migration of
-`scripts/run_xau_d1.py` from the coupled `select_threshold_inner_cv` to
+`scripts/run_backtest.py` from the coupled `select_threshold_inner_cv` to
 `inner_oof_predict_proba + RefittingCalibratedPipeline + select_threshold_inner_cv`
 changes the order of fits (clone-per-fold via the helper vs in-place loop
 inside the old threshold function), which can introduce O(1e-4) numerical
@@ -20,7 +20,7 @@ migrated pipeline):
     .venv\\Scripts\\python.exe scripts/generate_phase1_baseline.py
 
     # 2. On the feat branch (current code, Option B):
-    .venv\\Scripts\\python.exe scripts/run_xau_d1.py --config configs/xau_d1.yaml
+    .venv\\Scripts\\python.exe scripts/run_backtest.py --config configs/xau_d1.yaml
 
     # 3. Run the regression test:
     .venv\\Scripts\\python.exe -m pytest tests/test_regression_phase1.py -v
@@ -66,14 +66,14 @@ def _load_baseline() -> dict:
 def _load_current_outputs() -> dict:
     """Read the current pipeline outputs into the same shape as the baseline.
 
-    Assumes `scripts/run_xau_d1.py` has been run on the current branch.
+    Assumes `scripts/run_backtest.py` has been run on the current branch.
     If results directories are missing, skip — running the pipeline inside
     a test is too expensive (~10-30 min). The regression check gates manual
     or CI re-runs, not unit-test execution.
     """
     if not RESULTS_DIR.exists():
         pytest.skip(
-            f"no pipeline outputs at {RESULTS_DIR}. Run scripts/run_xau_d1.py first."
+            f"no pipeline outputs at {RESULTS_DIR}. Run scripts/run_backtest.py first."
         )
     current: dict = {"primaries": {}}
     for primary in PRIMARIES:

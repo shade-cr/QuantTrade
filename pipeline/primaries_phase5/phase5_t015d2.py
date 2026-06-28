@@ -35,7 +35,7 @@ Causal-window discipline (every computation is strictly backward-looking):
 INPUT_COLUMNS is empty because the primary reads `volume` (and OHLC) directly
 from the `ohlcv` frame, not from the audit pipeline's `features` frame. The
 orchestrator's disjointness check
-(scripts/run_xau_d1.py::assert_primary_inputs_disjoint) therefore trivially
+(scripts/run_backtest.py::assert_primary_inputs_disjoint) therefore trivially
 passes against any feature blacklist.
 
 Per B0040 backlog entry (this commit's session).

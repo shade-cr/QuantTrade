@@ -1,6 +1,6 @@
 """B0089 — Deflated Sharpe Ratio (DSR) as a HARD GATE in the M3 promotion decision.
 
-DSR is computed per-model by scripts/run_xau_d1.py (deflated_sharpe_ratio ->
+DSR is computed per-model by scripts/run_backtest.py (deflated_sharpe_ratio ->
 dsr_per_model, persisted to psr_dsr.json) but was previously used ONLY for
 deployment-tier Kelly sizing. The promotion gate (evaluate_against_falsification)
 keyed on audit_class_in + median_active_fold_sharpe_min + n_trades_total_min only,

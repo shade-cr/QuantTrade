@@ -16,7 +16,7 @@ FRED_SERIES = ("DTWEXBGS", "DFII5", "DGS5", "DGS2", "T5YIE", "VIXCLS", "UMCSENT"
 # These are NOT model features (build_macro_features never references them), so
 # they are deliberately kept OUT of FRED_SERIES: a feature-pipeline run must not
 # hard-fail just because a benchmark series is uncached / no FRED_API_KEY. The
-# benchmark code in scripts/run_xau_d1.py loads these from cache/fred/ best-
+# benchmark code in scripts/run_backtest.py loads these from cache/fred/ best-
 # effort and reports None when absent. SP500 (S&P 500 index) joins VIXCLS
 # (already a feature) as the second benchmark; cache it separately to populate
 # the S&P 500 correlation.

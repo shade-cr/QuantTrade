@@ -21,7 +21,7 @@ features` — exactly what H&T's reference architecture uses.
 Adding a new primary:
   1. Write a deterministic function. Inputs are typically `(close, atr)`
      plus optional macro series. The dispatched signature in
-     `scripts/run_xau_d1.py::_select_primary` is `(ohlcv, features, cfg)
+     `scripts/run_backtest.py::_select_primary` is `(ohlcv, features, cfg)
      -> pd.Series` for `phase5_*` customs.
   2. Use only deterministic operations (rolling/EMA/comparison/sign).
      No `.fit()`, no `import sklearn`, no `np.random` without a fixed seed.

@@ -150,7 +150,7 @@ def test_phase5_custom_primaries_have_no_fit_call():
     """Source-level scan of pipeline/primaries_phase5/ for `.fit(` calls.
 
     Phase 5 customs are dispatched via the `phase5_*` prefix in
-    scripts/run_xau_d1.py::_select_primary. They take a richer signature
+    scripts/run_backtest.py::_select_primary. They take a richer signature
     (ohlcv, features, cfg) but must remain rule-based — no classifier.fit().
     Auto-discovers new modules so this guardrail stays current.
     """

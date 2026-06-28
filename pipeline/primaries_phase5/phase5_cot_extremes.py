@@ -26,7 +26,7 @@ Inputs read:
     - atr_14                    = standard true-range rolling mean
 
   All inputs from `features` namespace are listed in INPUT_COLUMNS below.
-  The orchestrator (scripts/run_xau_d1.py::_run_one_primary) applies
+  The orchestrator (scripts/run_backtest.py::_run_one_primary) applies
   apply_primary_feature_blacklist AFTER calling this signal() — the meta
   sees the features frame MINUS the blacklist. The primary sees the
   unfiltered features arg, so it can still read dtwexbgs_close. All inputs

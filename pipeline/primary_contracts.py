@@ -2,7 +2,7 @@
 
 The Loop-A hypothesizer is handed `available_primaries` and emits `primary_params`
 with guessed key names (``threshold_atr_mult``, ``threshold_sigma``, ``window``,
-``n_std`` ...). The pipeline's ``scripts/run_xau_d1.py::_select_primary`` reads
+``n_std`` ...). The pipeline's ``scripts/run_backtest.py::_select_primary`` reads
 *canonical* keys (``threshold_atr``, ``period``, ``k_stdev`` ...). For
 ``cusum_filter`` / ``bollinger_meanrev`` the template config ships no default
 section, so a missing canonical key raised ``KeyError`` *inside* the audit

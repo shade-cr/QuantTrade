@@ -3,7 +3,7 @@
 Each module in this package implements a single `signal(ohlcv, features, cfg) -> pd.Series`
 function returning side values in {-1, 0, +1} indexed identically to ohlcv.
 
-The dispatcher in scripts/run_xau_d1.py:_select_primary routes any
+The dispatcher in scripts/run_backtest.py:_select_primary routes any
 `primary_name` starting with `phase5_` to the module in this package whose
 filename matches the primary name.
 
@@ -23,7 +23,7 @@ Per docs/superpowers/specs/2026-05-26-edge-search-scope-decision.md §Precondici
 
 Naming the columns the primary reads from the `features` arg. Raw OHLCV is
 universal substrate and is exempt — primaries that read ONLY raw OHLCV
-declare INPUT_COLUMNS=(). The orchestrator (scripts/run_xau_d1.py) invokes
+declare INPUT_COLUMNS=(). The orchestrator (scripts/run_backtest.py) invokes
 `assert_primary_inputs_disjoint(primary.INPUT_COLUMNS, meta_features_columns)`
 before calling signal(), raising PrimaryInputContractError if the primary's
 declared inputs overlap with the columns the meta-labeler will see.

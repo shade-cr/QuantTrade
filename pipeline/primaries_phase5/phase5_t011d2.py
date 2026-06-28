@@ -30,7 +30,7 @@ Causal-window discipline:
 
 INPUT_COLUMNS is empty because the primary reads no feature columns from the
 audit pipeline's features frame — it loads COT directly. The orchestrator's
-disjointness check (scripts/run_xau_d1.py::assert_primary_inputs_disjoint)
+disjointness check (scripts/run_backtest.py::assert_primary_inputs_disjoint)
 therefore trivially passes against any blacklist.
 
 Per B0040 backlog entry (this commit's session).

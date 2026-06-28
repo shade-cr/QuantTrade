@@ -7,7 +7,7 @@ The full chain:
   3. Build regime mask parquet from data/regimes/<asset>_d1_regimes.parquet.
   4. Generate transient pipeline config inheriting configs/xau_d1_22y_with_cot.yaml,
      overlaying primary.candidates, output_dir, regime_mask_path, triple_barrier params.
-  5. Run scripts/run_xau_d1.py as a subprocess.
+  5. Run scripts/run_backtest.py as a subprocess.
   6. Parse threshold_grid_metrics.json + summary.json + psr_dsr.json.
   7. Compute regime_diversity on OOS span; run _classify_transferability.
   8. Evaluate falsification_criterion + extra_falsification_criteria.
@@ -190,7 +190,7 @@ def build_transient_config(p: Proposal, regime_mask_path: Path) -> Path:
     # re-centered at p* (p*, +0.05, +0.10, +0.15) so grid rows exist at
     # exactly p* — the grid stays diagnostic-only (one threshold per audit
     # drives the verdict; the DSR trials count does not widen).
-    # `audit_effective_threshold` tells run_xau_d1 to ALSO persist the
+    # `audit_effective_threshold` tells run_backtest to ALSO persist the
     # per-event pnl artifact at p* (strategy_pnl_effective.parquet + sidecar)
     # for the per-episode survival gate. fixed_0.50 proposals take neither
     # branch — their transient config is bit-for-bit the pre-B0155 one.
@@ -305,8 +305,8 @@ def build_transient_config(p: Proposal, regime_mask_path: Path) -> Path:
 
 
 def run_pipeline_subprocess(cfg_path: Path, dry_run: bool = False) -> subprocess.CompletedProcess:
-    """Invoke scripts/run_xau_d1.py with the transient config."""
-    cmd = [sys.executable, "scripts/run_xau_d1.py", "--config", str(cfg_path)]
+    """Invoke scripts/run_backtest.py with the transient config."""
+    cmd = [sys.executable, "scripts/run_backtest.py", "--config", str(cfg_path)]
     if dry_run:
         cmd.append("--dry-run")
     print(f"+ {' '.join(cmd)}")
@@ -317,7 +317,7 @@ def count_events_subprocess(cfg_path: Path, primary: str) -> dict:
     """B0048 — run only the front-half of the pipeline and parse the emitted
     per-primary event count + walk-forward floor. Raises RuntimeError if the
     subprocess fails or the JSON marker is absent."""
-    cmd = [sys.executable, "scripts/run_xau_d1.py", "--config", str(cfg_path),
+    cmd = [sys.executable, "scripts/run_backtest.py", "--config", str(cfg_path),
            "--preflight-event-count"]
     print(f"+ {' '.join(cmd)}")
     proc = subprocess.run(cmd, check=False, capture_output=True, text=True)
@@ -346,7 +346,7 @@ def parse_pipeline_results(proposal_id: str, primary: str) -> dict:
     psr = {}
     if psr_path.exists():
         psr = json.loads(psr_path.read_text(encoding="utf-8"))
-    # B0079: read feature_overrides status written by run_xau_d1._run_one_primary
+    # B0079: read feature_overrides status written by run_backtest._run_one_primary
     fo_status_path = out_dir / "feature_overrides_status.json"
     fo_status = json.loads(fo_status_path.read_text(encoding="utf-8")) if fo_status_path.exists() else {}
     return {
@@ -421,7 +421,7 @@ def evaluate_against_falsification(per_fold_n: list[int], per_fold_sharpe: list[
 
     B0089 — Deflated Sharpe Ratio HARD GATE. `dsr` is the threshold-0.50
     per-trade DSR of the model under audit (from pipeline.metrics
-    .deflated_sharpe_ratio, persisted by scripts/run_xau_d1.py to psr_dsr.json
+    .deflated_sharpe_ratio, persisted by scripts/run_backtest.py to psr_dsr.json
     keyed by model name). When `criterion["dsr_min"]` is set (not None), a
     candidate whose DSR < dsr_min — OR whose DSR is unavailable (None) / not
     finite (NaN) — is FALSIFIED and its audit_class is DOWNGRADED to
@@ -729,7 +729,7 @@ def run(proposal_path: Path, dry_run: bool = False, preflight_only: bool = False
     regime = compute_oos_regime_diversity(p.id, p.primary, p.asset)
 
     # B0089 — per-model DSR keyed by model name, as persisted by
-    # scripts/run_xau_d1.py to psr_dsr.json ({"dsr": {model: float}}). Threaded
+    # scripts/run_backtest.py to psr_dsr.json ({"dsr": {model: float}}). Threaded
     # into evaluate_against_falsification so the DSR hard gate is load-bearing
     # in the promotion decision, not just in deployment-tier sizing.
     dsr_by_model: dict[str, float] = (results.get("psr_dsr") or {}).get("dsr", {}) or {}

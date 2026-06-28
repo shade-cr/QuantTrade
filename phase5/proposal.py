@@ -358,7 +358,7 @@ class Proposal:
     primary_feature_blacklist: list[str], default empty.
         For custom phase5_* primaries, this lists features the meta-labeler must
         NOT see. Enforcement is at orchestration time (assert_primary_inputs_disjoint
-        in scripts/run_xau_d1.py via the orchestrator's apply_primary_feature_blacklist
+        in scripts/run_backtest.py via the orchestrator's apply_primary_feature_blacklist
         call), NOT in this dataclass.validate(). validate() only ensures the
         field shape (list[str]). The schema is intentionally permissive —
         completeness against build_tier2_features outputs is verified by
