@@ -12,7 +12,7 @@ def test_nvda_dossier_pack_inherits_macro():
     # own base feature
     assert "cs_spread_21" in pack
     # macro members auto-appended for non-fx classes
-    for m in ("vix_level", "vix_chg_5", "dxy_z252", "real_yield_5y_z252d"):
+    for m in ("vix_level", "vix_chg_5", "dxy_z252", "real_yield_5y_z252d", "breakeven_5y_chg5", "us_5y2y_z252"):
         assert m in pack
     # metals-only alt-data must NOT leak into equities
     assert "cot_net_noncomm_z52w" not in pack
