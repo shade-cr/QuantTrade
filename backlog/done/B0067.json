@@ -1,0 +1,70 @@
+{
+  "id": "B0067",
+  "title": "Orphan XAUUSD_h4_regimes.parquet (4668 labeled) not reproducible by build_all_regimes — no manifest/dossiers, batch skips XAU H4",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "phase5",
+    "regimes",
+    "multi-asset",
+    "data-hygiene"
+  ],
+  "created_at": "2026-05-28",
+  "updated_at": "2026-05-29",
+  "source": "B0066 cleanup verification 2026-05-28",
+  "why": "data/regimes/XAUUSD_h4_regimes.parquet has 4668 labeled bars but build_all_regimes reports XAUUSD H4 skipped_insufficient_history (data/H4 XAUUSD_H4.csv has 7740 bars < 7760 floor). The parquet was generated from a longer H4 source (data/H4_extended? a 22y pull?) and is now an orphan: no _h4_manifest.json, no signals/regime_stats/XAUUSD H4 dossiers, and the batch cannot reproduce or refresh it. Latent inconsistency — a consumer could read a regime parquet that no current pipeline path produces.",
+  "value_rationale": "Removes a non-reproducible artifact / decides the canonical XAU H4 data source; prevents silent reliance on an unmanaged parquet.",
+  "scope": [
+    "Determine provenance (which CSV/source produced 4668 labels)",
+    "Either point the H4 resolver at the longer source so the batch manages XAU H4, or remove the orphan parquet",
+    "Reconcile data/H4 vs data/H4_extended for XAU/XAG"
+  ],
+  "recommendation": "Investigate H4_extended as the intended XAU/XAG H4 source; if so, wire the resolver and let the batch own it; else remove the orphan.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-28",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "fix(regimes): B0067 remove orphan XAUUSD_h4_regimes.parquet (stale pre-burn-in config)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "status_change",
+      "reason": "Removed orphan data/regimes/XAUUSD_h4_regimes.parquet. Provenance: 4668 labels from a pre-5y-burn-in labeler config (commit 7baeeee); current labeler yields 0 on the same 7740-bar CSV so the batch skips XAU H4. No longer source exists. Spec documents it. 2026-05-28.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "docs(spec): B0067 fix cross-ref to B0070 (dossier-path-frequency ticket)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(backlog): quiesce cross-session reconciliation + B0079 prereq + B0068 done",
+      "sha": "HEAD"
+    }
+  ]
+}

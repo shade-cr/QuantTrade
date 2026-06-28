@@ -1,0 +1,104 @@
+{
+  "id": "B0040",
+  "title": "`phase5_custom` primary needs a pseudocode→Python materialization step before full audit",
+  "status": "done",
+  "effort": {
+    "option_a": "S",
+    "option_b": "XS",
+    "option_c": "L"
+  },
+  "value": "H",
+  "tags": [
+    "phase5",
+    "loop-a",
+    "audit",
+    "infrastructure",
+    "lint"
+  ],
+  "created_at": "2026-05-26",
+  "updated_at": "2026-05-29",
+  "source": "Loop A tick 11 surfaced this — T011D2 cleared lint, two rounds of DA-feedback retry (B0037), final DA verdict PROCEED_WITH_CAVEAT, and pre-flight passed (via B0038 + B0039 fixes). Then the full audit subprocess crashed with `ValueError: Phase 5 custom primary 'phase5_custom' not found at pipeline.primaries_phase5.phase5_custom: No module named ...`. [scripts/run_xau_d1.py:75-84](scripts/run_xau_d1.py#L75-L84) requires an importable module at `pipeline.primaries_phase5.<primary_name>` exposing a `signal(ohlcv, features, cfg) -> pd.Series` function. The hypothesizer emits `primary: phase5_custom` with a `custom_primary_pseudocode` STRING describing the rule (e.g., \"rolling-quantile rank of cot_net_noncomm_z52w over 504 bars >= 0.75 AND CUSUM h=2.0×ATR\"). The pseudocode is not executable.",
+  "why": "This is the **third stacked gap** of the Loop A audit-dispatch path (after B0038 schema + B0039 asset-injection) but it is qualitatively deeper: B0038/B0039 were ~5-line orchestration fixes; B0040 is a codegen step. Without it, every Loop A survivor that uses `phase5_custom` (the catch-all primary the hypothesizer picks when none of the four built-in primaries fit) ends at preflight_passed_pending_audit forever — the loop produces candidates that cannot be empirically tested. Existing audit-capable Phase 5 primaries (`phase5_cot_extremes`, `phase5_gld_holdings`, `phase5_gdelt_tone`, `phase5_xau_bearq_conjunction`) were all human-authored against pre-committed specs; nothing in the codebase translates pseudocode to one of those.",
+  "value_rationale": "H (without one of these options, Loop A produces unaudited candidates indefinitely — the whole point of the audit step is to falsify, not just describe).",
+  "scope": [],
+  "recommendation": "Option A for T011D2 today (smoke-test the audit path end-to-end with a real survivor; ~20-30 min), then decide between A vs B vs C as a Phase 5.2 design question. Option B + a separate \"novel-primary\" promotion track may be the right long-term answer.",
+  "out_of_scope": "changes to the proposal schema (primary_custom_sha256 is already there and would carry the artifact identity for Option C).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0013",
+      "B0037",
+      "B0038",
+      "B0039"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "scripts/run_xau_d1.py#L75-L84",
+      "relation": "reference",
+      "label": "scripts/run_xau_d1.py:75-84"
+    },
+    {
+      "path": "pipeline/primaries_phase5/phase5_cot_extremes.py",
+      "relation": "reference",
+      "label": "phase5_cot_extremes.py"
+    },
+    {
+      "path": "pipeline/primaries_phase5/phase5_gld_holdings.py",
+      "relation": "reference",
+      "label": "phase5_gld_holdings.py"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-26",
+      "event": "created",
+      "reason": "migrated from BACKLOG.md (auto-parsed)"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "git_commit",
+      "reason": "feat(B0040+B0041+tick12): first end-to-end audit + 4th audit-path gap",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "git_commit",
+      "reason": "feat(B0040+B0041+tick12): first end-to-end audit + 4th audit-path gap",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "status_change",
+      "reason": "Option B (manual promotion track) chosen by user over Option C (autonomous codegen) — preserves human review of all custom-primary code before it touches the audit. Implementation: phase5/run_proposal.py gains _is_unmaterialized_custom_primary(p) + a gate after pre-flight that parks phase5_* proposals lacking a pipeline/primaries_phase5/<primary>.py module at status=pending_materialization (record carries pseudocode + expected module path + promote_command). Re-running run_proposal after the human writes+reviews the module IS the promotion step — no separate CLI. main() exit 0 for pending_materialization (valid waiting state, not a crash). Docs: .claude/agents/phase5-hypothesizer.md Custom primaries section + CLAUDE.md Loop A section. Tests: tests/phase5/test_b0040_materialization_gate.py (5: helper true/false branches + run() parks custom + does not park builtin). 550/550 tests pass. Unblocks B0035 value (per-episode escalation now reachable once a custom survivor materializes).",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "git_commit",
+      "reason": "feat(phase5): close 7 tickets â€” Loop A/H4 infra hardening + reporting",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "git_commit",
+      "reason": "feat(B0035): cross-episode survival sign test for low-n_episodes regimes",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(loop-a): B0040 custom-primary materialization->audit path demonstrated; B0085 normalizer; B0086 logged",
+      "sha": "HEAD"
+    }
+  ]
+}

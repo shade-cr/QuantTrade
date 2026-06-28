@@ -1,0 +1,86 @@
+{
+  "id": "B0129",
+  "title": "Purge by label-end (t_end_idx) overlap, not a fixed event-count scalar",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "walk-forward",
+    "leakage",
+    "ldp-audit",
+    "correctness"
+  ],
+  "created_at": "2026-06-03",
+  "updated_at": "2026-06-03",
+  "source": "LdP book audit (6 parallel read-only auditors vs AFML + Machine Learning for Asset Managers, books in D:/PROJECTS/QuantTradingDocs), 2026-06-03. Conversation: 'audita el proyecto usando los libros'.",
+  "why": "make_folds (walk_forward.py:104-105) and PurgedTimeSeriesSplit (walk_forward.py:136-148) purge a FIXED scalar number of EVENTS (purge_bars=20) before each test, NOT by each training event's actual label-end t_end_idx. AFML 7.4.1 (Snippet 7.1 getTrainTimes) requires purging every train obs whose label window [t_i0,t_i1] overlaps the test span. Severity is event-density dependent: for sparse labeled primaries (momentum_zscore ~640 events / ~5000 bars => 20 events ~= 157 bars >> horizon 40) the fixed purge OVER-covers, so NO leak today. But _run_supervised_direct uses events=ALL in-scope bars (density ~1, one-bar-apart events, run_xau_d1.py:173,239) => 20 events ~= 20 bars < horizon 40 bars => REAL look-ahead leak of ~20 bars in every fold. The design is fragile: any denser primary or shorter horizon silently leaks. Inner CV PurgedTimeSeriesSplit has the SAME flaw AND no embargo at all.",
+  "value_rationale": "Correctness/leakage. CRITICAL for supervised_direct mode (real leak), latent-fragile for sparse primaries. CLAUDE.md claim that inner-CV purges overlapping triple-barrier windows is only true by luck of event density, not by construction.",
+  "scope": [
+    "Replace fixed-scalar purge with t_end_idx-based purge: drop any train event whose t_end_idx >= test window first BAR index",
+    "Apply the same label-end purge inside PurgedTimeSeriesSplit (inner CV) and add a post-val embargo for symmetry",
+    "Minimum stop-gap if full fix deferred: assert purge_bars >= horizon for any density>=~0.5 path; hard-fail supervised_direct otherwise",
+    "Add a regression test: a dense-event config must NOT retain any train event with t_end_idx inside the test span"
+  ],
+  "recommendation": "Implement label-end (t1) purge; it is robust across event densities and is the AFML-correct method. Treat supervised_direct as currently leaking until fixed.",
+  "out_of_scope": "CPCV (tracked B0123). Embargo magnitude tuning beyond AFML ~0.01T.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0123",
+      "B0125"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "D:/PROJECTS/QuantTradingDocs/extracted/AFML_bonus.txt",
+      "relation": "source",
+      "label": "AFML Snippet 7.1 getTrainTimes / 7.2 getEmbargoTimes"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-03",
+      "event": "created",
+      "reason": "LdP book audit: purge not derived from label-end; leaks in dense-event mode"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "status_change",
+      "reason": "Implemented: make_folds + PurgedTimeSeriesSplit purge by label-end (t_end_idx) + inner-CV embargo; wired into run_xau_d1 (labeled+supervised_direct) and run_multi_h4. TDD, 24 walk_forward tests green, full suite green, dry-run clean.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "fix: LÃ³pez-de-Prado audit fixes B0129-B0133 (purge, MDA, CFI, DSR, calib)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): provenance for B0129-B0133 LdP-audit-fix commit",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): LdP newer-corpus verification follow-ups (B0139-B0145)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "test(regression): re-anchor Phase 1 baseline to post-audit-fix numbers (B0129-B0133)",
+      "sha": "HEAD"
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "id": "B0127",
+  "title": "GARCH/EGARCH/GJR one-step-ahead vol forecast for triple-barrier widths (Paso 2)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "M",
+  "tags": [
+    "features",
+    "repo-scout",
+    "h4"
+  ],
+  "created_at": "2026-05-31",
+  "updated_at": "2026-05-31",
+  "source": "GitHub repo scout (4 Haiku explorers) + quant-phd-advisor literature review, 2026-05-31. Conversation: 'search quant trading repositories'.",
+  "why": "Barriers are ALREADY ATR-scaled (tp_mult*atr_v[i]); the question is replacing the contemporaneous ATR with a one-step-AHEAD forecast so barriers breathe with EXPECTED not trailing vol (point-in-time clean by construction). quant-phd-advisor: HAR-RV is the consensus best vol forecaster BUT needs intraday RV -> dead on D1; on H4 (6 bars/day) a GJR/EGARCH sigma-hat is the realistic option. Asymmetry term matters for XAU risk-off spikes.",
+  "value_rationale": "VERDICT: Adopt-with-caveats, Paso 2 (H4) ONLY — defer on Paso 1.",
+  "scope": [
+    "On H4: GJR/EGARCH one-step-ahead sigma-hat (data <= t-1) feeding tp_mult/sl_mult",
+    "CRITICAL: the realistic comparison is GARCH-sigma-hat vs the EXISTING ATR widths, not vs a naive fixed baseline — marginal edge may be small",
+    "Cheap offline pre-test before pipeline surgery: barrier-hit asymmetry + meta-OOS Sharpe (ATR-width vs GARCH-width) on one H4 asset, one WF split",
+    "Adopt only if it lifts median fold Sharpe AND doesn't starve folds below 30 trades"
+  ],
+  "recommendation": "Defer to Paso 2; run the cheap offline pre-test first. HAR-RV is off the table on D1/H4 (needs clean intraday RV).",
+  "out_of_scope": "Paso 1 / D1 (cannot build RV from a daily bar; ATR already does the job). HMM statistical regimes (E1): Skip on Paso 1 — Viterbi/posterior SMOOTHING uses the full path = look-ahead invisible to current tests; only forward-filtered + walk-forward-refit is live-safe.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0125"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "https://blog.quantinsti.com/garch-gjr-garch-volatility-forecasting-python/",
+      "relation": "source-repo",
+      "label": "GARCH/GJR/EGARCH forecasting (QuantInsti)"
+    },
+    {
+      "path": "https://github.com/FilippoTiberi/garch-volatility-forecasting",
+      "relation": "source-repo",
+      "label": "FilippoTiberi/garch-volatility-forecasting"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-31",
+      "event": "created",
+      "reason": "repo-scout + quant-phd-advisor verdict"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "field_update",
+      "reason": "add_link related->B0125",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0125"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "chore(backlog): register repo-scout + quant-phd-advisor verdicts (B0120-B0128)",
+      "sha": "HEAD"
+    }
+  ]
+}

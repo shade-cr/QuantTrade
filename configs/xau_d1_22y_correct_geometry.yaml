@@ -1,0 +1,110 @@
+# XAU D1 with CORRECTED barrier geometry on 22-year file.
+# -----------------------------------------------------------------------------
+# Memory [[project_barrier_geometry_root_cause.md]] identifies the project-wide
+# root cause: tp_atr_mult=1.5-2.0 + sl_atr_mult=1.0 = baseline expectancy
+# -0.25R per trade (30% win rate × 1.5R - 70% × 1.0R). The meta-labeler can
+# filter but cannot create positive expectancy from negative baseline.
+#
+# Fix (empirically validated on 5y XAU D1):
+#   tp_atr_mult: 3.0  → expectancy = 0.30 × 3.0 - 0.70 × 1.0 = +0.20R
+#   horizon: doubled (20 → 40 on D1)
+#   sl_atr_mult: 1.0 unchanged
+#   n_folds: 3 (40-bar horizon reduces event count; 4 folds wouldn't clear floor)
+#
+# This config applies the corrected geometry to the 22-YEAR XAU D1 file —
+# the same file the original Phase 1 used. If the new baseline_sharpe is
+# positive across folds, the project's headline narrative changes from
+# "1 candidate survives" to "geometry was broken; corrected geometry yields
+# positive baseline + meta-labeling becomes additive instead of rescue".
+#
+# Specific change for momentum_zscore: threshold lowered 0.3 → 0.2 because
+# tp=3R makes the positive class too rare under the original selectivity;
+# inner-CV's calibration slice gets all-negative and the run fails.
+
+asset: XAUUSD
+timeframe: D1
+data_path: data/XAUUSD_D1.csv          # 22-year file
+
+date_range:
+  start: "2006-01-01"
+  end: "2026-04-30"
+
+# CORRECTED barrier geometry (vs Phase 1's tp=2.0/h=20, Camino D's tp=1.5/h=10).
+triple_barrier:
+  horizon: 40
+  tp_atr_mult: 3.0
+  sl_atr_mult: 1.0
+  atr_period: 14
+
+primary:
+  # mom_z restored after root-cause fix: FRED cache only had 2021+ data,
+  # so feature dropna left only ~1138 rows (4.4y) of the 22y dataset.
+  # Cache now extended to 2006+; with full macro history and
+  # calib_holdout_pct=0.30, mom_z passes inner-CV calibration.
+  # Diagnosed via scripts/debug_mom_z_calib.py (Phase 1 systematic debug).
+  candidates: [ema_cross, momentum_zscore]
+  ema_cross:
+    fast: 20
+    slow: 50
+    dead_zone_atr: 0.25
+  momentum_zscore:
+    lookback: 20
+    threshold: 0.2                     # lowered 0.3 -> 0.2 per memory recommendation
+
+features:
+  tier: 2
+
+walk_forward:
+  n_folds: 3                           # reduced from 4 to accommodate lower event count
+  train_min_bars: 1500
+  purge_bars: 40                       # match horizon
+  embargo_pct: 0.01
+
+models:
+  - xgb
+  - catboost
+  - rf
+
+hyperparam_search:
+  method: random
+  n_iter: 20
+  cv_splits: 3
+  cv_type: purged_time_series
+  cv_purge_bars: 40
+
+calibration:
+  method: sigmoid
+  cv: prefit
+  calib_holdout_pct: 0.30      # raised from 0.15: smaller inner-CV slices need more calib mass
+  min_minority_for_isotonic: 50
+
+stacking:
+  baseline: trade_all_primary
+  min_models_beating_baseline: 2
+  min_folds_beating_baseline: 3
+  max_oof_corr: 0.7
+  min_trades_per_fold: 30
+  meta_learner: logistic_regression
+  meta_C: 1.0
+  meta_penalty: l2
+  meta_n_folds: 4
+
+metrics:
+  cost_per_trade_bps: 10
+  bars_per_year: 252
+  threshold_grid: [0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62]
+  threshold_selection: inner_cv
+
+threshold_selection:
+  method: inner_cv
+  inner_splits: 3
+  min_trades_per_inner_fold: 20
+
+output_dir: results/clf_xau_d1_22y_correct_geometry
+random_seed: 42
+
+dry_run:
+  enabled_via_cli_flag: true
+  n_iter: 5
+  max_minutes_per_model_warn: 8
+  max_minutes_per_model_abort: 15

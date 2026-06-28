@@ -1,0 +1,86 @@
+{
+  "id": "B0053",
+  "title": "Swap CatBoost -> LightGBM + add LR as linear base learner",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "infrastructure",
+    "methodology"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-28",
+  "source": "",
+  "why": "XGB and CatBoost are both gradient boosting with similar inductive bias — they produce highly correlated OOF predictions and may fail the max_oof_corr<0.7 gate. LightGBM uses leaf-wise tree growth giving genuine diversity. Adding LR as a linear base captures signals that trees approximate noisily, and LR is typically least-correlated with tree ensembles.",
+  "value_rationale": "Better stack diversity -> higher chance of passing stacking gate -> ensemble edge",
+  "scope": [
+    "pipeline/train.py",
+    "scripts/run_xau_d1.py",
+    "configs/xau_d1.yaml",
+    "pyproject.toml"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "status_change",
+      "reason": "Implemented: _make_lgbm + _make_lr in pipeline/train.py, HP_SPACES entries in run_xau_d1.py, config updated, lightgbm dep added, test updated. All 587 tests pass.",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "finding",
+      "reason": "Positive-control follow-up (B0061): LR-decorrelation worked mechanically (momentum_zscore max_pair_corr 0.84->0.56) but stack_decision stayed FALSE for both primaries. Binding constraint on the stacking gate is NOT model correlation — it is fold-level trade starvation (folds 1&2 filter to 0-22 trades -> NaN/0 Sharpe, the documented n_trades artifact). Decorrelation interventions cannot move the gate while starvation binds. Signal of life: momentum_zscore+xgb fold0 = +2.14 Sharpe vs baseline -0.03 on 90 trades. Fix the trade-count floor before further ensemble-diversity work.",
+      "related": "B0061"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "git_commit",
+      "reason": "feat(validation): positive control for trend-edge reproducibility (B0061)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "finding",
+      "reason": "Stale regression baseline TRAP surfaced 2026-05-27: re-running run_xau_d1 under the new roster makes tests/test_regression_phase1.py fail 6/6 (best_model, thresholds, n_trades, psr, dsr, sharpe) because it compares live results/clf_xau_d1/*/summary.json against the frozen Phase1-v4 snapshot (tests/fixtures/phase1_v4_baseline.json) which still encodes the catboost roster. results/ is gitignored so nothing bad is committed, but the suite is red until the baseline is regenerated (scripts/generate_phase1_baseline.py) or the test retired. B0053 follow-up."
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "chore(backlog): sync registry â€” positive-control + meta diagnosis (B0061-B0064)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(models): swap CatBoost -> LightGBM + add LogisticRegression base (B0053)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "test(regression): B0064 re-anchor Phase 1 baseline to deterministic lgbm/lr roster",
+      "sha": "HEAD"
+    }
+  ]
+}

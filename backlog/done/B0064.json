@@ -1,0 +1,89 @@
+{
+  "id": "B0064",
+  "title": "Phase1-v4 regression baseline stale after B0053 roster swap — regenerate (suite red on next pipeline run)",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "infrastructure",
+    "testing",
+    "maintenance"
+  ],
+  "created_at": "2026-05-28",
+  "updated_at": "2026-06-03",
+  "source": "Surfaced 2026-05-28 by re-running run_xau_d1 under the B0053 roster.",
+  "why": "tests/test_regression_phase1.py compares live results/clf_xau_d1/*/summary.json against the frozen tests/fixtures/phase1_v4_baseline.json (catboost roster). B0053 (catboost->lgbm+lr) intentionally changes the numbers, so the suite fails 6/6 on the next real pipeline run. results/ is gitignored so nothing bad is committed, but the suite is red.",
+  "value_rationale": "Red suite is a trap for the next contributor; cheap fix but needs care.",
+  "scope": [
+    "BLOCKED-ish: pipeline/train.py is currently modified+uncommitted — do NOT regenerate the golden baseline from a dirty tree (would bless unblessed code)",
+    "Once train.py changes are committed/settled: run scripts/generate_phase1_baseline.py to refresh, OR retire/replace the Option-B regression test if it has served its purpose",
+    "Verify suite returns green afterwards"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0053"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-28",
+      "event": "created",
+      "reason": "stale regression baseline after B0053"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "chore(backlog): sync registry â€” positive-control + meta diagnosis (B0061-B0064)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(models): swap CatBoost -> LightGBM + add LogisticRegression base (B0053)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "fix(train): B0064 pin xgb+lgbm n_jobs=1 for deterministic, reproducible fits",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "test(regression): B0064 re-anchor Phase 1 baseline to deterministic lgbm/lr roster",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "status_change",
+      "reason": "Re-anchored Phase 1 regression baseline to the deterministic lgbm/lr roster. Root-cause investigation (systematic-debugging): ruled out data/feature/config regression; found xgb+lgbm thread-nondeterminism (pinned n_jobs=1) + stale catboost-era snapshot. Fresh deterministic run regenerated baseline; regression suite + full suite green. 2026-05-28.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(backlog): quiesce cross-session reconciliation + B0079 prereq + B0068 done",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "test(regression): re-anchor Phase 1 baseline to post-audit-fix numbers (B0129-B0133)",
+      "sha": "HEAD"
+    }
+  ]
+}

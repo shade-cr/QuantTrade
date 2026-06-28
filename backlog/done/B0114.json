@@ -1,0 +1,140 @@
+{
+  "id": "B0114",
+  "title": "Vol-estimate floor in vol_target_scale (bound k against vol-collapse)",
+  "status": "done",
+  "effort": "XS",
+  "value": "M",
+  "tags": [
+    "survival-book",
+    "risk",
+    "sizing"
+  ],
+  "created_at": "2026-05-30",
+  "updated_at": "2026-05-31",
+  "source": "risk-officer review of B0108: 'required regardless of any cap decision'. Split out as the safe, ungated sliver of B0108.",
+  "why": "vol_target_scale computes k = target_vol / book_vol clamped only by max_leverage. As the ex-ante book vol estimate collapses toward 0 (a near-flat price window), k blows up, bounded ONLY by the leverage cap. This is the classic lever-into-calm-then-spike failure mode of vol targeting. A vol-estimate floor on the denominator bounds k by construction, independent of any cap decision. At the current cap 0.5 a low default floor never bites (book_vol ~4.6% >> floor), so behavior is UNCHANGED today; the floor is the prerequisite safety rail for any future cap raise (deferred B0108).",
+  "value_rationale": "M: safety hardening of a live-book sizing primitive; no exposure change today, closes a real tail hole.",
+  "scope": [
+    "Add a min_book_vol floor parameter to vol_target_scale; k = target_vol / max(book_vol, min_book_vol).",
+    "Default floor low enough to NOT change behavior at the current cap (regression-pinned).",
+    "Unit test: k is bounded when book_vol -> 0; behavior unchanged when book_vol is normal."
+  ],
+  "recommendation": "Safe, decision-free, ships independently of B0108/B0112. Do now.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0116"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0108"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-30",
+      "event": "created",
+      "reason": "split from B0108 per risk-officer: the safe ungated sliver"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "add_link spawned_by->B0108",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0108"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "event": "status_change",
+      "reason": "starting implementation (TDD)",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "status_change",
+      "reason": "vol-estimate floor implemented (TDD); default 0.5% inert at current cap, backtest headline unchanged, parity green",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(survival): quant-reviewed improvement backlog + vol-estimate floor (B0114)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(survival): quant-reviewed improvement backlog + vol-estimate floor (B0114)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "chore(backlog): B0112 done, B0114 done, B0108/B0109 blocked + links",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "field_update",
+      "reason": "add_link related->B0116",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0108"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0116"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0108"
+        ],
+        "spawned_from": []
+      }
+    }
+  ]
+}

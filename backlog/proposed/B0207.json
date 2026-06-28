@@ -1,0 +1,110 @@
+{
+  "id": "B0207",
+  "title": "Technology Prize submission package: live 3-min demo + backtest data + AI-native novelty writeup + setup diagram, ready by 26 Jun 22:00",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "tech-prize",
+    "submission",
+    "deliverable",
+    "best-architecture"
+  ],
+  "created_at": "2026-06-21",
+  "updated_at": "2026-06-21",
+  "source": "Official 'AI Engine x Syphonix MoMQ Hack - Technology Prize' pack received 2026-06-21 (Downloads/AI Engine x Syphonix MoMQ Hack - Technology Prize.docx); summarized in memory reference_tech_prize_criteria.",
+  "why": "The Technology Prize is judged on four EQUAL 25% criteria - Future Potential, P&L Placement (does it work?), Creativity/Uniqueness, Pitching Quality - NOT pure architecture. Format is a 3-min product demo + 2-min Q&A that must show the real product in action WITH BACKTEST DATA. Submission window is 24 Jun 22:00 -> 26 Jun 22:00 BST (the deadline coincides with the trading close). Requires a short novelty description in the 'AI-native way' + source code; setup diagram/slides optional. We need this package pre-assembled so it can ship the moment we clear the top-100 cut on 24 Jun, not scrambled afterward.",
+  "value_rationale": "H: this is THE concrete deliverable for the $10k main track ($5k/3k/2k to top 3). Gated only on reaching top-100; high payoff and largely within our control given the system already exists.",
+  "scope": [
+    "Script + record (and be able to run live) a 3-minute demo of the product in action.",
+    "Assemble backtest-data exhibits to show during the demo (PSR/DSR, equity curve, walk-forward) - must be visible per the rules.",
+    "Write the short 'novelty of your setup in the AI-native way' description.",
+    "Produce the technology setup diagram (optional but recommended).",
+    "Map our story explicitly onto the 4x25% criteria (Future Potential, P&L Placement, Creativity, Pitching).",
+    "Stage everything so it can be submitted in the 24-26 Jun window without last-minute work."
+  ],
+  "recommendation": "Lead the deck/demo with the autonomous multi-agent research-and-execution system (the real edge), tie P&L Placement to the barbell/survival-book result, and rehearse the 3+2 min format tightly. Pre-assemble before the 24 Jun cut.",
+  "out_of_scope": "Does not decide the Stage-2 aggression rung or any CEO-reserved strategy posture; those are tracked elsewhere.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0208",
+      "B0209"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-21",
+      "event": "created",
+      "reason": "Surfaced from the official Technology Prize pack review (2026-06-21)."
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0208",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0208"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0209",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0208"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0208",
+          "B0209"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

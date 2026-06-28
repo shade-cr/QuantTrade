@@ -1,0 +1,251 @@
+{
+  "id": "B0116",
+  "title": "Trend-tilt sleeve OFF-vs-ON paired bootstrap — sleeve rejected for the preservation book",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "survival-book",
+    "validation",
+    "backtest",
+    "sleeve"
+  ],
+  "created_at": "2026-05-31",
+  "updated_at": "2026-05-31",
+  "source": "CEO request 2026-05-31: 'activate the sleeve and bootstrap-test vs the non-activated run from yesterday'. Paired single-run stationary block bootstrap via scripts/compare_sleeve_bootstrap.py (reuses B0112 harness, same window/seed/block-len; book-OFF arm reproduces B0112's survival_book distribution exactly as a self-check).",
+  "why": "The deployed book runs with_sleeve=False. The historical single path made the sleeve look like an improvement (ann.Sharpe 0.61 vs 0.53), but n=1 misleads. The 200-path paired bootstrap is the honest test of whether the OPT-IN positive-skew lottery sleeve helps a PRESERVATION book.",
+  "value_rationale": "M: closes the question of whether to flip with_sleeve in the deployed book with distributional evidence rather than one benign path; the method (point-estimate-misleads -> bootstrap-decides) is reusable for any future sleeve/overlay proposal.",
+  "scope": [
+    "Paired bootstrap (book-only vs book+sleeve) on identical resampled paths.",
+    "Verdict + evidence artifact; no live config change (that is risk-officer-gated)."
+  ],
+  "recommendation": "KEEP with_sleeve=False (as deployed). Findings over 200 paths (2021-06-01..2026-05-29, block_len 69.65, seed 12345): (1) median ann.Sharpe does NOT improve — it slightly DROPS (0.36 -> 0.33); (2) maxDD is worse at EVERY quantile and the p5 tail breaches the -10% DD mandate (-9.6% -> -11.0%); (3) worst_day tail ~doubles (-1.3% -> -2.4%) and realized vol inflates (2.4% -> 2.9% median, 3.8% p95); (4) the sleeve's hard envelope-loss cap latches in 98% of paths and its standalone median Sharpe is ~0 (+0.03) — it is NOT alpha. The ONLY thing the sleeve buys is a fatter right tail on total return (p95 +15.6% -> +25.2%) — pure positive skew, which a preservation book is not optimizing for. The sleeve would be defensible only if the mandate changed from 'preservation' to 'preservation + positive-skew lottery, accepting a -10%-mandate breach in the tail'.",
+  "out_of_scope": "Flipping the live with_sleeve flag (risk-officer-gated capital decision); re-tuning sleeve_risk_frac/lookback/top_n to find a less ruinous sleeve.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0112",
+      "B0108",
+      "B0114"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "scripts/compare_sleeve_bootstrap.py",
+      "relation": "implemented_by",
+      "label": "paired bootstrap comparison script"
+    },
+    {
+      "path": "results/survival_book/sleeve_compare_bootstrap.json",
+      "relation": "evidence",
+      "label": "200-path paired distribution (OFF vs ON)"
+    },
+    {
+      "path": "results/survival_book/bootstrap_distribution.json",
+      "relation": "evidence",
+      "label": "B0112 sleeve-OFF baseline (self-check target)"
+    },
+    {
+      "path": "scripts/sweep_sleeve_variants_bootstrap.py",
+      "relation": "implemented_by",
+      "label": "paired bootstrap sweep over 6 sleeve variants"
+    },
+    {
+      "path": "results/survival_book/sleeve_variants_bootstrap.json",
+      "relation": "evidence",
+      "label": "200-path variant distribution + per-variant verdicts"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-31",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "field_update",
+      "reason": "add_link related->B0112",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0112"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "event": "field_update",
+      "reason": "add_link related->B0108",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0112"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0112",
+          "B0108"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "event": "field_update",
+      "reason": "add_link related->B0114",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0112",
+          "B0108"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0112",
+          "B0108",
+          "B0114"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0116 â€” trend-tilt sleeve OFF-vs-ON paired bootstrap",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "field_update",
+      "reason": "add variant-sweep script + artifact refs",
+      "field": "external_refs",
+      "from": [
+        {
+          "path": "scripts/compare_sleeve_bootstrap.py",
+          "relation": "implemented_by",
+          "label": "paired bootstrap comparison script"
+        },
+        {
+          "path": "results/survival_book/sleeve_compare_bootstrap.json",
+          "relation": "evidence",
+          "label": "200-path paired distribution (OFF vs ON)"
+        },
+        {
+          "path": "results/survival_book/bootstrap_distribution.json",
+          "relation": "evidence",
+          "label": "B0112 sleeve-OFF baseline (self-check target)"
+        }
+      ],
+      "to": [
+        {
+          "path": "scripts/compare_sleeve_bootstrap.py",
+          "relation": "implemented_by",
+          "label": "paired bootstrap comparison script"
+        },
+        {
+          "path": "results/survival_book/sleeve_compare_bootstrap.json",
+          "relation": "evidence",
+          "label": "200-path paired distribution (OFF vs ON)"
+        },
+        {
+          "path": "results/survival_book/bootstrap_distribution.json",
+          "relation": "evidence",
+          "label": "B0112 sleeve-OFF baseline (self-check target)"
+        },
+        {
+          "path": "scripts/sweep_sleeve_variants_bootstrap.py",
+          "relation": "implemented_by",
+          "label": "paired bootstrap sweep over 6 sleeve variants"
+        },
+        {
+          "path": "results/survival_book/sleeve_variants_bootstrap.json",
+          "relation": "evidence",
+          "label": "200-path variant distribution + per-variant verdicts"
+        }
+      ]
+    },
+    {
+      "date": "2026-05-31",
+      "event": "evidence_added",
+      "reason": "VARIANT SWEEP (sweep_sleeve_variants_bootstrap.py, same window/seed/block; book arm reproduces B0112 exactly). 6 variants over 200 paths: risk_frac {0.08,0.04,0.02} x lookback63/top2, plus slow_126, tsmom_252, diversified (lb126/top3/cap0.25). RESULT: the sweep BURIES the sleeve rather than rescuing it. (1) Momentum has NO edge on this universe at any horizon — sleeve standalone median Sharpe +0.027 at 63d (~0) and NEGATIVE at 126d/252d (-0.058/-0.091); longer horizons are WORSE. (2) The historical point estimate INVERTED the ranking: tsmom_252 looked BEST historically (Sharpe 0.72, sleeve SR +0.384) but is the WORST in distribution (combined SR p50 0.283, sleeve SR p50 -0.091) — a second n=1 trap. (3) Only quarter_002 (risk_frac=0.02) clears BOTH gates, and only by being negligible: maxDD p5 -9.6% (just inside), delta-Sharpe +0.016 (noise), sleeve standalone Sharpe still ~0, cap latches 98%. It is 'harmless because invisible', not 'additive because skilled'. (4) The mandate boundary is risk_frac in [0.02,0.04]: half_004 already breaches (-10.1%). (5) cap latches 98-100% across ALL variants. VERDICT UNCHANGED: keep with_sleeve=False; no tuning rescues a zero-edge momentum sleeve. Consistent with the alpha-frontier-nondirectional finding."
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0116 variant sweep â€” no sleeve config rescues the book",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "research(alpha): B0102 DSR re-test â€” TSMOM uplift not significant after deflation",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "research(alpha): B0117 mean-reversion pre-flight â€” no tradeable valley net of cost",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "chore: sync backlog provenance, survival-book live state, regime dossiers",
+      "sha": "HEAD"
+    }
+  ]
+}

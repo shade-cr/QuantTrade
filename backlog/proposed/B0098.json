@@ -1,0 +1,53 @@
+{
+  "id": "B0098",
+  "title": "Phase 2: action endpoints + auth (command-intent pattern)",
+  "status": "proposed",
+  "effort": "L",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "dashboard",
+    "webapp",
+    "execution"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "CEO request 2026-05-29: live web dashboard to monitor the service + active strategy; explicitly think ahead to a control plane (expose actions/functions, portfolio mgmt, corporate actions, multi-strategy). Stack approved: FastAPI+uvicorn+Jinja/htmx.",
+  "why": "Expose actions from the web WITHOUT breaking the single-broker-actor invariant: POST /api/actions/{manual_reset,flatten,pause,resume,set_leverage} validate (pydantic) -> auth -> write signals/live/commands/<ts>.json; the execution service grows an idempotent, audited command consumer on each tick. Auth mandatory before any action, especially on a real account.",
+  "value_rationale": "",
+  "scope": [
+    "command-intent schema + idempotent consumer in the live loop (TDD).",
+    "auth (token/login) + never bind 0.0.0.0 without it.",
+    "risk-officer review + CEO gate per action type."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [
+      "B0097"
+    ],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "Dashboard/control-plane epic approved by CEO"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(dashboard): phase-1 read-only live monitor (FastAPI) for the survival book",
+      "sha": "HEAD"
+    }
+  ]
+}

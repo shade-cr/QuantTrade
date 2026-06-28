@@ -1,0 +1,29 @@
+{
+  "id": "I0003",
+  "title": "XAU/XAG ratio como standalone primary mean-reversion",
+  "status": "open",
+  "tags": [
+    "cross-asset"
+  ],
+  "created_at": "2026-05-26",
+  "updated_at": "2026-05-26",
+  "description": "historic ~80:1 ratio es famosamente mean-reverting; B0018a ya lo tiene en backlog pero gated en B0006 (refactor trivial). Probablemente la idea más cercana a go-live que está esperando.",
+  "source": "conversation 2026-05-26, BACKLOG B0018a",
+  "context": "",
+  "links": {
+    "related_backlog": [
+      "B0006"
+    ],
+    "related_ideas": [],
+    "promoted_to": null,
+    "discarded_reason": null
+  },
+  "history": [
+    {
+      "date": "2026-05-26",
+      "event": "captured",
+      "via": "/capture",
+      "note": "migrated from IDEAS.md"
+    }
+  ]
+}

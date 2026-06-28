@@ -1,0 +1,96 @@
+{
+  "id": "B0013",
+  "title": "`make_folds` empirical refusal cliff as first-class error",
+  "status": "done",
+  "effort": "S",
+  "value": "L",
+  "tags": [
+    "phase5",
+    "h4",
+    "audit"
+  ],
+  "created_at": "2026-05-26",
+  "updated_at": "2026-05-26",
+  "source": "[phase5/audit_null_distribution.md](phase5/audit_null_distribution.md) §B3 — empirical refusal boundary established at `n_events ≥ n_folds × 100 + train_min` (≥600 at defaults).",
+  "why": "Today `make_folds` raises a `ValueError` whose message doesn't name the cliff. Phase 5's H4 extension hit this and the diagnostic required reading the matrix to understand why. Converting the ValueError into a structured error that *names the cliff* + suggests the parameter axis to relax (lower n_folds OR lower train_min OR get more events) makes the failure mode legible without changing the failure-handling contract (still raises; orchestrator still stops). **Critically NOT what B3 v3.2 will do** (that's an audit-class question, see B0007); this is a pipeline-level UX fix that's safe to land independently.",
+  "value_rationale": "L (debugging clarity only; not a behavioral improvement)",
+  "scope": [
+    "in [pipeline/walk_forward.py](pipeline/walk_forward.py) `make_folds`, replace the generic ValueError with `WalkForwardGeometryError(ValueError)` carrying structured fields `(events, required, n_folds, train_min)`. **Strictly IS-A ValueError** so existing `except ValueError:` handlers in [scripts/run_xau_d1.py](scripts/run_xau_d1.py) and [phase5/run_proposal.py](phase5/run_proposal.py) continue working unchanged; new callers wanting structured info can `isinstance`-check. Audit existing call sites to confirm. Test in `tests/test_walk_forward.py`. No behavioral change — failure-handling contract preserved."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0007"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "phase5/audit_null_distribution.md",
+      "relation": "reference",
+      "label": "phase5/audit_null_distribution.md"
+    },
+    {
+      "path": "pipeline/walk_forward.py",
+      "relation": "reference",
+      "label": "pipeline/walk_forward.py"
+    },
+    {
+      "path": "scripts/run_xau_d1.py",
+      "relation": "reference",
+      "label": "scripts/run_xau_d1.py"
+    },
+    {
+      "path": "phase5/run_proposal.py",
+      "relation": "reference",
+      "label": "phase5/run_proposal.py"
+    },
+    {
+      "path": "backlog_reviews/20260526-backlog-full-review_v1.json",
+      "relation": "reference",
+      "label": "backlog_reviews/20260526-backlog-full-review_v1.json"
+    }
+  ],
+  "da_reviews": [
+    {
+      "path": "backlog_reviews/20260526-backlog-full-review_v1.json",
+      "verdict": "UNKNOWN",
+      "severity_counts": {},
+      "date": "20260526"
+    },
+    {
+      "path": "backlog_reviews/20260526-backlog-full-review_v1.json",
+      "verdict": "UNKNOWN",
+      "severity_counts": {},
+      "date": "20260526"
+    }
+  ],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-26",
+      "event": "created",
+      "reason": "migrated from BACKLOG.md (auto-parsed)"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "status_change",
+      "reason": "make_folds refusal cliff now raises WalkForwardGeometryError(ValueError) with structured fields (events, n_folds, train_min, test_pool_needed, required_events, shortfall) and a message naming the cliff + the 3 relaxable axes. Strictly IS-A ValueError so existing except-ValueError handlers in run_xau_d1/run_proposal are unchanged (call site propagates to subprocess as before; stderr now legible). Tests in tests/test_walk_forward.py: updated existing rejection test to match new message + added structured-error assertions + inclusive-boundary success. 572/572 pass.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "git_commit",
+      "reason": "feat(B0013): structured WalkForwardGeometryError names the refusal cliff",
+      "sha": "HEAD"
+    }
+  ]
+}

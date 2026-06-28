@@ -1,0 +1,66 @@
+{
+  "id": "B0145",
+  "title": "Sequential FDR (SFDR) posterior-error gate for Loop A promotion",
+  "status": "proposed",
+  "effort": "M",
+  "value": "M",
+  "tags": [
+    "overfit",
+    "loop-a",
+    "ldp-verification"
+  ],
+  "created_at": "2026-06-03",
+  "updated_at": "2026-06-03",
+  "source": "LdP newer-corpus verification (4 parallel read-only agents over the added 2012-2026 papers + LdP REFERENCE CODE in D:/PROJECTS/QuantTradingDocs/code, 2026-06-03). Conversation: 'verifica la nueva informacion antes de implementar'.",
+  "why": "The 2026 standard's 'which control to apply' table places SFDR (Sequential FDR) as the appropriate posterior-error control for INDUSTRIAL strategy selection (recruitment/defunding by an investment committee) — which is exactly Loop A (manufacture many candidates, deploy survivors, reversible defunding). FWER is for foundational discoveries; our case is SFDR. DSR is still preferred over generic FWER (it accounts for trial heterogeneity V[SR_k]). Also: the 2026 FDR paper proves search-and-selection makes in-sample FDR NON-IDENTIFIABLE unless the search intensity K is modeled (true FDR can exceed 80%) — hardening B0121's 'count N honestly' into a correctness condition.",
+  "value_rationale": "Adds the standard-endorsed posterior-error control for our exact (industrial) setting, complementing DSR. PBO (B0122) becomes a complement, not the headline.",
+  "scope": [
+    "Implement SFDR posterior-error control at the Loop A promotion gate (over the survivor config family)",
+    "Encode honest search intensity K (effective trials) — search-adjusted FDR is non-identifiable from the survivor cross-section alone",
+    "Keep DSR (B0132) as the per-run metric and B0121 DSR+MinTRL NO-GO; re-scope B0122 PBO as a complement"
+  ],
+  "recommendation": "Add SFDR alongside DSR at the promotion gate; pair with honest-K accounting. Complements (does not replace) B0121/B0122.",
+  "out_of_scope": "Replacing DSR (DSR stays, preferred over generic FWER). The PSR/DSR formula.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0121",
+      "B0122",
+      "B0132"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "D:/PROJECTS/QuantTradingDocs/extracted/2026_seminar_what_is_false_discovery_rate_in_finance.txt",
+      "relation": "source",
+      "label": "SFDR for industrial selection; FDR non-identifiability under search"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-03",
+      "event": "created",
+      "reason": "verification: SFDR is the 2026-standard posterior-error gate for Loop A (industrial selection); honest-K required"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): LdP newer-corpus verification follow-ups (B0139-B0145)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): provenance for B0139-B0145 verification commit",
+      "sha": "HEAD"
+    }
+  ]
+}

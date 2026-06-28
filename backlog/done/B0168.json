@@ -1,0 +1,198 @@
+{
+  "id": "B0168",
+  "title": "Risk envelope + live integration: intraday book inside survival-book/kill-switch framework, session blackouts, flat-into-marks, Sunday warmup",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "microstructure",
+    "B0162-epic"
+  ],
+  "created_at": "2026-06-11",
+  "updated_at": "2026-06-12",
+  "source": "Split of epic B0162 per methodology survey (docs/superpowers/specs/2026-06-11-l2-microstructure-methodology-survey.md)",
+  "why": "Frozen-at-launch means every operational behavior must be coded before Jun 21 22:00 BST: rollover blackout 21:45-23:15 BST, reduced-size warmup first 12h (Sunday-night thin liquidity), flat into Jun-24 22:00 cut and Jun-26 22:00 force-liquidation, FX/metals-closed-vs-crypto-open weekend asymmetry, vol-targeted sizing, <=20% L1 depth per order, portfolio kill switch reuse.",
+  "value_rationale": "",
+  "scope": [
+    "Extend execution/ live loop with intraday signal cadence (current book is bar-based).",
+    "Blackout/warmup/flatten scheduling config, frozen pre-launch.",
+    "risk-officer review MANDATORY before arming (BLOCK/PROCEED_WITH_CAVEAT gate)."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [
+      "B0166"
+    ],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0162"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [
+    {
+      "path": "docs/reviews/2026-06-12-risk-officer-B0168-BLOCK.md",
+      "verdict": "BLOCK",
+      "severity_counts": {
+        "high": 4,
+        "medium": 3,
+        "low": 2
+      },
+      "date": "2026-06-12"
+    },
+    {
+      "path": "docs/reviews/2026-06-12-risk-officer-B0168-rereview-PROCEED_WITH_CAVEAT.md",
+      "verdict": "PROCEED_WITH_CAVEAT",
+      "severity_counts": {
+        "medium": 2,
+        "low": 3
+      },
+      "date": "2026-06-12"
+    }
+  ],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-11",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "git_commit",
+      "reason": "feat(B0162): CEO commits Jun 15-21 L2/microstructure build; methodology survey accepted + epic split B0163-B0168",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "status_change",
+      "reason": "pm-day 2026-06-12: dispatched to execution-engineer (B0166 done in 91d3f7a unblocks it); risk-officer review remains mandatory before arming",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "implementation_complete",
+      "reason": "B0168 build complete in 28281c2 (TDD, 92 new tests, suite 1860 green): frozen GO-bundle contract (no GO file, no intraday book), OSR live loop reusing the survival RiskState/apply_risk_controls latch (one envelope, one kill), coded session scheduling (blackout/warmup/flat-into-marks/weekend asymmetry), <=20% L1 + gross clips, pid_guard instrument mutual exclusion, restart adoption with alert-only divergence mode. NOTHING ARMED: risk-officer review (BLOCK/PROCEED_WITH_CAVEAT) is MANDATORY before any --live run and REMAINS OPEN; status stays in_progress pending that gate.",
+      "sha": "28281c2"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "field_update",
+      "reason": "DA review BLOCK",
+      "field": "da_reviews",
+      "from": [],
+      "to": [
+        {
+          "path": "docs/reviews/2026-06-12-risk-officer-B0168-BLOCK.md",
+          "verdict": "BLOCK",
+          "severity_counts": {
+            "high": 4,
+            "medium": 3,
+            "low": 2
+          },
+          "date": "2026-06-12"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-12",
+      "event": "risk_officer_block",
+      "reason": "Risk-officer BLOCK with 6 must-fixes (all small/additive per reviewer): connect() missing on --loop path, no bundle writer/provenance, unbounded risk magnitudes in validator, zero crash containment + no watchdog coverage, mutual-exclusion start-order hole, gross-headroom fail-open. Remediation dispatched same day."
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "docs: B0167 LL interpretation pins in pre-registration Â§7 (K-neutral) + risk-officer B0168 BLOCK review record",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "Remediated all 6 risk-officer MUST-FIX items (BLOCK 2026-06-12) + LOW terminal-session rule: connect()+assembly test, bundle writer + provenance hardening (5 clauses/holdout marker/SHA-256), risk-magnitude ceilings, crash containment + watchdog OSR supervision, mutual-exclusion symmetry, gross-headroom fail-closed. Full suite 1966 tests green. Entry stays in_progress: risk-officer re-review is the next gate.",
+      "sha": "3ae135bab5f55f2480a1a5dd99801d30ca90e381"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "field_update",
+      "reason": "DA review PROCEED_WITH_CAVEAT",
+      "field": "da_reviews",
+      "from": [
+        {
+          "path": "docs/reviews/2026-06-12-risk-officer-B0168-BLOCK.md",
+          "verdict": "BLOCK",
+          "severity_counts": {
+            "high": 4,
+            "medium": 3,
+            "low": 2
+          },
+          "date": "2026-06-12"
+        }
+      ],
+      "to": [
+        {
+          "path": "docs/reviews/2026-06-12-risk-officer-B0168-BLOCK.md",
+          "verdict": "BLOCK",
+          "severity_counts": {
+            "high": 4,
+            "medium": 3,
+            "low": 2
+          },
+          "date": "2026-06-12"
+        },
+        {
+          "path": "docs/reviews/2026-06-12-risk-officer-B0168-rereview-PROCEED_WITH_CAVEAT.md",
+          "verdict": "PROCEED_WITH_CAVEAT",
+          "severity_counts": {
+            "medium": 2,
+            "low": 3
+          },
+          "date": "2026-06-12"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-12",
+      "event": "risk_officer_proceed_with_caveat",
+      "reason": "Re-review of 3ae135b: all 6 must-fixes verified fixed (reviewer ran pins + 11-variant forge probe, 10/11 refused, ceilings bound the 11th). Zero code-level must-fixes remain. OPERATIONAL arming preconditions -> runbook GO checklist; 2 MED objections (launch_cmd --force replay, atomic bundle write) dispatched as final hardening round."
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "docs(B0168): risk-officer re-review PROCEED_WITH_CAVEAT recorded + runbook Â§8 OSR GO-day arming checklist (operational preconditions, monitored caveats)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "status_change",
+      "reason": "Envelope complete (ede4ef1 final hardening: launch_cmd.json strips --force; atomic bundle publish never destroys a good live bundle). Risk-officer re-review PROCEED_WITH_CAVEAT recorded (docs/reviews/2026-06-12-risk-officer-B0168-rereview-PROCEED_WITH_CAVEAT.md); operational arming preconditions live in operations-runbook section 8; Jun-18 gate_check remains the strategy own bar - CEO makes the final deploy call.",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "chore(backlog): B0168 -> done (envelope complete, risk-officer PROCEED_WITH_CAVEAT, arming preconditions in runbook s8)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "chore(state): M9 pre-data phase complete - B0163-B0168 done, organizer questions queued on B0158, epic B0162 history updated",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "chore(backlog): trailing history annotations (B0163/B0168 git_commit events, B0162 phase note, B0158 organizer questions)",
+      "sha": "HEAD"
+    }
+  ]
+}

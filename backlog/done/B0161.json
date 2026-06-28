@@ -1,0 +1,124 @@
+{
+  "id": "B0161",
+  "title": "Wire EV-breakeven threshold (B0155) into multi_h4 headline/grid - root cause of systemic NO_FIRE",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "pipeline",
+    "threshold",
+    "b0148"
+  ],
+  "created_at": "2026-06-11",
+  "updated_at": "2026-06-11",
+  "source": "B0148 post-mortem OOF diagnostic 2026-06-11 (calibrated-p distributions, pooled + baseline trees)",
+  "why": "Measured root cause of the systemic NO_FIRE: multi_h4 uses tp=3.0/sl=1.0 ATR barriers (base win rate ~23%; OOF calibrated-p median 0.23 = correctly calibrated) but the threshold grid spans 0.50-0.62. EV breakeven for that geometry (B0155 formula, C_ATR=0.10, lambda=0.05) is p*~0.325; OOF q99 reaches 0.43-0.51, so hundreds of EV-positive events in [0.33, 0.50] are unreachable BY CONSTRUCTION. Neither pooling (B0148 falsified) nor more data can move this. Calibration is NOT broken - do not touch sigmoid. Threshold rule must be derived a-priori from geometry+costs (as ev_breakeven_v1 already is in phase5), never tuned on results.",
+  "value_rationale": "Unblocks measurement on every multi_h4 cell AND is the hard gate for B0160 (transfer follow-up); does not create edge - lets DSR measure whether any exists.",
+  "scope": [
+    "Wire ev_breakeven_v1 (phase5) as the multi_h4 headline threshold: p* from tp/sl/costs per config; report fixed 0.55 as legacy diagnostic only",
+    "Re-center threshold_grid around p* (e.g. p* + {0, .03, .06, .10, .15}) instead of the fixed 0.50-0.62",
+    "Pre-register: ONE re-run of the per-asset arm with the new rule; DSR>0.95 bar unchanged; if AUC ~0.5 and Sharpe negative-after-costs, record 'no discrimination' as the honest null",
+    "Add OOF AUC / Brier-vs-base-rate per (asset,primary,model) to summary.json so discrimination is visible without parquet spelunking",
+    "Secondary (separate, optional): wire B0120 continuous bet sizing from p as an alternative to any binary threshold (guard-rails per pipeline/sizing.py docstrings)"
+  ],
+  "recommendation": "Do BEFORE any new Loop-A batch on multi_h4 cells and before B0160; the phase5 path already uses ev_breakeven and does not need this.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [
+      "B0160"
+    ],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0148"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-11",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "field_update",
+      "reason": "add_link spawned_by->B0148",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0148"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "event": "field_update",
+      "reason": "add_link blocks->B0160",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0148"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0160"
+        ],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0148"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "event": "status_change",
+      "reason": "CEO go-ahead 2026-06-11; TDD implementation starting",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "status_change",
+      "reason": "Implemented + measured 2026-06-11: ev_breakeven wired (1557 tests green, code-reviewed), pre-registered re-run 16/16 pairs. NO SURVIVOR (max DSR 0.655 SOL/momz). Honest null confirmed: AUC 0.45-0.52 on FX/XAG/SOL (no discrimination); mild pockets XAU/ema 0.55 and BTC-ETH/momz 0.53-0.54, too weak for costs+significance. Measurement layer fixed: 12/16 pairs now trade vs 3/16; oof_discrimination in summary.json. Verdict: results/b0161/verdict.md",
+      "from": "in_progress",
+      "to": "done"
+    }
+  ]
+}

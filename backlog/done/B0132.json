@@ -1,0 +1,121 @@
+{
+  "id": "B0132",
+  "title": "DSR n_trials: deflate by family-wise trial count, not per-primary",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "metrics",
+    "overfit",
+    "ldp-audit",
+    "correctness"
+  ],
+  "created_at": "2026-06-03",
+  "updated_at": "2026-06-03",
+  "source": "LdP book audit (6 parallel read-only auditors vs AFML + Machine Learning for Asset Managers, books in D:/PROJECTS/QuantTradingDocs), 2026-06-03. Conversation: 'audita el proyecto usando los libros'.",
+  "why": "Deflated Sharpe Ratio uses n_trials = per-fold per-trade Sharpes across the 4 models WITHIN ONE PRIMARY (run_xau_d1.py:623-626, n_trials_global=len(sr_trials) at :661). The real search space is larger: 2 primaries x 4 models x 7-point threshold grid, plus every backlog config iteration. AFML 11/13 (AFML_book.txt:4160) requires deflating by the FULL number of trials carried out. Per-primary scoping UNDERSTATES trials and INFLATES DSR significance for any survivor. (Note: the per-fold-as-trial choice inflates trial variance in the conservative direction, but the cross-primary undercount dominates.)",
+  "value_rationale": "Correctness of the headline overfit-control statistic; prevents over-claiming significance at the promotion gate. Complements B0121/B0122.",
+  "scope": [
+    "Feed DSR a run-wide trial count spanning all primaries x models x thresholds (and ideally the backlog trial ledger AFML 11 advises)",
+    "OR document dsr as an explicit per-primary LOWER BOUND on deflation",
+    "Reconcile units: sr_observed (pooled-across-folds) vs sr_trials elements (per-fold) -- put them on matched footing"
+  ],
+  "recommendation": "Deflate by family-wise trial count; until then label DSR a per-primary lower bound.",
+  "out_of_scope": "PBO gate (B0122), MinTRL stop rule (B0121), CPCV multi-path (B0123).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0121",
+      "B0122",
+      "B0123",
+      "B0143"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "D:/PROJECTS/QuantTradingDocs/extracted/AFML_book.txt",
+      "relation": "source",
+      "label": "AFML 11/13 deflate by number of trials"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-03",
+      "event": "created",
+      "reason": "LdP book audit: DSR trial pool scoped to single primary, undercounts family-wise trials"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "status_change",
+      "reason": "Implemented: deflated_sharpe_ratio gains n_trials override (variance from empirical pool, E[max] from family-wise count = models x folds x threshold-grid); psr_dsr.json records n_trials_familywise as per-primary lower bound. Both orchestrators.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "fix: LÃ³pez-de-Prado audit fixes B0129-B0133 (purge, MDA, CFI, DSR, calib)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "field_update",
+      "reason": "add_link related->B0143",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0121",
+          "B0122",
+          "B0123"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0121",
+          "B0122",
+          "B0123",
+          "B0143"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-03",
+      "event": "field_update",
+      "reason": "verification: DSR N should be effective-independent count (B0143); formulas confirmed byte-exact vs LdP DSR.py/PSR.py"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): LdP newer-corpus verification follow-ups (B0139-B0145)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "test(regression): re-anchor Phase 1 baseline to post-audit-fix numbers (B0129-B0133)",
+      "sha": "HEAD"
+    }
+  ]
+}

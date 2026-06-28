@@ -1,0 +1,66 @@
+{
+  "id": "B0025",
+  "title": "One-shot MDA-gated FE candidate proposer (scoped variant of B0024)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "L",
+  "tags": [
+    "audit"
+  ],
+  "created_at": "2026-05-26",
+  "updated_at": "2026-05-26",
+  "source": "DA verdict on B0024 ([review](backlog_reviews/20260526-two-level-fe-generator-proposal_v1.json)) §reviewer_notes — \"viable scoped form: one-shot exploratory script proposing top-K candidates by MDA on a single fold, gated through human review\". Originally inspired by 2026-05-26 review of Optiver Kaggle two-level FE.",
+  "why": "Hand-curated tier2 features almost certainly miss productive interactions, but the open-ended generator form (B0024) overfits on 5,500 bars / ~400 events/fold. The bounded form is a one-shot exploratory script proposing a handful of causally-audited candidates ranked by MDA, surfaced to a human reviewer who decides whether each enters [pipeline/features.py](pipeline/features.py). Discipline is the value, not the raw alpha.",
+  "value_rationale": "L-M (small additive; primary value is the discipline of MDA-gated + causality-tested FE expansion — not raw alpha)",
+  "scope": [
+    "new `scripts/propose_fe_candidates.py` that:",
+    "reads `mda_per_fold.json` for the chosen primary, aggregates across folds, identifies top-5 features by median MDA",
+    "generates O(top-5 × top-5) cross-products (≤25 candidates) — ratios, spreads, products — restricted to **macro × technical pairs only** (DA must_have_mod #2: not technical × technical, which are near-collinear on daily OHLC)",
+    "applies `tests/test_feature_causality.py` (precondition, see below) to filter any candidate with leaky propagation",
+    "ranks survivors by single-fold inner-CV MDA (NEVER test-fold), emits top-K (K≤10) markdown report for human review",
+    "new `tests/test_feature_causality.py` (DA must_have_mod #3, **mandatory precondition** — no candidate enters `features.py` without passing): asserts each candidate at bar `t` depends only on inputs ≤ `t-1` for macro and ≤ `t` for technical.",
+    "**pre-registered acceptance criterion** (DA must_have_mod #1): a candidate is merged into `build_tier2_features` ONLY if the human reviewer pre-registers an improvement threshold (e.g. median OOS Sharpe across folds for the chosen primary improves by ≥0.3 with `min_trades` held) AND a held-out tail-window confirms it. Hard ceiling: ≤10 candidates surfaced per run."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0024"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "backlog_reviews/20260526-two-level-fe-generator-proposal_v1.json",
+      "relation": "reference",
+      "label": "review"
+    },
+    {
+      "path": "pipeline/features.py",
+      "relation": "reference",
+      "label": "pipeline/features.py"
+    }
+  ],
+  "da_reviews": [
+    {
+      "path": "backlog_reviews/20260526-two-level-fe-generator-proposal_v1.json",
+      "verdict": "BLOCK",
+      "severity_counts": {},
+      "date": "20260526"
+    }
+  ],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-26",
+      "event": "created",
+      "reason": "migrated from BACKLOG.md (auto-parsed)"
+    }
+  ]
+}

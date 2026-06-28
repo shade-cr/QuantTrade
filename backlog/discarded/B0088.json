@@ -1,0 +1,83 @@
+{
+  "id": "B0088",
+  "title": "Chaikin Money Flow / volume-flow MEAN-REVERSION primary on gold (XAU/XAG) -- new orthogonal driver",
+  "status": "discarded",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "edge-search",
+    "edge-search-volume-flow"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "CEO-relayed external survival-sweep analysis (65/131441 video) 2026-05-29; confirmed against code by hackathon-pm.",
+  "why": "External survival sweep (65/131441 video) + our own evidence converge: volume (38.7%) and mean-reversion (38.5%) are the HIGHEST-survival categories; trend-following is LOWEST (18.2%), matching our barrier-geometry retraction (no dense-trend XAU survivor) and positive-control (trend edge only concentrates in trends). The external set flags Chaikin Money Flow on GOLD at OOS Sharpe 0.99 / -9.3% DD. Our memory says the binding bottleneck is the ORTHOGONAL FEATURE SET, not the prompt -- and a volume/money-flow primary is a genuinely untested orthogonal driver (our Loop A volume mechanisms were breakdown/exhaustion momentum, not CMF mean-reversion). This cell (gold + CMF + mean-reversion framing) was NOT cleanly tested in the exhausted search.",
+  "value_rationale": "High: the single most evidence-justified NEW edge candidate after the exhaustive null -- a different orthogonal driver in the highest-survival category, on our most-data asset.",
+  "scope": [
+    "Feasibility spike: build a Chaikin Money Flow (CMF) mean-reversion primary on XAUUSD (+XAGUSD) D1/H4; fade CMF extremes (oversold/overbought money flow). Train/holdout, net-of-cost, IC + hit-rate + Sharpe; DSR-aware.",
+    "If the spike shows OOS promise, materialize as a phase5 custom primary + run the FULL M3 audit (purged WF + DSR gate) for a trustworthy verdict.",
+    "Compare CMF-mean-rev vs the already-falsified bollinger/momentum to confirm it is genuinely orthogonal, not a relabel."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "logged from video-analysis action candidates"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "CMF mean-reversion fails OOS on XAU/XAG: in-sample fade real + DSR-survives, but holdout IC flips sign, hit-rate <50%, net Sharpe negative. Orthogonal to bollinger (corr +0.11-0.23) so a FAIR test of a new driver -> 8th convergent null. External Sharpe-0.99-gold hint was an in-sample fit. results/feasibility/cmf_meanrev.json.",
+      "from": "proposed",
+      "to": "discarded"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(methodology+spike): DSR hard promotion gate (B0089 done) + CMF mean-rev null (B0088 discarded)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "Reopened per CEO: CMF mean-reversion was tested only on XAU/XAG -> extend to the full competition universe (FX + crypto) before final verdict.",
+      "from": "discarded",
+      "to": "proposed"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "fix(execution): B0090 contract-size lot conversion + notional leverage gate; B0088 CMF full-universe",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "CMF mean-reversion exhausted across the universe: full M3 audit (with B0089 DSR gate) FALSIFIED GBPUSD D1 (DSR~0.0006, overfit luck caught by the gate); SOLUSD H4 inconclusive -- FOLD_CONSTRUCTION_FAILED on 1.4y history (primary sound, data too short for WF). 9th convergent null. SOL re-testable only with >=2.5y H4 history (data prerequisite, not a green light).",
+      "from": "proposed",
+      "to": "discarded"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(phase5): CMF survivors die in full M3 audit (9th null); DSR gate works; fix B0087",
+      "sha": "HEAD"
+    }
+  ]
+}

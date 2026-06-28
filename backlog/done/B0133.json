@@ -1,0 +1,74 @@
+{
+  "id": "B0133",
+  "title": "Harden calibration-method default: fall back to sigmoid, not auto/isotonic",
+  "status": "done",
+  "effort": "S",
+  "value": "L",
+  "tags": [
+    "calibration",
+    "ldp-audit",
+    "robustness"
+  ],
+  "created_at": "2026-06-03",
+  "updated_at": "2026-06-03",
+  "source": "LdP book audit (6 parallel read-only auditors vs AFML + Machine Learning for Asset Managers), 2026-06-03.",
+  "why": "fit_calibrated defaults method=auto (train.py:140) -> isotonic when minority>=50; production call sites use cfg[calibration].get(method, auto) (run_xau_d1.py:480,722); build_calibrated_classifier hardcodes isotonic (train.py:126). If calibration.method is dropped from YAML, persisted/live models silently flip to isotonic -> step-function collapse the sigmoid invariant exists to prevent. Inner-CV path falls back to sigmoid correctly (run_xau_d1.py:449); others do not.",
+  "value_rationale": "Defense-in-depth for a paid-in-blood invariant; one-line fallback removes a config-edit foot-gun.",
+  "scope": [
+    "Make the .get fallback sigmoid at run_xau_d1.py:480,722 (or raise on missing key)",
+    "Review/retire build_calibrated_classifier hardcoded isotonic default (train.py:126)"
+  ],
+  "recommendation": "Fail-safe to sigmoid everywhere; invariant must not depend on a YAML key being present.",
+  "out_of_scope": "Changing the chosen calibration method (sigmoid stays correct).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-03",
+      "event": "created",
+      "reason": "LdP book audit: calibration default trap (auto->isotonic)"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "status_change",
+      "reason": "Implemented: fit_calibrated + build_calibrated_classifier default method -> sigmoid; orchestrator .get fallbacks -> sigmoid. 10 train tests green.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "fix: LÃ³pez-de-Prado audit fixes B0129-B0133 (purge, MDA, CFI, DSR, calib)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): provenance for B0129-B0133 LdP-audit-fix commit",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): LdP newer-corpus verification follow-ups (B0139-B0145)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "test(regression): re-anchor Phase 1 baseline to post-audit-fix numbers (B0129-B0133)",
+      "sha": "HEAD"
+    }
+  ]
+}

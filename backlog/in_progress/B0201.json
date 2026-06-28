@@ -1,0 +1,119 @@
+{
+  "id": "B0201",
+  "title": "Cold-start the armed state root at launch (clear stale $100k paper state) + optional guarded helper",
+  "status": "in_progress",
+  "effort": "XS",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "launch",
+    "risk",
+    "ops"
+  ],
+  "created_at": "2026-06-19",
+  "updated_at": "2026-06-19",
+  "source": "§7 go-live gate COLD-START item (risk-officer 2026-06-17); PM groomed the exact procedure 2026-06-19.",
+  "why": "The armed state root signals/live/survival_book/ carries stale $100k paper-session state (risk_state.json sod_equity 98458.28 / sod_date 2026-06-12 / sleeve envelope 0.08 / hand-edited hwm; stale positions/equity-curve/fills). LiveState._reload loads each file if present -> drags it into the $1M competition book. A passive first-cycle re-anchor is INSUFFICIENT: the day-roll re-anchors only sod_equity, while hwm + DD/sleeve/lottery/equity-lock latches persist across restart. Must cold-start (archive the files) before arming.",
+  "value_rationale": "Launch-day hygiene + audit integrity; a stale hwm/latch would mis-state drawdown from cycle one. Procedure now documented so launch-day is mechanical.",
+  "scope": [
+    "DONE (grooming): exact procedure + first-cycle verification table = docs/submission/cold_start_state_root_2026-06-21.md; runbook §7 cold-start item now points to it + corrected ('passive verify insufficient; cold-start required').",
+    "LAUNCH-DAY (operator): stop any service on the root -> archive the 8 state files to a timestamped subdir (move whole files; corrupt-fail-closed) -> confirm root clean -> launch frozen R1 cmd (--starting-equity 1000000) -> verify first-cycle snapshot per the table.",
+    "OPTIONAL follow-up (not built): scripts/cold_start_state_root.py -- guarded helper (refuse if live_service_pid alive; archive the exact file list to <root>/_archive_<stamp>/; print the verification checklist) + TDD-light (refuses-when-alive / archives-and-leaves-clean / idempotent). Removes manual-file-move fat-finger risk on the armed root."
+  ],
+  "recommendation": "Procedure groomed; execute at launch. Build the guarded helper only if the CEO wants the manual file-move risk mechanized (dispatch execution-engineer TDD).",
+  "out_of_scope": "Any change to trading behavior or the survival/Stage-2 instruments.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0197",
+      "B0195"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-19",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link related->B0197",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0197"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link related->B0195",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0197"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0197",
+          "B0195"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-19",
+      "event": "status_change",
+      "reason": "Guarded helper build dispatched to execution-engineer 2026-06-19 (CEO chose to mechanize the cold-start).",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-19",
+      "event": "helper_built",
+      "reason": "execution-engineer TDD DONE 2026-06-19: scripts/cold_start_state_root.py + tests/test_cold_start_state_root.py (9 tests green; 33 with regression test_osr_pid_guard/test_live_state/test_mutual_exclusion_symmetry, no regressions). FAIL-CLOSED guard reuses execution.pid_guard.live_service_pid (identical to the launch command's pid-guard) -> refuses (exit non-zero, archives nothing) if a live service holds the root; dead/stale PID does not block. DEFAULT = dry-run (lists + prints the verification checklist); --execute archives the exact 9-file set via whole-file shutil.move into <root>/_archive_<stamp>/ (never truncates -> corruption irrelevant); idempotent on a clean root; tolerates missing files; leaves non-state files in place. Caught+fixed a real Windows cp1252 UnicodeEncodeError in the operator output (lambda/sec/em-dash -> ASCII), pinned by a test (mirrors the action_20260612c cli_console fix). Memo 'Optional hardening' section updated to BUILT with launch-day usage. NOT run against the real signals/live/survival_book (launch-day operator action). STATUS stays in_progress: the dev/helper deliverable is COMPLETE; only the launch-day operator EXECUTION (stop service -> --execute -> relaunch -> verify) remains. Helper + memos committed as a clean launch-prep unit; runbook/deck/backlog edits left for a deliberate commit (entangled)."
+    }
+  ]
+}

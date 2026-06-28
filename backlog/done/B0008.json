@@ -1,0 +1,73 @@
+{
+  "id": "B0008",
+  "title": "Expand audit-of-audit probe matrix (B1 noise, B2 cross-asset, B3 calibrator)",
+  "status": "done",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "phase5",
+    "h4",
+    "audit",
+    "infrastructure",
+    "methodology"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-26",
+  "source": "[phase5/audit_null_distribution.md](phase5/audit_null_distribution.md) §\"Cells the matrix does NOT cover\" — acknowledged gaps before v3.2 patch design is defensible.",
+  "why": "The current 76-cell matrix covers B1 magnitude/dispersion/known-nulls, B2 synthetic close arrays, and B3 `make_folds` + `PurgedTimeSeriesSplit` layers — but leaves three gaps: (a) B1 partial-leakage with noise (mixed-signal cells at 25/50/75% leakage contamination), (b) B2 validation against real XAUUSD/XAGUSD/USDJPY close arrays not just synthetic, (c) B3 calibrator stage (`CalibratedClassifierCV.cross_val_predict`) entirely unprobed — yet this was the third layer that ultimately killed the H4 extension. Without these, any v3.2 threshold remains reverse-engineerable.",
+  "value_rationale": "H (gates B0007)",
+  "scope": [
+    "extend [phase5/audit_null_distribution.py](phase5/audit_null_distribution.py) with three new families: `B1_noise_contamination` (≥25 cells), `B2_real_asset_arrays` (≥10 cells), `B3_calibrator_geometry` (≥10 cells). Re-publish [phase5/audit_null_distribution.md](phase5/audit_null_distribution.md) with the expanded surface. Deterministic harness."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0007"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "phase5/audit_null_distribution.md",
+      "relation": "reference",
+      "label": "phase5/audit_null_distribution.md"
+    },
+    {
+      "path": "phase5/audit_null_distribution.md",
+      "relation": "reference",
+      "label": "phase5/audit_null_distribution.md"
+    },
+    {
+      "path": "phase5/audit_null_distribution.py",
+      "relation": "reference",
+      "label": "phase5/audit_null_distribution.py"
+    },
+    {
+      "path": "phase5/audit_null_distribution.md",
+      "relation": "reference",
+      "label": "phase5/audit_null_distribution.md"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "migrated from BACKLOG.md (auto-parsed)"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "git_commit",
+      "reason": "feat(phase5): close 7 tickets â€” Loop A/H4 infra hardening + reporting",
+      "sha": "HEAD"
+    }
+  ]
+}

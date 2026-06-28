@@ -1,0 +1,47 @@
+{
+  "id": "B0005",
+  "title": "Sequestered live-test stage",
+  "status": "done",
+  "effort": "L",
+  "value": "M",
+  "tags": [
+    "loop-a",
+    "audit",
+    "infrastructure"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-27",
+  "source": "maxdama.pdf §5.5 Michael Dubno interview + r/quant top thread (top comment by u/WhoIsTheUnPerson) — both independently identify this as the gap between backtest and production.",
+  "why": "The pipeline ends at WF backtest. Dubno: *\"Backtesting, paper trading, and live trading are three worlds. The system should not be able to tell which world it is in.\"* The current code architecture can support paper trading with minor extension; doing it before Paso 2 multi-asset is probably out of scope, but the design should be sketched now so the orchestrator doesn't lock in shape that breaks live-mode.",
+  "value_rationale": "M (downgraded from H in 2026-05-27 recalibration — still Paso 2/3 prereq for any live work, but no audit-passed primary exists yet to paper-trade; gated behind B0040+B0032+at-least-one-Loop-A-survivor-clearing-full-audit)",
+  "scope": [
+    "new `scripts/paper_trade.py` reusing `_run_one_primary` but ingesting live MT5 ticks; same OHLCV contract; signals go to a paper-broker stub instead of historical backtest."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0007",
+      "B0026",
+      "B0032",
+      "B0040"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "migrated from BACKLOG.md (auto-parsed)"
+    }
+  ]
+}

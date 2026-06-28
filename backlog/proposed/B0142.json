@@ -1,0 +1,59 @@
+{
+  "id": "B0142",
+  "title": "OTR-derived triple-barrier multiples (OU fit / heat-potential closed form)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "labels",
+    "ldp-verification",
+    "trading-rules"
+  ],
+  "created_at": "2026-06-03",
+  "updated_at": "2026-06-03",
+  "source": "LdP newer-corpus verification (4 parallel read-only agents over the added 2012-2026 papers + LdP REFERENCE CODE in D:/PROJECTS/QuantTradingDocs/code, 2026-06-03). Conversation: 'verifica la nueva informacion antes de implementar'.",
+  "why": "Our triple-barrier multiples (tp_atr_mult=3.0, sl_atr_mult=1.0, horizon=40) are hand-set. LdP's 'Determining Optimal Trading Rules Without Backtesting' (2014) + code/OTR.py derive tp/sl WITHOUT backtesting: fit a discrete Ornstein-Uhlenbeck to the PnL/price process (OLS, half-life HL = -ln2/ln phi), then a Monte-Carlo mesh over (PT,SL) pairs picks the Sharpe-maximizing corridor. The 2020 'closed-form optimal mean-reverting trading' paper gives an analytic solution (heat potentials) — no MC needed. CRITICAL falsification value: the paper proves that for a near-random-walk (large HL, phi->1) 'there is no optimal trading rule' — so an OU fit on XAU D1 is also a diagnostic of whether our barrier geometry is even well-posed.",
+  "value_rationale": "Replaces hand-set/arbitrary barriers with a data-derived, overfit-resistant choice AND yields a falsifiable 'is there an edge corridor' test. Directly relevant given MEMORY barrier_geometry_root_cause.",
+  "scope": [
+    "Fit discrete OU (OLS of dP on (E[P]-P_{t-1})) to XAU D1; report phi, half-life, sigma — per vol-regime (rv_regime already segments)",
+    "If OU distinguishable from random walk: run OTR.py MC mesh (or 2020 heat-potential closed form) to nominate tp/sl multiples; compare vs current 3.0/1.0/40",
+    "If indistinguishable from random walk: record as a finding (current barriers partly arbitrary; no stable OTR exists)",
+    "OTR governs the EXIT corridor of an open position (not entry) — it cleanly replaces the triple-barrier TP/SL the labeler uses"
+  ],
+  "recommendation": "High value: principled barriers + a falsification diagnostic. Start with the OU fit; the closed form (2020) is the fast path if OU holds.",
+  "out_of_scope": "Entry-threshold determination (OTR is exit-corridor only). Per-trade live sizing (B0001).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0129"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "D:/PROJECTS/QuantTradingDocs/code/OTR.py.txt",
+      "relation": "source",
+      "label": "OTR.py (OU MC mesh) + 2014/2020 OTR papers"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-03",
+      "event": "created",
+      "reason": "verification: OTR derives tp/sl from OU fit without backtesting; replaces hand-set 3.0/1.0/40 + falsification diagnostic"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): LdP newer-corpus verification follow-ups (B0139-B0145)",
+      "sha": "HEAD"
+    }
+  ]
+}

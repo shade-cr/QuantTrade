@@ -1,0 +1,75 @@
+{
+  "id": "B0159",
+  "title": "Fix pooled Phase-D per-asset extraction crash when an asset has zero events in a pooled fold (SOLUSD 14/16 gap)",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "pipeline",
+    "bug",
+    "b0148"
+  ],
+  "created_at": "2026-06-11",
+  "updated_at": "2026-06-11",
+  "source": "B0148 pooled arm run 2026-06-11 (results/b0148/pooled_run.log)",
+  "why": "Phase-D ERROR SOLUSD/{ema_cross,momentum_zscore}: IndexError index -1 out of bounds for axis 0 with size 0, in _write_per_asset_oos (scripts/run_multi_h4.py:1707 call site). SOL's ~1.4y history (3,149 H4 bars) contributes zero events to early pooled folds; the per-asset OOS extraction indexes an empty array. Left B0148 at 14/16 coverage - the verdict carries a pre-stated revisit clause: if SOL re-measures with DSR>0.95 on either primary, criterion 1 is re-evaluated on 16/16 (criteria stay frozen).",
+  "value_rationale": "Unblocks full-roster pooled runs for any future transfer experiment; SOL revisit clause on B0148.",
+  "scope": [
+    "TDD repro: pooled fixture where one asset has zero events in >=1 pooled fold",
+    "Fix: skip empty per-asset fold blocks gracefully (NaN metrics for that fold, not a crash); summary still written",
+    "Re-run pooled extraction for SOLUSD only (pooled models exist; extraction is cheap) and re-run the frozen comparator on 16/16",
+    "MUST NOT touch frozen B0148 semantics (best_model rule, familywise N, band/veto numbers)"
+  ],
+  "recommendation": "S effort; do before any future pooled-style experiment.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0148"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-11",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "field_update",
+      "reason": "add_link spawned_by->B0148",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0148"
+        ],
+        "spawned_from": []
+      }
+    }
+  ]
+}

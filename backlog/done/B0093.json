@@ -1,0 +1,80 @@
+{
+  "id": "B0093",
+  "title": "Hedging flip: suppress flip-open when partial close under-delivers (sub-min residual)",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "hackathon",
+    "execution",
+    "mt5",
+    "hedging"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "Adversarial code review 2026-05-29 (risk-officer + general-purpose reviewers on armed execution layer)",
+  "why": "On a RETAIL_HEDGING flip, if the close under-delivers by <=1 volume_min the flip-open still fires, leaving a tiny opposite-side residual ticket. Bounded + self-heals via broker-truth reconcile, but grows ticket count (related B0092).",
+  "value_rationale": "",
+  "scope": [
+    "risk-officer FINDING2: in _reduce_or_flip_hedging, _close_lots_by_ticket may break on a sub-min residual (snapped<volume_min); achieved net then falls short of target, yet flip_open fires unconditionally. FIX: verify achieved net vs target after the close loop; on a flip do NOT fire flip_open if the close under-delivered; alarm when a needed reduction is blocked by the broker minimum."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "Logged from adversarial review of armed execution layer"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "@ fix(execution): adversarial review caught 2 CRITICAL + 2 HIGH bugs in armed layer",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "fix(execution): adversarial review caught 2 CRITICAL + 2 HIGH bugs in armed layer",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "fix(execution): adversarial review caught 2 CRITICAL + 2 HIGH bugs in armed layer",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "Resolved: flip-compounding is near-unreachable on a clean book (a flip close targets abs(net), always step-aligned -> closes in full; only partial REDUCES leave a bounded <1 volume_min residual that self-heals). _close_lots_by_ticket now returns the undelivered remainder; caller alarms on under-delivery and DEFENSIVELY suppresses flip-open on material under-delivery. TDD test added.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "fix(execution): resolve B0093/B0094/B0095 review findings; B0090 -> done",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(coordination): log execution-backlog iteration (B0093/94/95 done, 9f153e5)",
+      "sha": "HEAD"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "B0089",
+  "title": "Make DSR a HARD GATE in M3 promotion (currently tier-sizing + diagnostic only)",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "hackathon",
+    "methodology",
+    "methodology-dsr-gate"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "CEO-relayed external survival-sweep analysis (65/131441 video) 2026-05-29; confirmed against code by hackathon-pm.",
+  "why": "DSR (deflated_sharpe_ratio) is computed and stored (psr_dsr.json, dsr_per_model) and used for deployment-tier Kelly sizing in pipeline/deployment.py, but phase5/run_proposal.py::evaluate_against_falsification gates ONLY on audit_class_in + median_active_fold_sharpe_min + n_trades -- it does NOT gate on DSR. So a candidate can be classed STABLE/MARGINAL on raw fold Sharpe while its trial-deflated DSR is ~0. The external video heuristic OOS-cannot-beat-IS-by->30% is a poor-man proxy for exactly this; DSR subsumes it -- but only if DSR is load-bearing in the PROMOTE decision, which it currently is not.",
+  "value_rationale": "Medium: closes a real overfit hole in the promotion gate; cheap; aligns the gate with the deflation we already compute.",
+  "scope": [
+    "Add dsr_min to FalsificationCriterion (default e.g. 0.90 or 0.95) and gate the falsification_verdict on per-model/aggregated DSR in evaluate_against_falsification.",
+    "TDD: a candidate with high raw fold Sharpe but DSR<dsr_min is falsified (NOT promoted).",
+    "Document that DSR subsumes the OOS-vs-IS-30% heuristic."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "logged from video-analysis action candidates"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "Implemented DSR hard gate: dsr_min on FalsificationCriterion (default None, recommended 0.90), threaded per-model DSR into evaluate_against_falsification, downgrades to NOT_PROFITABLE + falsified when DSR<dsr_min/NaN/None. 12 TDD tests green. Subsumes OOS-vs-IS-30pct heuristic.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(methodology+spike): DSR hard promotion gate (B0089 done) + CMF mean-rev null (B0088 discarded)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(phase5): CMF survivors die in full M3 audit (9th null); DSR gate works; fix B0087",
+      "sha": "HEAD"
+    }
+  ]
+}

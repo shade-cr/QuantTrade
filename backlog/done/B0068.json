@@ -1,0 +1,160 @@
+{
+  "id": "B0068",
+  "title": "Add per-asset orthogonal alt-data features to regime dossiers (break the single-driver hypothesis bottleneck)",
+  "status": "done",
+  "effort": "L",
+  "value": "H",
+  "tags": [
+    "phase5",
+    "features",
+    "dossier",
+    "hypothesizer"
+  ],
+  "created_at": "2026-05-28",
+  "updated_at": "2026-05-30",
+  "source": "phase5-hypothesizer persona A/B/C/D experiment (2026-05-28)",
+  "why": "A controlled persona experiment (base/afinada/v3/v4 x 3 regimes x k=5 draws, DA per draw) showed the binding constraint on hypothesis quality and diversity is NOT the agent prompt but the orthogonal feature set. XAUUSD has only 3 orthogonal features (volume, cot_net_noncomm_z52w, real_yield_5y_z252d), with real_yield the only rich driver, so every persona gravitates to the same real-yield carry story. The double-counting (same driver in primary AND meta) and sparsity (single-condition primary starves the WF event floor) failure modes are the two faces of this single-driver bottleneck: anti-sparsity prompting (v3) pushes toward double-counting; anti-double-counting prompting (v4) pushes toward sparsity and collapses primary diversity. The multi-asset build made it worse, not better: COT/real_yield exist ONLY for the two metals; crypto/fx dossiers carry only `volume` as orthogonal.",
+  "value_rationale": "This is the actual lever for both hypothesis creativity and escaping the double-counting/sparsity trade-off — more impactful than any further persona tuning, which has hit a feature-set ceiling.",
+  "scope": [
+    "TIER 1 (quick win, NO new data — implement first): inject already-computed orthogonal PIT features from pipeline/features.py into build_dossier_features (phase5/regime_stats.py). Candidates: atr_14_norm, bb_width, rv_term_structure (rv_5/rv_20), rsi_14, macd_hist (different timescales than regime windows), plus cross-asset macro (dxy_z252, vix_level, vix_chg_5, us_2y10y_spread, breakeven_5y) which apply to ALL asset classes incl crypto/fx that currently expose only `volume`.",
+    "Vet each candidate with the EXISTING anti-circularity machinery: build_dossier_features already computes correlation_with_regime_features and flags quasi_circular when |spearman rho| vs {roc_63,ma_50,ma_200,rv_20} > QUASI_CIRCULAR_RHO (0.35); circular ones (likely bb_width, rv_term_structure vs rv_20) are auto-excluded from orthogonal_features. Keep only those that pass.",
+    "PIT discipline: reuse the same rolling/.shift conventions as build_tier2_features; macro via macro_fetch with .shift(1) publication lag. Add tests (TDD) asserting injected features are PIT and that quasi_circular exclusion fires.",
+    "TIER 2 (needs external data sources, separate effort): per-asset alt-data — crypto perp funding / basis; fx rate differentials (FRED) / risk-reversal skew; metals term-structure / lease rates / ETF flows. Each needs a cache + PIT handling + tests.",
+    "DEFERRED COMPANION (unchanged): adopt the v4 anti-double-counting hypothesizer guardrail ONLY once a dossier carries >=2 strong orthogonal drivers (Tier 1 likely delivers this for metals; crypto/fx via vix/dxy)."
+  ],
+  "recommendation": "Do TIER 1 first via TDD — it is the highest-value, lowest-cost slice and directly breaks the single-driver bottleneck for crypto/fx (vix/dxy) and adds atr/macd levers for metals, reusing the existing quasi_circular vetting so no look-ahead/circular feature can slip in. Confirm the candidate feature list before wiring (it is look-ahead-sensitive). Tier 2 is a follow-on once Tier 1 lands.",
+  "out_of_scope": "Further persona prompt tuning; it has hit the feature-set ceiling.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0069"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-28",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "field_update",
+      "reason": "add_link related->B0069",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0069"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-28",
+      "event": "status_change",
+      "reason": "scope feature: per-asset orthogonal alt-data",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "field_update",
+      "reason": "grounded two-tier plan after reading features.py + regime_stats.py",
+      "field": "scope",
+      "from": [
+        "Add asset-class-appropriate orthogonal alt-data to the dossier feature set and the pipeline features: crypto -> perp funding / basis, on-chain flow; fx -> rate differentials, DXY, risk-reversal skew; metals -> term-structure / lease rates, ETF flows beyond GLD.",
+        "Ensure each new feature is PIT (.shift for publication lag) and passes the anti-circularity orthogonality check vs roc_63/ma_50/ma_200/rv_20.",
+        "Re-run the regime_stats dossier build so orthogonal_features lists the new features.",
+        "DEFERRED COMPANION: the v4 hypothesizer guardrail ('a feature either drives the primary OR is a meta feature, never both') cleanly eliminated double-counting at zero block-rate cost in testing, but collapsed creativity because only one rich driver exists. Adopt the v4 guardrail ONLY once a dossier has >=2 strong orthogonal drivers, so the meta has independent information to see. Until then keep the 'afinada' persona."
+      ],
+      "to": [
+        "TIER 1 (quick win, NO new data — implement first): inject already-computed orthogonal PIT features from pipeline/features.py into build_dossier_features (phase5/regime_stats.py). Candidates: atr_14_norm, bb_width, rv_term_structure (rv_5/rv_20), rsi_14, macd_hist (different timescales than regime windows), plus cross-asset macro (dxy_z252, vix_level, vix_chg_5, us_2y10y_spread, breakeven_5y) which apply to ALL asset classes incl crypto/fx that currently expose only `volume`.",
+        "Vet each candidate with the EXISTING anti-circularity machinery: build_dossier_features already computes correlation_with_regime_features and flags quasi_circular when |spearman rho| vs {roc_63,ma_50,ma_200,rv_20} > QUASI_CIRCULAR_RHO (0.35); circular ones (likely bb_width, rv_term_structure vs rv_20) are auto-excluded from orthogonal_features. Keep only those that pass.",
+        "PIT discipline: reuse the same rolling/.shift conventions as build_tier2_features; macro via macro_fetch with .shift(1) publication lag. Add tests (TDD) asserting injected features are PIT and that quasi_circular exclusion fires.",
+        "TIER 2 (needs external data sources, separate effort): per-asset alt-data — crypto perp funding / basis; fx rate differentials (FRED) / risk-reversal skew; metals term-structure / lease rates / ETF flows. Each needs a cache + PIT handling + tests.",
+        "DEFERRED COMPANION (unchanged): adopt the v4 anti-double-counting hypothesizer guardrail ONLY once a dossier carries >=2 strong orthogonal drivers (Tier 1 likely delivers this for metals; crypto/fx via vix/dxy)."
+      ]
+    },
+    {
+      "date": "2026-05-28",
+      "event": "field_update",
+      "reason": "sequence Tier 1 (TDD) before Tier 2",
+      "field": "recommendation",
+      "from": "Prioritize for any asset we actually want Loop A to explore beyond gold. Production hypothesizer persona stays 'afinada' (richest balance of block-rate, creativity, failure profile). Do NOT adopt v3 (regressed) or v4 (lateral move) yet.",
+      "to": "Do TIER 1 first via TDD — it is the highest-value, lowest-cost slice and directly breaks the single-driver bottleneck for crypto/fx (vix/dxy) and adds atr/macd levers for metals, reusing the existing quasi_circular vetting so no look-ahead/circular feature can slip in. Confirm the candidate feature list before wiring (it is look-ahead-sensitive). Tier 2 is a follow-on once Tier 1 lands."
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(phase5): B0068 _MACRO_PACK on non-fx assets (dedup, fx excluded)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(phase5): B0068 load_macro_pack cache-only PIT loader",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(phase5): B0068 inject macro pack in build_dossier_features",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(phase5): B0068 register macro features for vetting + freq-aware effective_n",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(phase5): B0068 fail-open guard excludes inconclusively-vetted features",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "Tier-1 macro-pack dossier features implemented + dossiers regenerated + CLI fix on feat/phase5-m3-v3.2 (commits a8ebc6b, f1de55a, d2aba99, 056ad90).",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(backlog): quiesce cross-session reconciliation + B0079 prereq + B0068 done",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(loop-a): FX batch â€” 10 cells explored (EURUSD/GBPUSD/USDJPY D1)",
+      "sha": "HEAD"
+    }
+  ]
+}

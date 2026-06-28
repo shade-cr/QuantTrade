@@ -1,0 +1,256 @@
+{
+  "id": "B0188",
+  "title": "Live MT5 DOM now returns real L2 depth — re-validate OSR edge on the live (synthetic) pricer ladder",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "l2",
+    "execution",
+    "osr"
+  ],
+  "created_at": "2026-06-16",
+  "updated_at": "2026-06-19",
+  "source": "Live MT5 probe 2026-06-16 (scripts/mt5_probe_dom_crypto.py + mt5_dump_dom.py): market_book_get now returns 4-10 GENUINE multi-level rungs for all 8 probed symbols incl crypto — reversing B0185.",
+  "why": "B0185 was filed because market_book_get returned None/'Invalid params' (live = top-of-book only). On a re-probe 2026-06-16 the DOM NOW POPULATES: 4-10 distinct-price levels per symbol (BTC/ETH/SOL/XAU/XAG/EUR/GBP/JPY), bid+ask sides, realistic sizes (EUR 8M, XAU 5000 lots). The earlier empty result was a polling-timing artifact — market_book_add registers asynchronously and the ladder populates on the next pricer update; a <=2s poll missed it, a ~5s poll catches it every time. So the organizer's pending live-L2 fix appears to have SHIPPED. CRITICAL CAVEAT: the depth is a SYNTHETIC pricer ladder, not a real aggregated book — tell-tale signs: identical size pattern across all 3 cryptos (3/8/12/15/20), mirror-symmetric bid/ask sizes, round XAU sizes (200/800/1000/2000/5000), crypto top-of-book zero-spread (bid==ask). This is almost certainly the SAME xSyphon market-maker pricer output that is in the parquet drop (reference-l2-data-drop) — i.e. the fill-model INPUT, now exposed live. That is GOOD: live feed exists AND structurally matches the backtest parquet => backtest<->live parity on the L2 feed becomes plausible. But synthetic depth may be a deterministic function of mid/vol, so OSR edges built on genuine order-flow/queue dynamics could be modeled away. Live feed existing != edge surviving.",
+  "value_rationale": "Resurrects the only candidate live return edge (OSR/L2) from undeployable to deployable, IF the edge survives on the synthetic ladder. Under the B0183 sim a return edge is the dominant lever to clear the cuts. High value, but gated on edge-survival, which is unproven (B0184 was event-starved on Jun-16 data).",
+  "scope": [
+    "Confirm the live DOM ladder schema matches the parquet pricer-ladder schema (levels, fields, units) -> if so, the B0184 adapter can target both.",
+    "Re-run the B0184 OSR validation feeding the live-DOM ladder shape; quantify whether the synthetic depth carries exploitable structure or is a deterministic f(mid,vol).",
+    "Compare live DOM vs parquet ladder on overlapping symbols (EUR/XAU/XAG) to confirm same generator -> establishes backtest<->live L2 parity.",
+    "Wire a live DOM reader into execution/ (market_book_add + ~5s async populate poll + market_book_release per symbol) with a bounded reconnect; reuse the probe scripts.",
+    "Re-probe at launch (21 Jun 22:00, trade_allowed flips) to confirm depth persists when live trading is enabled; do NOT assume prep-phase behavior carries.",
+    "Feed conclusion into B0182 (posture) + the architecture deck (now: live L2 IS available, synthetic, matches fill model)."
+  ],
+  "recommendation": "Treat the live-L2-feed blocker as RESOLVED but the edge as UNPROVEN. Highest-leverage path: confirm live<->parquet ladder parity, then re-run B0184 against it before the Jun 21 freeze. The synthetic nature is a feature for parity, a risk for alpha.",
+  "out_of_scope": "The OSR strategy logic itself (B0165, frozen). Building an external/real exchange L2 feed (unnecessary — MT5 carries the fill-model ladder).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0162",
+      "B0184",
+      "B0183",
+      "B0182",
+      "B0198"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0185"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "scripts/mt5_probe_dom_crypto.py",
+      "relation": "probe",
+      "label": "DOM availability + crypto envelope probe"
+    },
+    {
+      "path": "scripts/mt5_dump_dom.py",
+      "relation": "probe",
+      "label": "DOM ladder dump (genuine-depth verification)"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-16",
+      "event": "created",
+      "reason": "Live MT5 DOM now returns genuine multi-level L2 depth (reversing B0185); re-validate OSR on the live synthetic pricer ladder."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update",
+      "reason": "add_link spawned_by->B0185",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0162",
+          "B0184",
+          "B0183",
+          "B0182"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0162",
+          "B0184",
+          "B0183",
+          "B0182"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0185"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "Live MT5 terminal connected (PID 36928); capturing live DOM sample + running structural parity vs parquet ladder before the Jun-21 freeze.",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "parity_probe",
+      "reason": "Live MT5 DOM vs parquet ladder STRUCTURAL PARITY = PARTIAL: price/spread process matches order-of-magnitude (same mid generator plausible) but DEPTH/SIZE structure does NOT match. The live DOM is a coarse round-size, perfectly mirror-symmetric synthetic ladder; the parquet ladder is a finer, often-asymmetric one. => backtest depth/size features will NOT transfer faithfully to live; L1 price/spread is the only parity-safe surface.",
+      "script": "scripts/l2_live_vs_parquet_parity.py",
+      "artifacts": [
+        "results/l2_parity/live_dom_capture.json",
+        "results/l2_parity/parity_report.json"
+      ],
+      "terminal": {
+        "build": 5836,
+        "connected": true,
+        "trade_allowed": false
+      },
+      "EURUSD": {
+        "parquet_size": "~99000 fine/continuous",
+        "live_size": "100k/1M/2M/3M/5M round",
+        "spread_bp_p50_parquet": 0.0866,
+        "spread_bp_live": 0.173,
+        "mirror_parquet": 1.0,
+        "mirror_live": true
+      },
+      "XAUUSD": {
+        "parquet_size": "1-20 integer lots",
+        "live_size": "200/800/1000/2000/5000",
+        "spread_bp_p50_parquet": 0.528,
+        "spread_bp_live": 0.414,
+        "mirror_parquet": 0.325,
+        "mirror_live": true
+      },
+      "XAGUSD": {
+        "parquet_size": "5k/10k/20k+",
+        "live_size": "5k/10k/25k/50k/100k",
+        "spread_bp_p50_parquet": 1.278,
+        "spread_bp_live": 2.05,
+        "mirror_parquet": 0.983,
+        "mirror_live": true
+      },
+      "crypto_live_only": {
+        "BTC": "sizes 3/8/12/15/20 zero-spread top",
+        "SOL": "sizes 3/8/12/15/20 spread~4bp",
+        "ETH": "shallow 2 levels 20/38"
+      },
+      "caveats": [
+        "live fingerprint = single snapshot per symbol (n=1) in prep phase trade_allowed=False",
+        "parquet aggregated over millions of snapshots",
+        "re-probe at launch when trade_allowed flips"
+      ],
+      "verdict": "live L2 feed EXISTS and is usable (5 levels, ~5s poll); backtest<->live PRICE parity plausible, DEPTH parity FALSE. OSR edges that rely on the parquet size/queue structure are NOT validated for live."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "parity_probe_corroboration",
+      "reason": "Re-ran scripts/l2_live_vs_parquet_parity.py scoped to XAGUSD (single live snapshot, prep phase, trade_allowed=False). Corroborates the prior parity_probe: family parity CONFIRMED (provider XSMM01CH02, 5/5 levels, live mirror=True vs parquet mirror_frac=0.983); 1:1 depth parity FALSE. NEW INSIGHT: the ragged parquet size set (5000/10000/20000/20571/25571/31142/36142/47300/51142...) looks like base+/-offset COMPOSITES => parquet is a MULTI-PROVIDER aggregate (CH01+CH02, rule=primary:XSMM01CH02), whereas the live DOM is a single re-quantized clean staircase (5k/10k/25k/50k/100k oz = 1/2/5/10/20 lots). Implication: a fill model calibrated on parquet deeper-level sizes OVER-specifies live depth; L1/top-of-book (1 lot=5000oz) matches, but orders that WALK the book get only a proxy market-impact estimate. Spread datapoint: live 2.26bp vs parquet p50 1.28bp (p05 0.73) — again ABOVE the parquet median, consistent with the earlier 2.05bp reading.",
+      "script": "scripts/l2_live_vs_parquet_parity.py --symbols XAGUSD",
+      "live_top": {
+        "bid": 69.9575,
+        "ask": 69.9733,
+        "spread_bp": 2.258
+      },
+      "live_size_set_oz": [
+        5000,
+        10000,
+        25000,
+        50000,
+        100000
+      ],
+      "parquet_spread_bp_p50": 1.278,
+      "multi_provider_aggregation_hypothesis": true,
+      "followup": "Sample live XAGUSD spread across multiple hours-of-day before trusting the single-snapshot spread; n=1 prep-phase snapshot."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "verified",
+      "reason": "Event-count caveat RESOLVED (execution-engineer verification 2026-06-16, docs/reviews/2026-06-16-osr-event-count-verification.md): the <=8 trades/trial is TRUE SCARCITY, not an adapter/threshold bug. Consolidation keeps 51%/99% of snapshots (1-1.8M/day, NOT decimated); the binding constraint is bar geometry (75 bars/day by construction) x rarity of |z|>=2 overshoots (~3% of bars) x two registered gates (OFI-sign confirmation + calm veto). More data cannot produce more events without a NEW pre-registration (fresh DSR penalty). Combined with depth-parity-FALSE (parity probe), the OSR edge does NOT survive on the live feed."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "Evidence complete: live L2 DOM exists+usable, but (1) depth parity FALSE vs backtest parquet and (2) the OSR signal is event-starved by TRUE scarcity (verified, not a bug) -> N>=300 unreachable, Sharpe NaN (null, not measured-negative). OSR edge does not survive on live. Live-DOM reader wiring for OSR is moot under NO-GO; re-probe-at-launch deferred to launch-day runbook. Was left in_progress only pending the OSR/L2 go/no-go its findings fed.",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "organizer_answer",
+      "reason": "ORGANIZER (Duncan, Discord 2026-06-16 18:00) on static depth: a competitor reported EUR/USD parquet L2 sizes are STATIC on all 5 levels all day (100K/1M/2M/3M/5M both sides); prices/spreads move but depth never changes. Duncan: \"Yes, that is expected in the current test data. The historical files mainly provide PRICE MOVEMENTS for backtesting. Depth may remain static there. In the live competition, top-of-book prices will follow real market movement, and LIQUIDITY / EXECUTION BEHAVIOUR MAY CHANGE once real trading activity starts.\" CONSEQUENCES: (1) CONFIRMS our B0188/B0184 read — backtest L2 depth is synthetic/static, carries NO order-flow structure -> a depth/microstructure (OSR) edge CANNOT be trained or validated on the provided historical data, full stop. This REINFORCES the NO-GO (not reopens it). (2) NEW: live depth MAY become dynamic once real trading starts -> the B0188 \"synthetic forever, no transfer\" read is now UNCERTAIN for the live phase (we probed PREP, trade_allowed=False) -> ACTION: re-probe live DOM at launch Jun-21 when real trading activity begins. (3) Minor: backtest fills used static-depth ladder -> live fill/impact MAY differ -> mild caveat on survival-book backtest<->live FILL parity (L1 PRICE parity still holds; book is low-turnover so impact small). NOTE: competitor reports parquet EUR=100K/1M/2M/3M/5M but our adapter measured EUR~99k continuous (CH01) -> a provider-channel/representation discrepancy worth a 5-min recheck, immaterial to the static-depth conclusion."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "organizer_answer",
+      "reason": "Organizer (Duncan, Discord 2026-06-16, follow-up): \"We provide REAL market liquidity, not placeholder data. In normal conditions we typically maintain ~100 oz at top-of-book for Gold. Impossible to predict exact live env (depends on participant activity), but we dont expect participant flow to significantly impact our liquidity, so live execution should be BROADLY CONSISTENT with what you are seeing now.\" READ: Duncan is defending liquidity REALNESS/MAGNITUDE, but conflates that with order-book DYNAMICS. Our concern is unaddressed: the depth is TIME-INVARIANT (sizes constant tick-to-tick/all-day; only mid/spread move) -> order-flow/microstructure signals (OFI, book pressure, depth imbalance, queue, VPIN) are identically zero. \"Broadly consistent with now\" => live depth ALSO static => microstructure strategies non-viable platform-wide. PENDING outgoing clarifying question drafted for the CEO: will live per-level SIZES update dynamically with flow (adds/cancels/consumption) or stay a fixed re-pricing template? Also: 100 oz top-of-book is small vs $1M@30:1 -> orders walk several levels (separate fill-impact note). Confirms NO-GO; answer determines if order-book strategies are ever viable here."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "organizer_answer",
+      "reason": "Organizer (Duncan, Discord 2026-06-16) DEFINITIVE: \"The book is driven by underlying market liquidity, so sizes CAN change over time and are not completely static. That said, we are NOT simulating participant-driven order flow dynamics. If you are looking for microstructure signals based on depth REACTING TO LOCAL FLOW, the environment may be LESS EXPRESSIVE than a fully participant-driven market.\" => ORGANIZER-CONFIRMS our NO-GO at the mechanism level: depth moves only with the exogenous LP feed, NOT in response to order flow -> OFI/book-pressure/queue/depth-imbalance signals are structurally non-expressive on this platform (backtest AND live). Microstructure/order-book strategies are off the table platform-wide. NO-GO is FINAL and now externally validated."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "ceo_decision",
+      "reason": "OSR/L2 Jun-18 third-leg gate RATIFIED NO-GO by CEO 2026-06-17. The intraday OSR/L2 book will NOT be deployed in the live window; the bundle does not assemble. (B0184 event-starved + B0188 depth-parity false.)"
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link related->B0198",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0162",
+          "B0184",
+          "B0183",
+          "B0182"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0185"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0162",
+          "B0184",
+          "B0183",
+          "B0182",
+          "B0198"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0185"
+        ],
+        "spawned_from": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "B0154",
+  "title": "Dossier feature-pack widening: wire dossier_feature_pack() into CLI + declared FX exogenous pack",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "phase5",
+    "features"
+  ],
+  "created_at": "2026-06-11",
+  "updated_at": "2026-06-11",
+  "source": "2026-06-11 Loop-A v2 prep",
+  "why": "The CLI read spec.feature_pack raw so the macro widening never applied; FX dossiers had ZERO alt features. Hypothesizer persona-ceiling memory: the bottleneck is orthogonal feature raw material, not the prompt.",
+  "value_rationale": "",
+  "scope": [
+    "regime_stats CLI uses dossier_feature_pack()",
+    "_FX_PACK declared: us_5y2y_z252, vix_level, vix_chg_5, breakeven_5y_chg5, dxy_z252 (dxy auto-vetted quasi_circular)",
+    "9 dossiers rebuilt with fresh data"
+  ],
+  "recommendation": "done in-session",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-10",
+      "event": "created",
+      "reason": "initial entry"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "id": "B0141",
+  "title": "Kyle's lambda t-value microstructure feature (LdP's preferred 2nd-gen feature)",
+  "status": "discarded",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "features",
+    "ldp-verification",
+    "microstructure"
+  ],
+  "created_at": "2026-06-03",
+  "updated_at": "2026-06-03",
+  "source": "LdP newer-corpus verification (4 parallel read-only agents over the added 2012-2026 papers + LdP REFERENCE CODE in D:/PROJECTS/QuantTradingDocs/code, 2026-06-03). Conversation: 'verifica la nueva informacion antes de implementar'.",
+  "why": "Lecture08 'Useful Financial Features' contains LdP's single most explicit feature-engineering steer (AFML §19.4, line 6866): 'the t-values associated with these microstructural estimates are MORE informative than the (mean) estimates themselves... rescaled by the std of the estimation error.' This points at Kyle's lambda (price impact = slope of dP on signed volume b_t*V_t) reported as a T-VALUE — ahead of the raw Amihud ratio (B0136). Cheap on D1 (one rolling regression; aggressor sign via tick rule on close-to-close). Opens an order-flow/impact dimension absent today.",
+  "value_rationale": "Higher-signal than Amihud per LdP's own guidance; cheap; orthogonal order-flow dimension. Should outrank B0136 in implementation order.",
+  "scope": [
+    "Rolling regression dP_t ~ lambda*(b_t*V_t); b_t = sign(close_t - close_{t-1}) (tick rule); expose the t-VALUE of lambda, not the raw slope",
+    "Label volume as tick-volume proxy on XAU (MT5 volume = tick count)",
+    "Causal: rolling window only, no full-sample fit",
+    "Compare MDA/CFI vs Amihud (B0136) and the current set"
+  ],
+  "recommendation": "Implement ahead of B0136; it is LdP's preferred microstructure feature. Pair: also emit Amihud as a t-value.",
+  "out_of_scope": "VPIN (H4-only, needs intraday volume clock). Hasbrouck lambda (needs TAQ/Gibbs).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0136",
+      "B0135",
+      "B0147"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "D:/PROJECTS/QuantTradingDocs/extracted/AFML_book.txt",
+      "relation": "source",
+      "label": "AFML §19.4.1 Kyle lambda + §19.4 t-value preference (L6866)"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-03",
+      "event": "created",
+      "reason": "verification: Kyle lambda t-value is LdP's preferred microstructure feature, ahead of Amihud"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "chore(backlog): LdP newer-corpus verification follow-ups (B0139-B0145)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "status_change",
+      "reason": "quant-phd-advisor verdict 2026-06-03: KILL. On bar closes b_t=sign(close.diff)=sign(dp), so the regression dp~lambda*(sign(dp)*V) is sign-aligned by construction -> lambda t-value biased POSITIVE; on a no-real-volume CFD it is a disguised |dp|~V volatility ratio (Amihud-flavored), not order-flow impact. Lit (OFI arXiv 2508.06788; VPIN Easley-LdP-OHara) says even the real-volume version is volatility/toxicity, not directional. The legitimate real-signed-trade-volume construction is folded into B0147. microstructure.py functions kept as B0147 building blocks.",
+      "from": "proposed",
+      "to": "discarded"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "field_update",
+      "reason": "add_link related->B0147",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0136",
+          "B0135"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0136",
+          "B0135",
+          "B0147"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "feat(features): B0134 fractionally-differentiated log-price (FFD, AFML Ch5) + expert-guided backlog",
+      "sha": "HEAD"
+    }
+  ]
+}

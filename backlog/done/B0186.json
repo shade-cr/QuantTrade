@@ -1,0 +1,100 @@
+{
+  "id": "B0186",
+  "title": "Ingest public crypto OHLCV/L2 to validate the crypto high-vol lottery sleeve",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "crypto",
+    "data",
+    "lottery-sleeve",
+    "barbell"
+  ],
+  "created_at": "2026-06-16",
+  "updated_at": "2026-06-16",
+  "source": "Organizer update 2026-06-16 (via CEO): crypto absent from the parquet drop; org says crypto feeds are widely available online -> use public sources for referencing.",
+  "why": "The parquet drop has ZERO crypto (B0185/reference-l2-data-drop), so the crypto-only lottery sleeve (B0151, DONE) and any crypto edge could not be backtested. The organizer has now given a casual go-ahead to use public crypto feeds (Binance et al.) for reference 'in the meantime' (NOT a formal ruling that public data is competition-grade -- confirm fill fidelity + whether crypto trades against an official feed at launch in #rules-and-faq). This matters NOW because the B0183 variance sweep showed reaching top-100 requires ~4-8%/day book volatility delivered via a BOUNDED sleeve, and crypto (BTC/ETH/SOL, all live-tradable on MT5) is the natural high-vol engine for that sleeve. Public crypto OHLCV (and L2 from exchange depth endpoints) lets us calibrate the sleeve's variance, carry drag, and forced-liq envelope against real crypto dynamics before the Jun 21 freeze.",
+  "value_rationale": "Unblocks empirical sizing of the only instrument class capable of producing the variance the tournament sim says we need. Directly feeds B0182 (posture/rung) and the barbell Stage-2 calibration.",
+  "scope": [
+    "Pull public crypto OHLCV for BTCUSD/ETHUSD/SOLUSD (e.g. Binance klines) covering at least the parquet window (2026-05-11->06-10) plus deep history for vol estimation.",
+    "Optionally pull public L2/depth snapshots if a crypto OSR/lead-lag variant is to be tested (BTC->ETH/SOL).",
+    "Estimate realized daily vol + overnight carry to size the bounded sleeve to a target book vol (~4-8%/day per the sweep).",
+    "Reconcile public crypto prices against MT5 live quotes (basis/spread) so the backtest matches the live venue.",
+    "Feed calibrated sleeve parameters into B0182 and the operations runbook lottery-rung ladder."
+  ],
+  "recommendation": "Source public crypto data and calibrate the bounded sleeve's variance/forced-liq envelope; keep it isolated (B0150 latch) so a bad draw cannot cause margin wipeout (= elimination, rules sec14).",
+  "out_of_scope": "Deploying a crypto directional edge (none validated); building a live crypto data pipeline beyond what's needed for sleeve calibration.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0151",
+      "B0150",
+      "B0182",
+      "B0183",
+      "B0185"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-16",
+      "event": "created",
+      "reason": "Organizer sanctioned public crypto feeds; variance sweep shows crypto is the natural high-vol engine for the bounded sleeve."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update",
+      "reason": "Avoid overstating organizer permission re public crypto data",
+      "field": "why",
+      "from": "The parquet drop has ZERO crypto (B0185/reference-l2-data-drop), so the crypto-only lottery sleeve (B0151, DONE) and any crypto edge could not be backtested. The organizer has now explicitly sanctioned using public crypto feeds (Binance et al.) for reference. This matters NOW because the B0183 variance sweep showed reaching top-100 requires ~4-8%/day book volatility delivered via a BOUNDED sleeve, and crypto (BTC/ETH/SOL, all live-tradable on MT5) is the natural high-vol engine for that sleeve. Public crypto OHLCV (and L2 from exchange depth endpoints) lets us calibrate the sleeve's variance, carry drag, and forced-liq envelope against real crypto dynamics before the Jun 21 freeze.",
+      "to": "The parquet drop has ZERO crypto (B0185/reference-l2-data-drop), so the crypto-only lottery sleeve (B0151, DONE) and any crypto edge could not be backtested. The organizer has now given a casual go-ahead to use public crypto feeds (Binance et al.) for reference 'in the meantime' (NOT a formal ruling that public data is competition-grade -- confirm fill fidelity + whether crypto trades against an official feed at launch in #rules-and-faq). This matters NOW because the B0183 variance sweep showed reaching top-100 requires ~4-8%/day book volatility delivered via a BOUNDED sleeve, and crypto (BTC/ETH/SOL, all live-tradable on MT5) is the natural high-vol engine for that sleeve. Public crypto OHLCV (and L2 from exchange depth endpoints) lets us calibrate the sleeve's variance, carry drag, and forced-liq envelope against real crypto dynamics before the Jun 21 freeze."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "CEO directed: calibrate crypto sleeve in parallel with the OSR/L2 edge resolution",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "Correcting status: B0186 is a not-yet-started proposal (crypto data ingestion), inadvertently created/moved to in_progress",
+      "from": "in_progress",
+      "to": "proposed"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "CEO directed: calibrate crypto sleeve in parallel with OSR/L2 edge resolution",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "calibration_complete",
+      "reason": "Crypto sleeve sizing calibrated (docs/submission/crypto_sleeve_calibration_2026-06-16.md + scripts/crypto_sleeve_calibration.py). Findings: realized daily vol BTC~2%/ETH~3%/SOL~3% (MT5==Binance within 0.2pt). Frozen-mechanism R-dist on 255 real weekly windows = bounded-downside/convex lottery (win 21-27%, meanR~0 = no edge by design, stdR~2, tail +12-20R, losers capped -1R). Book-vol LINEAR in risk_frac (slope ~1.17): 4-8%/day target -> risk_frac in [0.034,0.068]; runbook 0.05 rung = 5.9%/day. Forced-liq SAFE (sec14): worst case bounded at -risk_frac, isolated+latched, fully-pyramided notional <=0.5E -> margin <2%, no wipeout. The 0.05 rung's -5% worst case exceeds the 1.5% portfolio-kill -> MUST raise --portfolio-kill with it (confirms runbook 6.2 coupling). Basis MT5 vs Binance <=0.59% abs-median (date-aligned); carry ~0.11% over 5 nights = second-order. Feeds B0182 rung decision (band [0.034,0.05], lean lower if PCE realizes hot). REMAINING (post-event, can't run pre-freeze): forward sanity on actual FOMC 17-jun / PCE 25-jun; #rules-and-faq confirm crypto official feed + fill fidelity."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "live_reconciliation_and_runbook_feed",
+      "reason": "Closed the two actionable gaps: (1) operations-runbook 6.2 updated with the calibrated band [0.034,0.068]/0.05=5.9%/day + the mandatory portfolio-kill coupling + the all-days-vs-PCE caveat; (2) live read-only MT5 crypto probe (scripts/mt5_crypto_basis_probe.py) — live spread BTC 1.19/ETH 0.98/SOL 4.00 bps, live basis MT5 vs Binance <=0.07%, confirming the live cost basis matches B0183's ~1.3bps BTC assumption. Remaining items are date/externally gated, tracked elsewhere: forward sanity on the real FOMC-17/PCE-25 prints (FOMC-17 rehearsal runsheet) and #rules-and-faq confirmation crypto trades vs an official feed at launch (B0158)."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "Crypto sleeve calibration complete and defensible: sizing band [0.034,0.068] for 4-8%/day, sec14-safe, runbook fed, basis/spread reconciled live + historical. Only date-gated forward verification remains (FOMC-17 rehearsal + B0158 org confirmation).",
+      "from": "in_progress",
+      "to": "done"
+    }
+  ]
+}

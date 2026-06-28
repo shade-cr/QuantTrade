@@ -1,0 +1,127 @@
+{
+  "id": "B0074",
+  "title": "M3 — Paper broker + feed + execution types",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "execution"
+  ],
+  "created_at": "2026-05-28",
+  "updated_at": "2026-05-29",
+  "source": "hackathon-pm M0 bootstrap 2026-05-28; roadmap in plan eres-un-product-manager-bubbly-floyd.md",
+  "why": "The abstract Broker + PaperBroker stub + ReplayFeed let the whole live loop be developed and tested with zero external dependency, and are the substrate for the parity test.",
+  "value_rationale": "Critical path to live paper-trading for the AI Engine Quantitative Hack; H = directly gates competition participation.",
+  "scope": [
+    "execution/types.py: Side/OrderType/OrderStatus enums, Quote/Order/OrderResult/Position/Account dataclasses",
+    "execution/broker.py: Broker ABC; execution/feed.py: PriceFeed ABC + ReplayFeed + MT5Feed skeleton",
+    "execution/paper_broker.py: slippage/spread fills, position/PnL/margin tracking, SL/TP mark-to-market",
+    "tests: test_execution_types, test_broker_abc, test_paper_broker"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [
+      "B0075"
+    ],
+    "blocked_by": [
+      "B0073"
+    ],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-28",
+      "event": "created",
+      "reason": "seeded by hackathon-pm M0 bootstrap"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "field_update",
+      "reason": "add_link blocked_by->B0073",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [
+          "B0073"
+        ],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-28",
+      "event": "field_update",
+      "reason": "add_link blocks->B0075",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [
+          "B0073"
+        ],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0075"
+        ],
+        "blocked_by": [
+          "B0073"
+        ],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "Delivered via the survival book: execution/types.py + broker.py (Broker ABC) + paper_broker.py built & tested. Shape differs from the original spec (history pulled by the broker get_history instead of a separate feed.py/ReplayFeed), but the substrate (abstract Broker + offline PaperBroker as the parity substrate) is in place.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "@ chore(backlog): reconcile M1-M7 execution epic with the survival-book reality",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(backlog): reconcile M1-M7 execution epic with the survival-book reality",
+      "sha": "HEAD"
+    }
+  ]
+}

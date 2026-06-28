@@ -1,0 +1,77 @@
+{
+  "id": "B0020",
+  "title": "DA-review protocol extension for calendar-driven proposals",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "phase5",
+    "audit",
+    "infrastructure",
+    "methodology",
+    "lint"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-27",
+  "source": "[backlog_reviews/20260526-backlog-full-review_v1.json](backlog_reviews/20260526-backlog-full-review_v1.json) objection 6 (medium); promoted out of B0017 because expanding DA-review scope is a methodology change, not a feature.",
+  "why": "The current LLM lookahead linter does NOT catch event-calendar references — no calendar dates appear in proposal text, but implicit references to public schedules (Fed meetings, BLS releases) are still lookahead-shaped. Expanding the DA protocol to include a `calendar_leakage_check` is a load-bearing methodology change that deserves its own meta-decision with steel-man and objections, not a sentence buried inside a feature entry.",
+  "value_rationale": "M (downgraded from H in 2026-05-27 recalibration — gates B0017 which is itself B0000-deferred; not currently load-bearing on any active work-stream)",
+  "scope": [
+    "add a new review category to [.claude/agents/phase5-devils-advocate.md](.claude/agents/phase5-devils-advocate.md) that explicitly checks calendar-driven proposals for (a) implicit schedule references in the hypothesis text, (b) post-publication-but-pre-pricing windows being exploited as features rather than declared lookahead, (c) whether the probe matrix in B0008 covers a calendar-null cell. Document the new category in [phase5/AUDIT_REVIEW.md](phase5/AUDIT_REVIEW.md)."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0000",
+      "B0008",
+      "B0017"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "backlog_reviews/20260526-backlog-full-review_v1.json",
+      "relation": "reference",
+      "label": "backlog_reviews/20260526-backlog-full-review_v1.json"
+    },
+    {
+      "path": ".claude/agents/phase5-devils-advocate.md",
+      "relation": "reference",
+      "label": ".claude/agents/phase5-devils-advocate.md"
+    },
+    {
+      "path": "phase5/AUDIT_REVIEW.md",
+      "relation": "reference",
+      "label": "phase5/AUDIT_REVIEW.md"
+    }
+  ],
+  "da_reviews": [
+    {
+      "path": "backlog_reviews/20260526-backlog-full-review_v1.json",
+      "verdict": "UNKNOWN",
+      "severity_counts": {},
+      "date": "20260526"
+    },
+    {
+      "path": "backlog_reviews/20260526-backlog-full-review_v1.json",
+      "verdict": "UNKNOWN",
+      "severity_counts": {},
+      "date": "20260526"
+    }
+  ],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "migrated from BACKLOG.md (auto-parsed)"
+    }
+  ]
+}

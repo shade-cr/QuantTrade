@@ -1,0 +1,62 @@
+{
+  "id": "B0062",
+  "title": "Meta decision threshold (0.5/0.55) mismatched to low TP base rate (~0.22) from 3R barriers",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "validation",
+    "xau-d1",
+    "meta-labeling",
+    "calibration"
+  ],
+  "created_at": "2026-05-28",
+  "updated_at": "2026-06-10",
+  "source": "B0061 positive-control follow-up + per-fold drill-down 2026-05-28.",
+  "why": "3R asymmetric barriers make P(label=1)=TP-hit ~0.22, so the calibrated meta outputs probabilities centred at ~0.22 (OOF medians 0.21-0.24). The 0.5 decision threshold (spec headline 0.55) sits far above that mass, so frac(prob>0.5) is 0.10-0.17 (ema_cross) / 0.00-0.04 (momentum_zscore; lgbm never exceeds 0.38). The meta therefore rejects nearly everything in folds 1&2 -> 0 trades -> stack gate cannot pass. The threshold grid only sweeps upward (0.50-0.65), the wrong direction for a low-base-rate positive class.",
+  "value_rationale": "Explains the persistent stack=False across the whole XAU D1 line; mis-diagnosed earlier as fold starvation. Gates whether the meta can ever be evaluated.",
+  "scope": [
+    "Quantify base rate P(label=1) per fold and the prob-distribution vs threshold gap",
+    "Design a PRINCIPLED ex-ante threshold (e.g. relative to training-set base rate ~0.25-0.30) -- NOT a post-hoc test-grid pick (spec invariant defers per-fold inner-CV threshold to Paso 2)",
+    "CAVEAT: lowering threshold alone will not create alpha while meta MCC~=0 on ema_cross (hit~=base rate); it would add negative-EV trades. Pair with discrimination analysis.",
+    "Investigate the one live lead: momentum_zscore+xgb fold0 (hit 0.51, MCC 0.20, +2.14 Sharpe) -- why does xgb find signal there and does it generalise?"
+  ],
+  "recommendation": "",
+  "out_of_scope": "Lowering min_trades_per_fold (load-bearing invariant) or changing n_folds as a workaround.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0061",
+      "B0053"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-28",
+      "event": "created",
+      "reason": "threshold vs base-rate mismatch — corrected root cause of stack=False"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "chore(backlog): sync registry â€” positive-control + meta diagnosis (B0061-B0064)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-10",
+      "event": "status_change",
+      "reason": "Superseded/implemented by B0155 ev_breakeven_v1: audit threshold now derived from pre-registered barrier geometry (p*=(sl+C_ATR+lambda(tp+sl))/(tp+sl), p*=0.325 for tp=3/sl=1) instead of payoff-blind 0.50/0.55. Validated in batch_fable_v2: F002/F005/F006/F008 produced real falsifiable trade sets where fixed-0.50 produced NO_FIRE silence.",
+      "from": "proposed",
+      "to": "done"
+    }
+  ]
+}

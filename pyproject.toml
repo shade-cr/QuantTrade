@@ -1,0 +1,63 @@
+[project]
+name = "quanttrade"
+version = "0.1.0"
+description = "Equity-swing meta-labeling research engine (cherry-picked from QuantHack)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "xgboost>=2.0,<3.0",
+    "catboost>=1.2,<2.0", # factory kept for compat; not in active config (B0053)
+    "lightgbm>=4.0,<5.0", # B0053: replaces catboost in active model config
+    "scikit-learn>=1.4,<2.0",
+    "pandas>=2.1,<3.0",
+    "numpy>=1.26,<2.0",
+    "scipy>=1.11,<2.0",
+    "pyarrow>=15.0",
+    "fredapi>=0.5",
+    "pyyaml>=6.0",
+    "matplotlib>=3.8",
+    "tabulate>=0.9",
+    # Phase 2 — Hurst exponent for primary pre-screening (T7).
+    # ema_cross is appropriate when H > 0.52 (trending); momentum_zscore
+    # when H < 0.48 (mean-reverting). Computed over the chronological
+    # head(train_min_bars) only, never the tail — avoids look-ahead.
+    "hurst>=0.0.5,<1.0",
+    # Phase 2 — Yahoo Finance intraday macro (DXY proxy, VIX) for H4 (T2).
+    # Yahoo's H4 intraday is only available for the last ~730 days; older
+    # data falls back to daily FRED with forward-fill.
+    "yfinance>=0.2.40,<1.0",
+    "statsmodels>=0.14.6",
+    # 2026-05-25 — extended H4 history for ETHUSD/BTCUSD via Binance OHLCV
+    # (used by scripts/fetch_extended_h4_data.py for the XAG/ETH extended
+    # bear-regime validation).
+    "ccxt>=4.0,<5.0",
+    "openpyxl>=3.1.5",
+    "hmmlearn>=0.3.3",
+    "ruptures>=1.1.10",
+    "pywavelets>=1.8.0",
+    "pytrends>=4.9.2",
+    # Web monitoring dashboard / future control plane (B0096 epic, B0097 phase 1).
+    # FastAPI chosen for: same language as execution/ (imports the exact state
+    # contracts), typed action endpoints + auto OpenAPI (future "expose actions"),
+    # and native WebSockets for live push as it grows. Read-only + localhost-bound
+    # in phase 1.
+    "fastapi>=0.110,<1.0",
+    "uvicorn>=0.29,<1.0",
+    "jinja2>=3.1,<4.0",
+    # news_scout.py — schema-validate the LLM (Nemotron) scout output at the
+    # untrusted-data boundary, same principle as the CSV contract in pipeline/data.py.
+    "pydantic>=2.5,<3.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",  # FastAPI/starlette TestClient transport
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q"
+
+[tool.uv]
+package = false

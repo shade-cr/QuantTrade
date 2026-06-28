@@ -1,0 +1,47 @@
+{
+  "id": "B0155",
+  "title": "ev_breakeven_v1 pre-registered EV threshold + proposal-time feature-existence gate",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "phase5",
+    "audit",
+    "methodology"
+  ],
+  "created_at": "2026-06-11",
+  "updated_at": "2026-06-10",
+  "source": "quant-phd-advisor verdict 2026-06-11 (Elkan 2001 cost-ratio theorem; AFML ch.3/10)",
+  "why": "Fixed 0.50 meta threshold is payoff-blind: with tp=3/sl=1 barriers the EV breakeven is ~0.33, so honest calibrated probabilities in [0.25,0.48] containing positive-EV trades were discarded wholesale (4/4 NO_FIRE audits 2026-06-11).",
+  "value_rationale": "",
+  "scope": [],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-10",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-10",
+      "event": "status_change",
+      "reason": "ev_breakeven_v1 + feature-existence gate implemented and tested (32 new tests, suite 1472). Hypothesizer v2 constraints added. Committed with this change.",
+      "from": "in_progress",
+      "to": "done"
+    }
+  ]
+}

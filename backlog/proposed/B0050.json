@@ -1,0 +1,67 @@
+{
+  "id": "B0050",
+  "title": "Cross-asset regime (#4) child-spec prerequisites — HIGH blockers before planning",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "phase5",
+    "cross-asset",
+    "regime",
+    "lookahead"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-27",
+  "source": "Two adversarial expert reviews of the multi-asset/cross-regime program spec (2026-05-27). Both verdicts BLOCKED piece #4 from going to planning.",
+  "why": "Piece #4 (cross-asset regime, own_4 x driver_2 = 8) is the user-requested feature but cannot enter planning until a child spec resolves three HIGH findings the expert review raised. (H1) 8 is a vocabulary size, not a tradeable count: XAU's own regimes are already {BULL_QUIET .606, BEAR_QUIET .295, BULL_STRESSED .088, BEAR_STRESSED .011} with only 2 comfortably sufficient; a binary driver split halves each cell and attacks n_episodes harder than n_bars. The child spec must publish a measured surviving-cell projection. (H2) The 0.8/100 falsification tightening is asserted, not derived: cross-asset adds >=2 researcher DOF (driver x axis x continuous threshold). Must forbid free-floating threshold axes in v1, tie strictness to a declared/logged trials budget with a DSR/Bonferroni haircut (metrics.py already computes DSR), and land the criterion in SKILL.md (the source of truth). (H3) The PIT cross-asset as-of join is the program's most dangerous lookahead surface and is specified in one sentence: needs a strict-'<' as-of contract, composed burn-in (union of traded + driver burn-in), and a frequency-aware FRED publication lag (the existing .shift(1) is daily-calendar, wrong for H4) — each with a leak-injection test. Plus M1: mechanical co-integration (DXY->EUR, foreign-2Y->same-currency FX, EUR->GBP) must be a HARD BLOCK via a driver-eligibility matrix, not a correlation flag; and M4: the driver name is reconstructable from a class+axis dossier, so a new driver block + fresh lookahead_lint pass is required.",
+  "value_rationale": "H: this is the gating set for the user's headline requested feature (cross-asset regime). Until resolved, #4 cannot be planned or built.",
+  "scope": [
+    "Write a #4 child spec under docs/superpowers/specs/ resolving H1/H2/H3 + M1 + M4.",
+    "H1: measured surviving-cell projection (run on XAU/XAG first) + episode-count projection; state honest expectation (~2-4 of 8 on deep assets).",
+    "H2: forbid free-floating threshold axes in v1; declared+logged trials budget; DSR/Bonferroni haircut; land cross-asset falsification criterion in SKILL.md not just spec prose.",
+    "H3: strict-'<' as-of-join contract; composed burn-in = max(traded, driver-mapped); frequency-aware FRED lag; leak-injection test for each.",
+    "M1: driver-eligibility matrix in the asset registry with a shares_a_leg boolean; orchestrator BLOCKS ineligible driver<->traded pairs.",
+    "M4: new dossier 'driver' block design + fresh lookahead_lint pass (driver name must not reach hypothesis/causal_story); check (traded_class, driver_class, axis) is not a near-unique identifier.",
+    "Proposal schema gains a driver block {asset_or_series, class, axis} (no free threshold v1); pin driver labeling by driver_regime_parquet_sha256 for reproducibility."
+  ],
+  "recommendation": "",
+  "out_of_scope": "Implementing #4 itself; #3 (multi-asset regime/dossier batch, planned separately); building the long-FX-history pull (piece #1).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/superpowers/specs/2026-05-27-multi-asset-cross-regime-program-design.md",
+      "relation": "specified_by",
+      "label": "Program spec — piece #4 sketch + expert-review appendix"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "git_commit",
+      "reason": "chore(backlog): add B0050 â€” cross-asset regime (#4) HIGH blockers before planning",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "git_commit",
+      "reason": "docs(plan): piece #3 multi-asset regime + dossier batch implementation plan",
+      "sha": "HEAD"
+    }
+  ]
+}

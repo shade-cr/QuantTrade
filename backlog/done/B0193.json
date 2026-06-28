@@ -1,0 +1,73 @@
+{
+  "id": "B0193",
+  "title": "Mini-test: turn-of-month + weekend/day-of-week calendar effect in XAU/XAG/FX D1 (+ harvestability in the Jun 21-26 live window)",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "hackathon",
+    "seasonality",
+    "research",
+    "spike"
+  ],
+  "created_at": "2026-06-17",
+  "updated_at": "2026-06-17",
+  "source": "CEO request 2026-06-17: run a mini-test of turn-of-month / weekend effect in gold/FX, after the seasonality coverage review found only crypto time-of-day had been tested (NULL, edge-search-exhaustive-negative.md row 3) and calendar seasonality is structurally un-mined by Loop A (date firewall).",
+  "why": "Seasonality is the one of {mean-rev, breakout, seasonality} family least explored on gold/FX. Two classic calendar anomalies remain un-tested on our D1 history: turn-of-month (Lakonishok-Smidt: last trading day + first 3) and the weekend/day-of-week effect (French). Pre-register and measure both on 1996-2026 D1 (XAU/XAG/EURUSD/GBPUSD/USDJPY), with Newey-West HAC t-stats, a multiple-testing note, and -- decisively -- a recent-subsample decay check (calendar effects notoriously vanish post-discovery). CRITICAL second question: even if real, is the effect HARVESTABLE in the live window? Jun 21 22:00 -> Jun 26 22:00 BST: month-end is Jun 30 (AFTER close) -> TOM cannot fire; no full weekend is held inside the window; only day-of-week (Mon-Fri all present) is harvestable.",
+  "value_rationale": "M not H: priors (prior crypto NULL + post-1990s decay literature) say most likely NULL, and the harvestability gate likely rules out TOM for THIS window regardless. But it closes an open gap in the seasonality coverage claim and, if day-of-week shows a robust recent vol/return tilt, it could inform cut-phase variance timing (which weekday to lean the bounded sleeve into).",
+  "scope": [
+    "scripts/spike_calendar_seasonality.py: pre-registered study. Load D1 via pipeline.data.load_dataset; daily log returns; TOM (Lakonishok-Smidt {-1,+1,+2,+3}) vs rest-of-month; day-of-week buckets (Mon return = Fri->Mon, captures weekend). Per bucket: n, mean, std, Newey-West t, bootstrap 95% CI. Full-sample vs recent-subsample (2015+) sign/significance stability. Bonferroni note across buckets x assets.",
+    "Harvestability gate: explicitly map the Jun 21-26 2026 window onto the calendar -- does it contain TOM days? which weekdays? -- and state which effect (if any) can actually be acted on at the freeze.",
+    "tests/test_calendar_seasonality.py: unit tests for the date-bucketing helpers (TOM classification off-by-one at month boundaries, weekday mapping, return-shift no-lookahead).",
+    "docs/reviews/2026-06-17-calendar-seasonality-minitest.md: honest findings + harvestability verdict."
+  ],
+  "recommendation": "Pre-register expected NULL; treat a positive only if it survives BOTH the recent-subsample decay check AND Bonferroni. Report harvestability separately from statistical significance.",
+  "out_of_scope": "Any change to the deployed posture/sleeve timing (B0182, CEO-reserved). Intraday/time-of-day seasonality (already NULL, edge-search doc). Building a tradable primary -- this is measurement only.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0182"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/superpowers/decisions/2026-05-29-edge-search-exhaustive-negative.md",
+      "relation": "prior-evidence",
+      "label": "crypto time-of-day NULL; day-of-week a mirage"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-17",
+      "event": "created",
+      "reason": "CEO request: mini-test turn-of-month/weekend effect on gold/FX; pre-registered, decay-checked, harvestability-gated."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "evidence",
+      "reason": "Study run + documented (docs/reviews/2026-06-17-calendar-seasonality-minitest.md). RESULT: NULL under pre-registered gates. TOM: no asset reaches raw p<0.05 (full or recent) AND structurally un-harvestable in the Jun 21-26 window (all June TOM days 30-Jun..03-Jul fall after the close). Weekend/Monday: faint negative-Monday ghost (sign-consistent XAU/EUR/GBP, classic direction) but only XAU hits raw 0.05, fails Bonferroni (a=0.005), and decays/flips post-2015. Exploratory XAU-Friday +10.9bp t~2.9 is post-hoc/snooped, sign-inconsistent cross-asset -> noise. Confirms prior: no deployable calendar edge for gold/FX; reinforces survival-book posture.",
+      "path": "docs/reviews/2026-06-17-calendar-seasonality-minitest.md"
+    },
+    {
+      "date": "2026-06-17",
+      "event": "status_change",
+      "reason": "Mini-test complete: NULL under pre-registered gates; TOM also un-harvestable in the live window. Negative result documented; no posture change.",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-17",
+      "event": "evidence",
+      "reason": "Follow-up (a): XAU-Friday promoted to its own pre-registered test (scripts/spike_xau_friday.py). Mechanically PASSES all 4 fixed gates (full p=0.0036; winsorized t=3.10 -> not outlier-driven; sign-test z=4.76). BUT the decomposition is the honest story: directional FREQUENCY persists (P(Fri>0)=0.576 z=3.34 in 2017-2026, matches full sample) while the relative-return MAGNITUDE edge DECAYED (Fri-vs-rest +12bp in 1998-2016 -> +2.4bp t=0.48 NULL in 2017-2026, because the 2019-26 gold bull bid every weekday and compressed the relative premium). Deployment read: real weekend-risk-premium fingerprint but ~2bp tradable excess now = weak prior, NOT a deployable standalone alpha; the only window Friday is 26-Jun (final force-liq day, overlaps Stage-2/PCE, n=1). Documented prior, not an action item. Posture unchanged (B0182 CEO-reserved).",
+      "path": "docs/reviews/2026-06-17-calendar-seasonality-minitest.md"
+    }
+  ]
+}

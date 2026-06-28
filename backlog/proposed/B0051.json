@@ -1,0 +1,57 @@
+{
+  "id": "B0051",
+  "title": "Audit-outcome reflection log feeding phase5-skeptic (firewall-safe TradingAgents memory loop)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "loop-a",
+    "phase5",
+    "lookahead"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-27",
+  "source": "Analysis of D:\\PROJECTS\\TradingAgents-main (Tauric Research multi-agent LLM trading framework) for transferable patterns, 2026-05-27. Most of it is LLM-as-trader (forbidden by our rule-based-primary contract + lookahead firewall), but three engineering patterns transfer.",
+  "why": "TradingAgents' strongest idea is a two-phase outcome-memory loop (agents/utils/memory.py + graph/reflection.py): Phase A logs each decision as pending; Phase B fetches the realized return on the next run, generates a structured 2-4 sentence reflection (which thesis held/failed, one lesson), and injects recent lessons into future decision prompts. Loop A records tick outcomes to signals/loop_a_state.json but has NO structured cross-tick learning. The transferable, firewall-safe version: a durable audit-outcome reflection log — proposal survived/died, was the declared falsification criterion met, why — wired into the phase5-skeptic (end-of-day red-teamer) and human triage. CRITICAL: it must NOT feed the phase5-hypothesizer, which is firewalled from outcomes by design (.claude/skills/phase5-regime-methodology/SKILL.md). This gives the loop genuine memory of what auditing has and hasn't found, without reintroducing lookahead.",
+  "value_rationale": "H: directly strengthens Loop A's self-correction (the autonomous-loop north-star) and addresses the skeptic's mandate to catch methodology drift across days — currently it has no persisted history of prior verdicts to compare against.",
+  "scope": [
+    "Define a reflection-log schema (per audited proposal: id, regime, verdict, falsification criterion, met/unmet, realized audit metrics, 2-4 sentence lesson). Durable store under signals/ or results/loop_a/.",
+    "Phase A: at audit completion, append a pending reflection entry keyed by proposal id.",
+    "Phase B: resolve pending entries with the M3 audit outcome; generate the structured reflection.",
+    "Wire recent reflections into the phase5-skeptic context (end-of-day red-team), NOT the hypothesizer.",
+    "Firewall guard: add an explicit test/assertion that reflection text never reaches the hypothesizer's inputs (mirror the existing lookahead firewall checks)."
+  ],
+  "recommendation": "Build it skeptic-facing and human-facing first; resist any temptation to close the loop into the hypothesizer (that is the lookahead trap).",
+  "out_of_scope": "Feeding outcomes to the hypothesizer (forbidden by firewall); importing TradingAgents' LLM debate-as-signal mechanism; any live-trading reflection.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "D:/PROJECTS/TradingAgents-main/tradingagents/agents/utils/memory.py",
+      "relation": "inspired_by",
+      "label": "Two-phase append-only decision log"
+    },
+    {
+      "path": "D:/PROJECTS/TradingAgents-main/tradingagents/graph/reflection.py",
+      "relation": "inspired_by",
+      "label": "Reflector: deferred outcome reflection"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "initial entry"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "B0149",
+  "title": "Audit fidelity hardening: volume tier2 features + fo_add alias + automatic system DSR floor + fable model pins",
+  "status": "done",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "phase5",
+    "audit",
+    "hackathon"
+  ],
+  "created_at": "2026-06-10",
+  "updated_at": "2026-06-10",
+  "source": "session 2026-06-10 (CEO request: verify audit construction before launching 9 pending M3 audits)",
+  "why": "7 of 9 pending proposals hypothesize volume as discriminator but tier2 exposed no volume feature (silently skipped via not_in_tier2_skipped); DSR gate (B0089) was off for the whole dsr-less Loop-A corpus, leaving Deflated-Sharpe enforcement to manual reviewer discretion.",
+  "value_rationale": "",
+  "scope": [
+    "PIT-safe volume block in D1+H4 technical builders (volume_z42, volume_pct_rank_21, volume_rel_median_42)",
+    "FEATURE_ALIASES + feature_add_status: conceptual volume request satisfied by derived family, evidence recorded",
+    "SYSTEM_DSR_MIN=0.95 floor injected at result-reading; tightening-only; source recorded per model",
+    "model: fable pinned on phase5-hypothesizer/devils-advocate/skeptic, quant-phd-advisor, risk-officer"
+  ],
+  "recommendation": "Implemented in this session; audits of the 9 pending proposals should run AFTER this lands so they test the stated hypotheses.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-10",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-10",
+      "event": "status_change",
+      "reason": "Implemented and committed in 22fb7a3: volume tier2 block (D1+H4), FEATURE_ALIASES/feature_add_status, SYSTEM_DSR_MIN=0.95 auto floor, fable pins on 5 critical agents. Full test suite green.",
+      "from": "in_progress",
+      "to": "done"
+    }
+  ]
+}

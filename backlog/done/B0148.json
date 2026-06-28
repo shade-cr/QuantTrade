@@ -1,0 +1,245 @@
+{
+  "id": "B0148",
+  "title": "Cross-asset pooling of the meta-learner to relieve fold-starvation (events > features)",
+  "status": "done",
+  "effort": "L",
+  "value": "H",
+  "tags": [
+    "walk-forward",
+    "stack",
+    "meta",
+    "fold-starvation",
+    "ldp-literature"
+  ],
+  "created_at": "2026-06-03",
+  "updated_at": "2026-06-12",
+  "source": "quant-phd-advisor prioritization (web-cited: Bailey-LdP DSR/PBO + curse-of-dimensionality), 2026-06-03.",
+  "why": "The BINDING constraint is fold-starvation (folds <30 trades -> should_stack rarely fires, DSR often NaN), which is an EVENTS/sample-size problem, not a feature problem. Bailey-LdP (DSR/MinBTL) + bias-variance literature: under a binding sample constraint, adding features past the first cheap one (B0134) is DOMINATED by adding OBSERVATIONS. The most literature-defensible event multiplier is pooling the meta-learner ACROSS ASSETS: turn N starved single-asset folds into one larger pooled training set, so the secondary ML model learns the act/pass decision from many more events while primaries stay per-asset. Directly attacks both the stack-gate starvation and the NaN-DSR symptom.",
+  "value_rationale": "H: the expert-identified highest-EV lever after the one cheap feature (B0134). Relieves the binding constraint; unlocks the stack gate and real DSR verdicts.",
+  "scope": [
+    "Pool meta-training events across assets (the H4 multi-asset roster) into one secondary-model training set; keep per-asset rule-based primaries and per-asset purge/embargo",
+    "Preserve the lookahead firewall + label-end purge PER ASSET within the pooled set (no cross-asset leakage; align by event time)",
+    "Add an asset-id / asset-features dimension so the pooled meta can condition on asset where signal differs",
+    "Re-evaluate should_stack + DSR on the pooled events (expect the gate to actually fire with adequate trade counts)",
+    "Mind: pooling assumes some transportability of the act/pass boundary across assets; validate with per-asset OOS, not just pooled"
+  ],
+  "recommendation": "Highest-value structural fix for fold-starvation; sequence AFTER the cheap B0134 win. Pairs with B0123 CPCV (more paths) once events are adequate.",
+  "out_of_scope": "Pooling the PRIMARIES (they stay rule-based per asset). Changing the meta-label definition.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0134",
+      "B0123",
+      "B0053"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [
+      "B0159",
+      "B0160",
+      "B0161"
+    ],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551",
+      "relation": "source",
+      "label": "Bailey & Lopez de Prado, Deflated Sharpe Ratio / MinBTL"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-04-b0148-cross-asset-meta-pooling-design.md",
+      "relation": "spec",
+      "label": "B0148 cross-asset meta-pooling design spec (quant-phd reviewed)"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-03",
+      "event": "created",
+      "reason": "expert: events>features under starvation; cross-asset meta pooling is the top structural lever"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "feat(features): B0134 fractionally-differentiated log-price (FFD, AFML Ch5) + expert-guided backlog",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-04",
+      "event": "field_update",
+      "reason": "promoted proposed->spec; quant-phd-advisor review folded in (blockers B1 pooled-uniqueness, B2 inner-CV/calib time-space, B3 DSR-significance falsification; defaults: within_class, per_class, class_onehot; pre-flight effective-N gate)",
+      "field": "external_refs",
+      "from": [
+        {
+          "path": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551",
+          "relation": "source",
+          "label": "Bailey & Lopez de Prado, Deflated Sharpe Ratio / MinBTL"
+        }
+      ],
+      "to": [
+        {
+          "path": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551",
+          "relation": "source",
+          "label": "Bailey & Lopez de Prado, Deflated Sharpe Ratio / MinBTL"
+        },
+        {
+          "path": "docs/superpowers/specs/2026-06-04-b0148-cross-asset-meta-pooling-design.md",
+          "relation": "spec",
+          "label": "B0148 cross-asset meta-pooling design spec (quant-phd reviewed)"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-04",
+      "event": "git_commit",
+      "reason": "feat(walk-forward): B0148 slice 1 â€” pooled time-purged WF + cross-asset uniqueness",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-04",
+      "event": "git_commit",
+      "reason": "feat(multi-h4): B0148 slice 2 - pooled meta-learner orchestration (Phase A-D)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "git_commit",
+      "reason": "feat(B0148): confirmatory + baseline run configs; cp1252 console fix",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "field_update",
+      "reason": "add_link spawned->B0159",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0134",
+          "B0123",
+          "B0053"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0134",
+          "B0123",
+          "B0053"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0159"
+        ],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "event": "field_update",
+      "reason": "add_link spawned->B0160",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0134",
+          "B0123",
+          "B0053"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0159"
+        ],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0134",
+          "B0123",
+          "B0053"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0159",
+          "B0160"
+        ],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "event": "status_change",
+      "reason": "Measured to completion 2026-06-11: confirmatory pooled arm vs fresh baseline, frozen pre-registered criteria, comparator verdict FALSIFIED (crit1: pooled 0 pairs DSR>0.95 vs baseline 0, needed strictly more; band/veto clean trivially - both arms abstain). Training starvation relieved, OOS firing unchanged. 14/16 coverage (SOL Phase-D bug -> B0159 with revisit clause). Follow-up branch -> B0160. Verdict: results/b0148/verdict.md",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "field_update",
+      "reason": "add_link spawned->B0161",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0134",
+          "B0123",
+          "B0053"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0159",
+          "B0160"
+        ],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0134",
+          "B0123",
+          "B0053"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0159",
+          "B0160",
+          "B0161"
+        ],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "chore: sync session state - CLAUDE.md timeline corrections (5-day live window, risk-adjusted cut, Jun-27 presentation-only), B0148 run logs (unignored), D1/regime data refresh, live survival-book stat",
+      "sha": "HEAD"
+    }
+  ]
+}

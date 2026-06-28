@@ -1,0 +1,38 @@
+# Per-asset round-trip transaction costs in basis points.
+#
+# Reflects realistic retail bid-ask + slippage for each instrument class.
+# Source: typical IC Markets / OANDA spreads for liquid pairs; CME contract
+# specs for metals; major exchange spot fees for crypto (Coinbase / Binance).
+#
+# These numbers are inputs to:
+#   - pipeline/threshold_selection.select_threshold_inner_cv (cost-aware OOF)
+#   - pipeline/metrics.strategy_metrics (per-trade Sharpe net of costs)
+#
+# To activate this config in a pipeline run, add to your run config:
+#
+#   friction:
+#     config_path: configs/friction.yaml
+#
+# Without the friction block, pipelines fall back to the legacy global
+# cfg['metrics']['cost_per_trade_bps'] for backward compat with Phase 1 v4.
+
+per_asset_bps:
+  # FX majors — institutional spreads are sub-bp, retail ~1-2 bps roundtrip
+  EURUSD: 1.5
+  GBPUSD: 1.5
+  USDJPY: 1.5
+
+  # Metals — wider than FX, especially silver
+  XAUUSD: 5.0
+  XAGUSD: 6.0
+
+  # Crypto majors — exchange spot fees + bid/ask
+  BTCUSD: 8.0
+  ETHUSD: 8.0
+
+  # Crypto alt — thinner book, higher slippage
+  SOLUSD: 10.0
+
+# Fallback for any asset not explicitly listed. Conservative (10 bps matches
+# the legacy global used in Phase 1 v4 and the Phase 2 baseline).
+default_bps: 10.0

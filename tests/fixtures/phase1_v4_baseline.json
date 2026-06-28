@@ -1,0 +1,170 @@
+{
+  "primaries": {
+    "ema_cross": {
+      "best_model": "xgb",
+      "dsr_per_model": {
+        "lgbm": 0.0,
+        "lr": 0.00102706673544332,
+        "rf": 0.0,
+        "xgb": 0.0
+      },
+      "n_trades_per_fold_per_model": {
+        "lgbm": [
+          317,
+          0,
+          0
+        ],
+        "lr": [
+          0,
+          2,
+          0
+        ],
+        "rf": [
+          302,
+          0,
+          0
+        ],
+        "xgb": [
+          385,
+          0,
+          0
+        ]
+      },
+      "psr_per_model": {
+        "lgbm": 0.012249468955055458,
+        "lr": 0.08202640495413993,
+        "rf": 0.020304720135395308,
+        "xgb": 0.03246997877897013
+      },
+      "selected_threshold_per_fold_per_model": {
+        "lgbm": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "lr": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "rf": [
+          0.5,
+          0.52,
+          0.5
+        ],
+        "xgb": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "sharpe_per_fold_per_model": {
+        "lgbm": [
+          -1.1922565483267449,
+          0.0,
+          0.0
+        ],
+        "lr": [
+          0.0,
+          NaN,
+          0.0
+        ],
+        "rf": [
+          -1.0756495930734193,
+          0.0,
+          0.0
+        ],
+        "xgb": [
+          -0.9541672928115845,
+          0.0,
+          0.0
+        ]
+      },
+      "stack": false,
+      "stack_n_models_passing": 0
+    },
+    "momentum_zscore": {
+      "best_model": "xgb",
+      "dsr_per_model": {
+        "lgbm": NaN,
+        "lr": 5.22932596436456e-05,
+        "rf": NaN,
+        "xgb": 0.0
+      },
+      "n_trades_per_fold_per_model": {
+        "lgbm": [
+          0,
+          0,
+          0
+        ],
+        "lr": [
+          0,
+          2,
+          0
+        ],
+        "rf": [
+          0,
+          0,
+          0
+        ],
+        "xgb": [
+          4,
+          0,
+          0
+        ]
+      },
+      "psr_per_model": {
+        "lgbm": NaN,
+        "lr": 0.07867175830055856,
+        "rf": NaN,
+        "xgb": 0.4334134901067319
+      },
+      "selected_threshold_per_fold_per_model": {
+        "lgbm": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "lr": [
+          0.56,
+          0.5,
+          0.5
+        ],
+        "rf": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "xgb": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "sharpe_per_fold_per_model": {
+        "lgbm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lr": [
+          0.0,
+          NaN,
+          0.0
+        ],
+        "rf": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "xgb": [
+          NaN,
+          0.0,
+          0.0
+        ]
+      },
+      "stack": false,
+      "stack_n_models_passing": 0
+    }
+  }
+}

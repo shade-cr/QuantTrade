@@ -1,0 +1,165 @@
+{
+  "id": "B0199",
+  "title": "L2 regime-feasibility probe (GATE for the B0198 full fork): per-cell event table + L2-vs-OHLCV-proxy agreement",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "hackathon",
+    "research",
+    "loop-a",
+    "l2",
+    "microstructure",
+    "best-tech",
+    "gate"
+  ],
+  "created_at": "2026-06-19",
+  "updated_at": "2026-06-19",
+  "source": "Advisor 'cheapest experiment to settle the core question (~1 day)' in the B0198 methodology brief; PM made it a hard gate before the 8-file fork.",
+  "why": "Before forking 8 modules of Loop-A machinery, confirm the 27-day synthetic L2 can populate even one microstructure regime cell to the redefined floor. The advisor's expected outcome (given B0184 event-starvation) is single-digit events/cell -> the deliverable is a documented negative, not a built loop.",
+  "value_rationale": "Cheap (~1 day, reuses existing L2 tooling, diagnostic-only so no new firewall surface) and DECISIVE: GO -> proceed to B0198-1..8; NO-GO -> write the documented negative as the Best-Tech artifact and stop.",
+  "scope": [
+    "Label BENIGN/TOXIC x TIGHT/WIDE on XAUUSD + EURUSD parquet using TRAIN-FITTED quantiles (q75 vpin, q75 rel_spread) via reuse of pipeline.l2_adapter.load_symbol(allowed_days=train+val) + build_osr_features + build_activity_bars. Diagnostic only -- no proposal/dossier/firewall surface yet.",
+    "Dump the per-cell table: n_bars, n_episodes, n_calendar_days, n_qualifying_events (|z|>=2 overshoot or the registered OSR event def), depth_liveness -- vs the spec section-2.3 floor (n_bars>=500, n_episodes>=5 over >=5 days, n_events>=100/cell, depth_liveness>=0.5).",
+    "Run the OHLCV-proxy liquidity labeler (Corwin-Schultz / Abdi-Ranaldo spread + Amihud) on the same symbols' bar view and compute the confusion matrix vs the L2-depth liquidity axis -- agreement => the depth axis is real; wild disagreement => synthetic-ladder artifact.",
+    "VERDICT: GO (>=1 cell clears the floor AND labelers agree) -> unblock B0198-1..8. NO-GO -> documented negative; write the Best-Tech negative-result note; do not fork."
+  ],
+  "recommendation": "Dispatch execution-engineer (or run as a scripted analysis) reusing the existing L2 tooling verbatim; output a results table + a short verdict note. No new firewall/test surface (diagnostic). Honest reporting of the per-cell counts is the whole point.",
+  "out_of_scope": "Any proposal/dossier/loop machinery (that is B0198-1..8, gated on this). Any live-deployable claim. Buying Tardis crypto L2.",
+  "links": {
+    "blocks": [
+      "B0198"
+    ],
+    "blocked_by": [],
+    "related": [
+      "B0200"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0198"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-19",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link spawned_by->B0198",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0198"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link blocks->B0198",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0198"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0198"
+        ],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0198"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-19",
+      "event": "status_change",
+      "reason": "Build+run dispatched to execution-engineer 2026-06-19 (CEO: run the feasibility probe on the synthetic XAU+EUR hackathon L2; Best-Tech framing).",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-19",
+      "event": "status_change",
+      "reason": "NO-GO / INCONCLUSIVE (documented negative). execution-engineer built+ran scripts/l2_regime_feasibility_probe.py (8 tests green, 6 pipeline modules reused verbatim). On XAUUSD+EURUSD synthetic hackathon L2, train+val block: 0/8 micro-regime cells clear the spec section-2.3 floor -- pure EVENT STARVATION (max 11 events in any cell vs the 100 floor; 3 cells at 0), exactly the B0184 single-digit expectation. Liquidity-axis agreement L2-depth vs OHLCV-proxy = 0.66-0.68 (Corwin-Schultz + Amihud), BELOW the 0.70 bar -> synthetic depth's spread variation is largely orthogonal to real high-low range = pricer-artifact signature (depth_liveness=1.00 everywhere is itself a synthetic tell). Ruling per spec section-2.4: INCONCLUSIVE not NEGATIVE (data insufficient at required power; same as the OSR Jun-16 gate). Artifacts: results/l2_feasibility/{per_cell_table.csv,feasibility_report.json}; verdict note docs/submission/l2_regime_feasibility_2026-06-19.md. RECOMMENDATION: do NOT fork B0198-1..8; the documented negative IS the Best-Tech deliverable (the loop generalizes to a new state space under the same firewall/train-fit/event-comparable/artifact-check discipline and reached a clean falsifiable verdict in one pass). Hard prerequisite for any rebuild = a REAL non-synthetic L2 feed with materially more days (none exists today).",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link related->B0200",
+      "field": "links",
+      "from": {
+        "blocks": [
+          "B0198"
+        ],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0198"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0198"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0200"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0198"
+        ],
+        "spawned_from": []
+      }
+    }
+  ]
+}

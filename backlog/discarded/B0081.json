@@ -1,0 +1,159 @@
+{
+  "id": "B0081",
+  "title": "Crypto intraday seasonality primary (time-of-day, ~22:00 UTC / Asia open)",
+  "status": "discarded",
+  "effort": "M",
+  "value": "M",
+  "tags": [
+    "hackathon",
+    "edge-search",
+    "intraday",
+    "primary"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "quant-phd-advisor literature survey 2026-05-29 (intraday edges on FX/metals/crypto at H1). See project-no-edge-h4-primary-direct memory + hackathon plan.",
+  "why": "Concentrated returns when crypto is one of few open venues (US-close / Asia-open re-entry). Two practitioner reproductions (Concretum, Quantpedia) gross Sharpe ~1.6, strengthening post-2020 (flow mechanism). Crypto only.",
+  "value_rationale": "Edge-search for the hackathon competition book (H1, conservative vol-target). B0080 is the front-runner (best OOS evidence across all asset classes) and is spiked first.",
+  "scope": [
+    "Primary: long/flat in documented UTC hours. Test: mean H1 return by hour-of-day (24) and hour-of-week (168) per coin; THEN apply mlquants debunk -- add hour-of-day fixed effects, confirm day-of-week effect VANISHES (it is a mirage). Keep only hour-of-day effects stable across pre/post-2022.",
+    "Assets: BTC/ETH/SOL. Caveat: gross Sharpe, regime-dependent (dies in bears), thin (2-3 hrs/day) so 5-day window variance high. Use as feature/filter with B0080, not standalone."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0080",
+      "B0082",
+      "B0083"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "registered by hackathon-pm from quant-phd-advisor shortlist"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0080",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0082",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080",
+          "B0082"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0083",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080",
+          "B0082"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080",
+          "B0082",
+          "B0083"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(backlog): register intraday-edge shortlist B0080-B0083 from quant-phd-advisor survey",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "time-of-day seasonality: dead net-of-cost OOS, day-of-week confirmed a mirage (spike b0081_b0082)",
+      "from": "proposed",
+      "to": "discarded"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(spike): crypto/lead-lag/pairs edges all fail OOS; edge search exhausted",
+      "sha": "HEAD"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "id": "B0205",
+  "title": "Stage-2 lambda-advisor refuse-to-flat at the ceiling: lower LAMBDA_CEILING to the section14-safe value under the arming -0.45 stress (+ margin_div>0 guard)",
+  "status": "in_progress",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "stage2",
+    "barbell",
+    "section14",
+    "lambda-advisor",
+    "launch-blocker-R2"
+  ],
+  "created_at": "2026-06-21",
+  "updated_at": "2026-06-21",
+  "source": "launch-day deep review 2026-06-21: code-review HIGH + risk-officer HIGH + quant-phd-advisor (decisive, literature-grounded). CEO directive 'no queremos encontrarnos mas bugs ocultos'.",
+  "why": "The ratified section 6.4 policy ceiling was lambda=2.4, DERIVED under a -40% worst case (c*(2.4)=-39.66%). But (a) the runbook MANDATES arming any lambda>2.0 with a -45% stress, under which the combined section14-safe ceiling is only 2.0996 -> at lambda=2.4 the scripts/lambda_advisor.py relaunch command pairs --stage2-worst-case-move -0.45 + --stage2-refuse-if-unsafe so section14_safe_lambda returns ok=False -> the round-boundary roll takes the REFUSE branch -> FULL FLATTEN to 0 -> we sit FLAT for the whole round (the dominated 0.016-vs-0.198 outcome the policy exists to avoid). lambda=2.4 is in fact un-armable under refuse-if-unsafe even at the default -0.40 (ceiling 2.3413<2.4). AND (b) the risk-officer showed c*(2.4)=-39.66% is INSIDE the worst observed 3-day BTC+ETH equal-weight basket move (-40.69%, COVID 2020-03-12); SOL beta makes the 3-asset tail worse, and Bailey-Lopez de Prado (2013) puts the true quantile loss ~65% beyond naive -> 2.4 is a forced-liquidation (= INSTANT ELIMINATION) path, not a recoverable-variance bet. The PhD advisor (Browne goal-reaching, Bayraktar-Young drawdown-min, fractional-Kelly ruin boundary, Seel-Strack contest absorption) ruled: section14 is an ABSORBING barrier; size so it is unreachable in one worst-case move; deploy ceiling = section14-safe-under-(-0.45) ~ 2.10, NOT 2.4. Marginal P(top25) gain 2.10->2.4 is <=0.01-0.02 (falsifier: adaptive avg lambda 1.16-1.47, P(top25) ~0.10), convexly dominated by any >1% elimination prob.",
+  "value_rationale": "HIGH: removes a launch-blocker for R2/R3 (the advisor currently hands the operator a self-flattening command at the exact strict-cut-below-line corner where the barbell needs its convex tail). Negligible P(top25) cost. Does NOT affect tonight's R1 launch (lambda=1.5 << 2.099, arms unscaled under either stress).",
+  "scope": [
+    "tournament_sim/lambda_policy.py: replace LAMBDA_CEILING=2.4 with the section14-safe combined ceiling under the arming stress (-0.45, g=0.5, M=30), FLOORED to 3 decimals so the advisor's {:.3f} print always re-parses to a value the live gate arms (2.099). DERIVE it from pipeline.stage2_lambda.section14_safe_lambda (single source of truth, auto-tracks the math). STRICT_BELOW_LAMBDA references LAMBDA_CEILING (auto-updates).",
+    "scripts/lambda_advisor.py: validate --margin-div > 0 (ap.error otherwise) so a launch-day B0195 fat-finger can never recommend lambda=0 (flat) or negative. (The ceiling change alone fixes the refuse-to-flat: every emitted lambda now arms -- <=2.0 sized under -0.40 (ceiling 2.34), the 2.099 strict-below sized under -0.45 (ceiling 2.0996).)",
+    "scripts/simulate_barbell.py: align LAM_CEILING (its own percentile-convention policy_lambda) to the same value so the sim reflects the real deployable ceiling; re-run falsifier to confirm P(top25) ~unchanged.",
+    "docs/submission/operations-runbook.md section 6.4: ceiling 2.4 -> 2.099 (rationale: section14-safe under -0.45, inside-COVID-tail at 2.4); pre-final default 2.0 unaffected.",
+    "Tests: update the ~6 tests that hardcode 2.4 to the new ceiling; ADD the canonical invariant test -- for a sweep of round-close reads, the advisor's emitted (lambda, worst_case_move, margin_div) fed through section14_safe_lambda in REFUSE mode arms (ok=True) for ALL -- i.e. the advisor can never emit a refuse-to-flat command."
+  ],
+  "recommendation": "TDD: write the refuse-to-flat invariant test FIRST (fails today at the strict-below 2.4 read), then lower the ceiling. R1 launch path (scripts/survival_run.bat) UNCHANGED tonight. First bite is R1->R2 ~Jun 22 22:00 BST. Re-run full suite + falsifier. CEO surface: this lowers the ratified ceiling 2.4->2.10 on the PhD advisor's delegated authority (B0182 sign-off) -- reversible, 24h veto window before R1->R2.",
+  "out_of_scope": "No change to the section14 sizing MATH, the survival book, the delta-rebalance roll mechanics (B0203), or the live config default stage2_worst_case_move (-0.40 stays; the advisor's emitted -0.45 flag governs the R2/R3 high-lambda relaunch -- unifying the config to -0.45 is an optional follow-up, not needed for correctness).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0203",
+      "B0204",
+      "B0202",
+      "B0182",
+      "B0195"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-21",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "link to the stage-2 roll/advisor/policy family + the section14 gates",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0203",
+          "B0204",
+          "B0202",
+          "B0182",
+          "B0195"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "reviewed",
+      "reason": "code-review (opus) on diff abd8a65: SAFE-TO-MERGE; swept 1461 reads, 0 refuse-to-flat, ceiling 2.099<=exact 2.09964 arms under refuse, no circular import, R1 byte-identical. Cosmetic stale-2.4 comments scrubbed in 335cd80. Full suite green (exit 0). Awaits CEO merge-to-main decision (R1 unaffected; needed before R1->R2 ~Jun22 22:00 BST)."
+    }
+  ]
+}

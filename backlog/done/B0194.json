@@ -1,0 +1,78 @@
+{
+  "id": "B0194",
+  "title": "Screen all 101 WorldQuant formulaic alphas (Kakushadze 2016) — pre-registered, DSR-corrected",
+  "status": "done",
+  "effort": "M",
+  "value": "M",
+  "tags": [
+    "alpha-search",
+    "formulaic-alphas",
+    "directional",
+    "null-result",
+    "architecture-deck"
+  ],
+  "created_at": "2026-06-17",
+  "updated_at": "2026-06-17",
+  "source": "CEO request 2026-06-17: 'Try the 101 Formulaic Alphas paper. Testing every single one of the 101 formulaic alphas.' (arXiv:1601.00991)",
+  "why": "Project has found no deployable directional alpha (Loop A 0/13; alpha frontier non-directional). The WorldQuant 101 is the canonical published formulaic-alpha library, so a systematic pre-registered screen either surfaces a candidate or is strong architecture-deck evidence of due diligence. Built pipeline/alpha_ops.py + alpha_eval.py + alphas_101.py (all 101 transcribed) + scripts/screen_alphas_101.py; dual construct (cross-sectional L/S + per-asset), net of 2bps cost, Deflated-Sharpe deflated by the full 160-trial family.",
+  "value_rationale": "M not H: priors said NULL is most likely and the result confirms it. Value is the closed gap + the deck-worthy methodology, not a deployable edge.",
+  "scope": [
+    "operator library",
+    "101 alpha transcription",
+    "two-construct screening harness",
+    "DSR multiple-testing correction",
+    "honest interpretation + findings doc"
+  ],
+  "recommendation": "Pre-registered NULL confirmed: 0 survivors of 160 trials. Top DSR 0.137 (alpha#85) vs 0.95 bar. High per-asset Sharpes (~0.65, PSR=1.0) are beta-capture (turnover~0.001) collapsed to DSR~0.002 by deflation; market-neutral xs IC ~0. No Stage-2 promotion (gated on a survivor).",
+  "out_of_scope": "Stage-2 meta-labeling promotion (no survivor). H4/intraday re-test. Any change to the committed survival-book/barbell posture (CEO-reserved). Crypto cross-section beyond our 8-asset history.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/submission/alpha101_screen_findings_2026-06-17.md",
+      "note": "findings"
+    },
+    {
+      "path": "results/alphas_101/screen_report.md",
+      "note": "ranked verdict report"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-17-alphas-101-screen-design.md",
+      "note": "spec"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-17",
+      "event": "created",
+      "reason": "CEO request: screen all 101 formulaic alphas"
+    },
+    {
+      "date": "2026-06-17",
+      "event": "status_change",
+      "reason": "Built + ran the full pre-registered DSR-corrected screen: 0 survivors of 160 trials (clean NULL, as pre-registered). All 101 transcribed (21 clean / 61 proxy / 19 not-computable). Findings: docs/submission/alpha101_screen_findings_2026-06-17.md; raw: results/alphas_101/.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-17",
+      "event": "extended",
+      "reason": "L2/M15 re-test on the new hackathon data (xSyphon tick parquet, 22 FX/metals, realized-spread cost). Also a clean NULL: the lone raw survivor (alpha#72, DSR=0.950) was an n=24 small-sample artifact that failed cross-construct (xs DSR~4e-7); fixed survival_verdict with the CLAUDE.md n>=30 floor -> 0 survivors. See docs/submission/alpha101_screen_findings_2026-06-17.md (Addendum) + results/alphas_101_l2/."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "sampling-frequency robustness passes complete",
+      "reason": "Re-ran the identical 101-alpha engine on the L2 universe at two more sampling regimes to rule out the M15 null being a sampling artifact. H1 (60-min clock, results/alphas_101_l2_h1): 0 survivors / 155 trials, best DSR 0.367. Tick (event bars, 10k ticks/bar, results/alphas_101_l2_tick): 0 survivors / 129 trials, best DSR 0.258. Null holds across all three regimes (M15 + H1 + tick). New driver capability: scripts/screen_alphas_101_l2.py gained freq-derived labels (67083f5) + an event-based tick-bar mode (3017fbd, opus-reviewed clean; day-boundary tick-carry verified, n>=30 floor intact). Caveat: all L2 regimes are FX+metals only (no intraday crypto data); crypto null rests on the D1 screen."
+    }
+  ]
+}

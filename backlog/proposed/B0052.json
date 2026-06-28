@@ -1,0 +1,81 @@
+{
+  "id": "B0052",
+  "title": "Insider-transaction / global-news point-in-time feature source (B0015 alt-data family)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "M",
+  "tags": [
+    "phase5",
+    "alt-data",
+    "lookahead"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-27",
+  "source": "Analysis of D:\\PROJECTS\\TradingAgents-main (Tauric Research multi-agent LLM trading framework) for transferable patterns, 2026-05-27. Most of it is LLM-as-trader (forbidden by our rule-based-primary contract + lookahead firewall), but three engineering patterns transfer.",
+  "why": "TradingAgents' dataflows layer exposes alt-data tools we have not tried: get_insider_transactions, get_global_news, and structured fundamentals. The reusable angle is the DATA SOURCES as point-in-time feature inputs (or single-condition primaries) — fed through our existing .shift(1) publication-lag discipline into build_tier2_features — NOT the LLM that consumes them. Insider-transaction flow in particular is a clean point-in-time signal absent from our current feature set. This continues the B0015 alt-data lever; our prior memo concluded single-condition primaries beat the COT+DXY AND-gate (B0015b pre-flight falsified), so insider/news flow should be tried as single-condition signals.",
+  "value_rationale": "M: plausible orthogonal edge and fits the existing alt-data program, but sourcing/PIT alignment cost is real and equities-oriented data (insider txns) needs an XAU/FX-relevant analogue before it pays off here.",
+  "scope": [
+    "Survey which TradingAgents alt-data tools have an XAU/FX-relevant analogue (insider txns are equities-only; global-news + macro-event flow are more transferable).",
+    "Spec a point-in-time ingestion contract for the chosen source (publication timestamp, frequency-aware lag — note .shift(1) is daily-calendar and wrong for H4, see B0050 H3).",
+    "Prototype as a single-condition primary and/or tier2 feature; run the standard triple-barrier + purge/embargo backtest.",
+    "Leak-injection test on the PIT alignment before any audit."
+  ],
+  "recommendation": "Prioritize macro/global-news + event flow over insider transactions for the XAU/FX scope.",
+  "out_of_scope": "Using the alt-data via an LLM trader; multi-condition AND-gated primaries (B0015b lesson).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0015"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "D:/PROJECTS/TradingAgents-main/tradingagents/dataflows/interface.py",
+      "relation": "inspired_by",
+      "label": "Vendor-routed alt-data tool catalog"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "add_link related->B0015",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0015"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

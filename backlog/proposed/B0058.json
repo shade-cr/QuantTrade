@@ -1,0 +1,51 @@
+{
+  "id": "B0058",
+  "title": "T015D2 survivor: volume_pct_threshold=0.60 ~= regime median (decorative gate) — tighten before materialization",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "loop-a",
+    "phase5",
+    "primary",
+    "materialization"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-27",
+  "source": "",
+  "why": "Loop A survivor 20260527-XAUUSD-BEAR_QUI-T015D2 (phase5_custom CUSUM+volume short) passed pre-flight with PROCEED_WITH_CAVEAT, but the DA flagged (medium) that volume_pct_threshold=0.60 sits at the regime volume median (q=0.6185) — it selects the upper ~half, not genuine expansion, so the gate may be decorative (the same arithmetic that was HIGH in T015 pre-reframe). Also: orthogonality was argued vs roc_63 (slow trend) but the relevant check is volume vs contemporaneous CUSUM-breach magnitude. Before B0040 materialization: raise threshold to ~0.75 (and recheck n_trades>=50 tension), and have the lookahead reviewer measure rank-corr(volume, |breach return|). UPDATE 2026-05-27: module materialized as pipeline/primaries_phase5/phase5_t015d2.py and adversarially lookahead-reviewed (verdict PROCEED_WITH_CAVEAT, NO high-severity lookahead — prefix-stability test proves causality). The threshold concern was NOT a lookahead bug but an EDGE-ATTRIBUTION risk. DA-mandated diagnostic to run at promote/discard: (a) fraction of cond_cusum_down events surviving the volume>=0.60 gate; (b) rank-corr(volume_rank, abs(log-return)) on breach bars in BEAR_QUIET. If gate removes <~15% of breaches OR corr>0.7, the volume filter is decorative and the survivor is effectively a bare CUSUM-down primary — re-attribute edge before promoting.",
+  "value_rationale": "The first pre-flight survivor; tightening the gate determines whether it has real edge or is a median-cut artifact before the slow M3 audit.",
+  "scope": [
+    "pipeline/primaries_phase5/"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "Lookahead review cleared; recording edge-attribution diagnostic from code-commit DA review",
+      "field": "why",
+      "from": "Loop A survivor 20260527-XAUUSD-BEAR_QUI-T015D2 (phase5_custom CUSUM+volume short) passed pre-flight with PROCEED_WITH_CAVEAT, but the DA flagged (medium) that volume_pct_threshold=0.60 sits at the regime volume median (q=0.6185) — it selects the upper ~half, not genuine expansion, so the gate may be decorative (the same arithmetic that was HIGH in T015 pre-reframe). Also: orthogonality was argued vs roc_63 (slow trend) but the relevant check is volume vs contemporaneous CUSUM-breach magnitude. Before B0040 materialization: raise threshold to ~0.75 (and recheck n_trades>=50 tension), and have the lookahead reviewer measure rank-corr(volume, |breach return|).",
+      "to": "Loop A survivor 20260527-XAUUSD-BEAR_QUI-T015D2 (phase5_custom CUSUM+volume short) passed pre-flight with PROCEED_WITH_CAVEAT, but the DA flagged (medium) that volume_pct_threshold=0.60 sits at the regime volume median (q=0.6185) — it selects the upper ~half, not genuine expansion, so the gate may be decorative (the same arithmetic that was HIGH in T015 pre-reframe). Also: orthogonality was argued vs roc_63 (slow trend) but the relevant check is volume vs contemporaneous CUSUM-breach magnitude. Before B0040 materialization: raise threshold to ~0.75 (and recheck n_trades>=50 tension), and have the lookahead reviewer measure rank-corr(volume, |breach return|). UPDATE 2026-05-27: module materialized as pipeline/primaries_phase5/phase5_t015d2.py and adversarially lookahead-reviewed (verdict PROCEED_WITH_CAVEAT, NO high-severity lookahead — prefix-stability test proves causality). The threshold concern was NOT a lookahead bug but an EDGE-ATTRIBUTION risk. DA-mandated diagnostic to run at promote/discard: (a) fraction of cond_cusum_down events surviving the volume>=0.60 gate; (b) rank-corr(volume_rank, abs(log-return)) on breach bars in BEAR_QUIET. If gate removes <~15% of breaches OR corr>0.7, the volume filter is decorative and the survivor is effectively a bare CUSUM-down primary — re-attribute edge before promoting."
+    }
+  ]
+}

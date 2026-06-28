@@ -1,0 +1,131 @@
+assets:
+- EURUSD
+- GBPUSD
+- USDJPY
+- XAGUSD
+- BTCUSD
+- ETHUSD
+- SOLUSD
+- XAUUSD
+asset_overrides:
+  SOLUSD:
+    walk_forward:
+      train_min_bars: 1200
+      n_folds: 3
+date_range:
+  start: '2021-01-01'
+bars_per_year_by_class:
+  fx: 1560
+  metal: 1560
+  crypto: 2190
+primary_screening:
+  enabled: true
+  hurst_threshold_trending: 0.52
+  hurst_threshold_mr: 0.48
+  force_both_primaries: []
+  force_all_primaries: true
+  hurst_failure_policy: train_all
+triple_barrier:
+  horizon: 48
+  tp_atr_mult: 3.0
+  sl_atr_mult: 1.0
+  atr_period: 14
+primary:
+  candidates:
+  - ema_cross
+  - momentum_zscore
+  ema_cross:
+    fast: 60
+    slow: 240
+    dead_zone_atr: 0.25
+  momentum_zscore:
+    lookback: 24
+    threshold: 0.2
+features:
+  tier: 2
+  include_session_one_hot: true
+  include_cross_asset: true
+funding_features:
+  enabled: false
+walk_forward:
+  n_folds: 4
+  train_min_bars: 3000
+  purge_bars: 48
+  embargo_pct: 0.01
+models:
+- xgb
+- catboost
+- rf
+hyperparam_search:
+  method: random
+  n_iter: 20
+  cv_splits: 3
+  cv_purge_bars: 48
+calibration:
+  method: sigmoid
+  calib_holdout_pct: 0.15
+  min_minority_for_isotonic: 50
+stacking:
+  baseline: trade_all_primary
+  min_models_beating_baseline: 2
+  min_folds_beating_baseline: 3
+  max_oof_corr: 0.7
+  min_trades_per_fold: 30
+  meta_learner: logistic_regression
+  meta_C: 1.0
+  meta_penalty: l2
+  meta_n_folds: 4
+metrics:
+  cost_per_trade_bps: 10
+  threshold_grid:
+  - 0.5
+  - 0.52
+  - 0.54
+  - 0.56
+  - 0.58
+  - 0.6
+  - 0.62
+  threshold_selection: inner_cv
+threshold_selection:
+  method: inner_cv
+  inner_splits: 3
+  min_trades_per_inner_fold: 20
+sessions:
+  enabled: true
+  min_events_total: 250
+  min_events_per_fold: 50
+best_model:
+  min_trades_per_fold: 30
+  min_folds_with_trades: 2
+deployment:
+  hard_gates:
+    n_trades_min: 100
+    max_drawdown_pct_max: 0.2
+    psr_min: 0.85
+  dsr_tiers:
+    full: 0.95
+    half: 0.5
+    quarter: 0.2
+    paper_only: 0.05
+sentiment:
+  enabled: false
+  cache_dir: cache/sentiment
+cot:
+  enabled: false
+  cache_dir: cache/cot
+output_dir: results/clf_multi_h4
+meta_pooling:
+  enabled: false                              # OFF = current per-asset path, byte-identical
+  scope: within_class                         # within_class (confirmatory) | global (exploratory)
+  schema: core                                # core (confirmatory) | extended (exploratory NaN-union)
+  weight_balance: per_class                   # per_class (default) | none | per_asset
+  asset_id: class_onehot                      # class_onehot (default) | asset_onehot | both
+  pooled_uniqueness: true                     # [R-B1] cross-asset wall-clock concurrency weighting (required)
+  output_subdir: results/clf_multi_h4_pooled  # pooled per-asset outputs (keeps baseline tree intact for A/B)
+  train_min_frac: 0.5                         # initial-train fraction reserved by TIME for make_pooled_time_folds
+random_seed: 42
+dry_run:
+  enabled_via_cli_flag: true
+  n_iter: 5
+  n_folds: 1
+  max_minutes_per_asset_warn: 60

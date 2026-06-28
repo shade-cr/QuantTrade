@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+data/
+cache/
+results/
+signals/
+catboost_info/
+*.log
+.sdd/

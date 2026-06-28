@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "schema_version": "1.0",
+  "updated_at": "2026-05-27T13:15:03Z",
+  "entries": [
+    {
+      "id": "I0001",
+      "status": "open",
+      "title": "GLD holdings change-of-regime (slope, no threshold)",
+      "updated_at": "2026-05-26",
+      "tags": [],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "I0002",
+      "status": "open",
+      "title": "COT+DXY OR (en vez de AND)",
+      "updated_at": "2026-05-26",
+      "tags": [],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "I0003",
+      "status": "open",
+      "title": "XAU/XAG ratio como standalone primary mean-reversion",
+      "updated_at": "2026-05-26",
+      "tags": [
+        "cross-asset"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "I0004",
+      "status": "open",
+      "title": "Post-OPEX gold futures specs-extreme primary",
+      "updated_at": "2026-05-26",
+      "tags": [
+        "alt-data"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "I0005",
+      "status": "open",
+      "title": "MDA-derived feature engineering loop",
+      "updated_at": "2026-05-26",
+      "tags": [
+        "feature-engineering"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "I0006",
+      "status": "open",
+      "title": "Vendor-agnostic data routing + fallback layer for the multi-asset data path",
+      "updated_at": "2026-05-27",
+      "tags": [
+        "data",
+        "multi-asset",
+        "phase5"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    }
+  ]
+}

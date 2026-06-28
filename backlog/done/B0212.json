@@ -1,0 +1,67 @@
+{
+  "id": "B0212",
+  "title": "Ratified lambda-policy emits lambda=0.4 (HARVEST) but the live CLI hard-rejects --stage2-lambda < 1.5 -> the policy's harvest command is non-executable",
+  "status": "done",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "stage2",
+    "lambda-policy",
+    "cli",
+    "risk",
+    "barbell",
+    "consistency"
+  ],
+  "created_at": "2026-06-22",
+  "updated_at": "2026-06-22",
+  "source": "Found 2026-06-22 while running scripts/lambda_advisor.py for the R1-close decision (#5 of <400, lenient cut). The advisor printed --stage2-lambda 0.400 (HARVEST_LAMBDA) + a relaunch command.",
+  "why": "tournament_sim/lambda_policy.py HARVEST_LAMBDA=0.4 (and MU_FLOOR=0.4) are emitted by lambda_next_round when safely through a lenient cut, and lambda_advisor.py prints them verbatim into a relaunch command. But scripts/run_survival_live.py validation hard-rejects --stage2-lambda outside [LAMBDA_MIN=1.5, LAMBDA_MAX=2.4] (pipeline.stage2_lambda). So the RATIFIED policy produces a command the live gate REFUSES: the entire 'harvest the laterals' branch (the correct play when we are a leader far above a lenient cut - the Browne/Chen-Hughson-Stoughton regime) is non-executable. The operator is forced to either hold 1.5 (NOT what the policy wants), flatten (the policy says NEVER flat), or change a ratified risk parameter under time pressure.",
+  "value_rationale": "The harvest branch is exactly our live situation (R1: #5 of <400). The policy and the executable surface disagree on the most likely R2/R3 action. Must be reconciled BEFORE the next round-close decision.",
+  "scope": [
+    "Decide the reconciliation (needs risk-officer sign-off): (a) lower CLI LAMBDA_MIN to allow the policy's harvest floor (e.g. 0.3-0.5) - keeps 'never fully flat' but permits genuine de-risking; OR (b) define harvest as an explicit low-exposure executable mode; OR (c) change the policy's harvest floor to 1.5 (means 'never below 1.5' - but then harvest != harvest).",
+    "TDD: a property test that EVERY (round,d,q,mu) the policy can emit is within the CLI accept-band (lambda_policy outputs subset of CLI-valid range) - this invariant is what was violated.",
+    "Make lambda_advisor refuse-or-translate any policy output the CLI would reject, so it never prints an un-runnable command.",
+    "Full suite green."
+  ],
+  "recommendation": "Option (a): lower LAMBDA_MIN to the policy's harvest floor (0.4) with risk-officer review - the harvest branch is theory-correct (cut risk when a leader far above a lenient cut) and the sim assumed it executable. Add the policy-subset-of-CLI invariant test so the two can never silently diverge again.",
+  "out_of_scope": "No change to the ratified policy TABLE values beyond reconciling the floor; no strategy change.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-22",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-22",
+      "event": "status_change",
+      "reason": "Starting TDD fix: invariant test + advisor guard; floor change prepared but NOT applied pending risk sign-off.",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-22",
+      "event": "reconciliation_prepared",
+      "reason": "TDD fix landed (not committed): (1) invariant test tests/test_lambda_policy_cli_consistency.py asserts policy output subset-of CLI band; lower-bound xfail(strict) pending floor sign-off, upper-bound green. (2) lambda_advisor.py now WARNs + SUPPRESSES any out-of-band command (harvest 0.4 AND margin-rescale-below-floor) instead of printing an un-runnable relaunch. (3) Chosen reconciliation = option (a): one-line LAMBDA_MIN 1.5->0.4 in pipeline/stage2_lambda.py, PREPARED + documented inline but NOT applied (risk-officer+CEO sign-off). Closing step once signed: edit that one line + delete the xfail mark."
+    },
+    {
+      "date": "2026-06-22",
+      "event": "status_change",
+      "reason": "Reconciled λ band [0.4,2.099] to the ratified §6.4 policy: LAMBDA_MIN 1.5->0.4 (harvest executable), LAMBDA_MAX 2.4->2.099 (risk-officer MEDIUM, §14-safe ceiling). policy⊆CLI invariant now green (scoped margin_div=30) + advisor-guard as runtime net for rescale path. Risk-officer PROCEED_WITH_CAVEAT. Full suite green; committed 587cccb. NOTE: code fix only — LIVE deploy of λ=0.4 remains gated on CEO posture sign-off + arm-preview re-run (not done; crypto stays flat).",
+      "from": "in_progress",
+      "to": "done"
+    }
+  ]
+}

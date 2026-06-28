@@ -1,0 +1,111 @@
+{
+  "id": "B0185",
+  "title": "Live L2 unavailable via MT5 DOM ? resolve the OSR/L2 book's live input before relying on it",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "l2",
+    "execution",
+    "blocker"
+  ],
+  "created_at": "2026-06-16",
+  "updated_at": "2026-06-16",
+  "source": "Live MT5 probe 2026-06-16 (market_book_get -> None/Invalid params on XAU/BTC/EUR); MT5-only, no direct API",
+  "why": "The competition MT5 server does NOT publish order-book depth via the DOM API (market_book_get returns None/'Invalid params' for all probed symbols), and there is no direct API (MT5-only). So LIVE we get top-of-book bid/ask only, NOT the 5-level ladder. The historical parquet L2 drop is historical-only. Consequence: even if the OSR/L2 book validates at the Jun-18 gate on parquet, it has NO live L2 feed to run on during Jun 21-26. The tournament sim (B0183) concluded a return edge is ESSENTIAL and the OSR book is the only candidate -> a backtest-only edge that cannot be fed live is not deployable. Must resolve the live-input question before counting on it.",
+  "value_rationale": "Determines whether the L2 edge is live-deployable at all. If not, the edge leg of the strategy needs a top-of-book-only redesign or the posture leans harder on the survival book ? a launch-gating decision.",
+  "scope": [
+    "Re-verify DOM at/after launch (21 Jun 22:00, when trade_allowed flips) ? market_book may enable then; confirm or rule out.",
+    "Confirm there is genuinely no alternate live L2 channel (no direct API; ask org in #rules-and-faq whether live L2 depth is exposed anywhere).",
+    "If no live L2: assess whether the OSR signal can run on TOP-OF-BOOK + tick dynamics only (degraded), or must be shelved live.",
+    "Quantify the degradation: re-run the B0184 OSR validation using only top-of-book features vs full ladder, to see how much edge survives without depth.",
+    "Feed the conclusion into B0182 (posture) and the architecture deck (honest about the live-data constraint)."
+  ],
+  "recommendation": "Treat as a live-deployability blocker for the L2 edge until DOM is confirmed at launch or a top-of-book-only variant is shown to retain edge. Do not assume the historical-L2 backtest transfers to a live top-of-book-only feed.",
+  "out_of_scope": "Building an external L2 feed (no direct API available); the OSR strategy logic itself (B0165 frozen).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0162",
+      "B0184",
+      "B0183",
+      "B0158"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [
+      "B0188"
+    ],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-16",
+      "event": "created",
+      "reason": "Live MT5 probe: no DOM/L2 depth available; OSR edge has no live L2 feed via MT5 (the only connection)."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "B0185 question (does the edge survive top-of-book-only?) is UNANSWERABLE on the Jun-16 data: both full-ladder and top-of-book are event-starved (<=8 trades) -> below the measurability floor. Top-of-book fires marginally fewer events (consistent with depth adding a little signal) but neither is measurable. Live-L2-DOM re-verify at launch still pending; deferred until/unless a less event-starved signal design exists.",
+      "from": "proposed",
+      "to": "blocked"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "Organizer update (2026-06-16, via CEO): \"working on an updated version to address the issue where MT5 data does not include Level 2 depth, released shortly.\" The live-L2-DOM blocker has a PENDING VENDOR FIX. Re-opens live deployability of the OSR/L2 edge -- but now gated on three things landing before the Jun 21 22:00 freeze: (a) the org actually ships live L2 depth, (b) Jun-18 gate verdict GO on parquet (B0184), (c) integration+test time of the live DOM feed into execution/. If the update slips past freeze, the edge stays backtest-only and undeployable. Do NOT count on it until the DOM API returns real depth at launch.",
+      "reason": "Organizer says live L2 depth update coming shortly"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update",
+      "reason": "add_link spawned->B0188",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0162",
+          "B0184",
+          "B0183",
+          "B0158"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0162",
+          "B0184",
+          "B0183",
+          "B0158"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0188"
+        ],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "RESOLVED/FALSIFIED 2026-06-16: re-probe shows live MT5 DOM NOW returns genuine multi-level depth (4-10 rungs, all 8 probed symbols incl crypto). The 'no live L2 feed' blocker is lifted — the organizer's pending fix appears shipped; the earlier empty book was a polling-timing artifact (async market_book_add). Live feed is a SYNTHETIC pricer ladder matching the parquet (fill-model input) => parity plausible. Forward edge-survival validation moves to B0188.",
+      "from": "blocked",
+      "to": "done"
+    }
+  ]
+}

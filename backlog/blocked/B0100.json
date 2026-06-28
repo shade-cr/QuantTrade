@@ -1,0 +1,120 @@
+{
+  "id": "B0100",
+  "title": "Pre-flight: crypto funding/basis carry (delta-neutral) net Sharpe",
+  "status": "blocked",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "research",
+    "crypto",
+    "carry",
+    "alpha",
+    "pre-flight"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-31",
+  "source": "Alpha-avenue review 2026-05-29 (quant-phd-advisor, literature-grounded). Directional prediction exhausted (9 nulls); non-directional risk premia untested. See agent review for citations.",
+  "why": "The single most promising NON-directional, durable, orthogonal-to-our-9-nulls premium for our universe (advisor: net Sharpe 0.5-1.7 venue-dependent; accrues every 8h). Cheap to falsify before any build.",
+  "value_rationale": "",
+  "scope": [
+    "Pull >=1y funding-rate + basis history for BTC/ETH/SOL (perps).",
+    "Compute delta-neutral (spot long + perp short) carry Sharpe NET of fees + funding-flip + a realistic deleveraging-event assumption.",
+    "GATE: requires perpetual instruments. CONFIRM whether the Syphonix competition venue exposes perps (we only have spot listed). If spot-only, this collapses to weak FX-carry-grade -> deprioritize.",
+    "If net Sharpe clears ~0.7 -> promote to a spec. 1-day spike, not a pipeline rebuild."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0113"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "Logged from alpha-avenue literature review"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "backlog: log non-directional alpha avenues (B0100-B0102) from PhD review",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "Pre-flight DONE + Syphonix research DONE. (1) Premium is REAL on a perp exchange: Binance BTC/ETH funding ~3%/yr, 76% of intervals positive. BUT the headline Sharpe (8-22) is the CLASSIC CARRY ILLUSION: tiny unlevered return (~2-3.5%/yr) with SEVERE negative skew (basket -4.9, SOL -9.7, SOL net carry NEGATIVE) -> pennies in front of a steamroller; realistic levered net Sharpe is far lower (lit: 0.5-1.7). (2) BLOCKER: Syphonix is ~85-90% a CFD/spot venue (FIX4.4->MT5/OneZero, BTCUSD-style naming, no funding mention) => NO exchange funding rate => delta-neutral funding carry NOT deployable on the competition platform. CFD overnight swap is broker-set (usually negative both sides), not a harvestable long-pays-short funding. Resolving fact when creds arrive: grep the instrument schema for a funding_rate field. Only viable as a POST-hackathon product on a real perp exchange (Binance/Bybit), outside the competition.",
+      "from": "proposed",
+      "to": "blocked"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "research(alpha): two pre-flights + Syphonix perp-access verdict",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "research(alpha): TSMOM overlay pre-flight â€” PASSES as a diversifier (product, not sprint)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "add_link related->B0113",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0113"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "research(alpha): B0102 DSR re-test â€” TSMOM uplift not significant after deflation",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "research(alpha): B0102 closure â€” TSMOM overlay discarded (no edge a-priori)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "chore: sync backlog provenance, survival-book live state, regime dossiers",
+      "sha": "HEAD"
+    }
+  ]
+}

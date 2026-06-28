@@ -1,0 +1,81 @@
+{
+  "id": "B0166",
+  "title": "Primary: toxicity-gated intraday overshoot-reversion signal (pure rule-based) + features (multi-level OFI, microprice, VPIN-proxy)",
+  "status": "done",
+  "effort": "L",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "microstructure",
+    "B0162-epic"
+  ],
+  "created_at": "2026-06-11",
+  "updated_at": "2026-06-12",
+  "source": "Split of epic B0162 per methodology survey (docs/superpowers/specs/2026-06-11-l2-microstructure-methodology-survey.md)",
+  "why": "Survey rank-1 (BUILD primary, advisor-estimated 30-50% pass probability): fade vol-scaled short-horizon moves when OFI/microprice says aggressor flow exhausted AND toxicity gates say liquidity-driven. The only family where target move (1-3x spread) >> cost at 10-45 min holding on this feed.",
+  "value_rationale": "",
+  "scope": [
+    "Feature primitives: integrated multi-level OFI (Cont-Cucuringu-Zhang PCA form, degrades to L1), Stoikov microprice, tick-rule-signed VPIN proxy, realized-vol gate.",
+    "Pure rule-based primary returning {-1,0,+1} (pure-primary invariant; no .fit()).",
+    "Run through B0164 harness on the Jun-15 sample; confirmatory run on holdout exactly once per B0165."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [
+      "B0163",
+      "B0164",
+      "B0165"
+    ],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0162"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-11",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "git_commit",
+      "reason": "feat(B0162): CEO commits Jun 15-21 L2/microstructure build; methodology survey accepted + epic split B0163-B0168",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "status_change",
+      "reason": "pm-day 2026-06-12: dispatched to execution-engineer; pre-data code build against synthetic fixtures; real-data runs wait for Jun-15",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "code_build_complete",
+      "reason": "B0166 code scope built TDD pre-data (synthetic only): pipeline/intraday_features.py (integrated multi-level OFI w/ training-fitted PCA weights + L1 degradation, Stoikov microprice/displacement, VPIN-proxy, trailing RV, training-percentile helper, bar-clock aggregation), pipeline/osr_intraday.py (pure rule-based osr_signal per pre-registration 1.1; toxicity 0.90 + session blackout frozen), scripts/run_osr_validation.py (trials 1-6 train->val runner; holdout structurally unreachable). 79 new tests; full suite 1768 passed. REAL-DATA validation remains OPEN for Jun-15 (runs + B0165 confirmatory holdout are separate manual steps)."
+    },
+    {
+      "date": "2026-06-12",
+      "event": "status_change",
+      "reason": "code-build scope complete (pre-data). Real-data Jun-15 validation + single confirmatory holdout run tracked by B0165 protocol, not this entry.",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "docs(B0165): pin B0166 interpretation ambiguities in pre-registration Â§7 amendment log (timeout semantics, VPIN geometry, OTR vol unit) - all pre-data, K-neutral",
+      "sha": "HEAD"
+    }
+  ]
+}

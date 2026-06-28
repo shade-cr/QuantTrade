@@ -1,0 +1,53 @@
+{
+  "id": "B0065",
+  "title": "Dense-trend ema_cross on XAU D1 falsified on valid data: +5.18 was a pre-cache-fix artifact; camino_d positives are 2020+ window selection",
+  "status": "proposed",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "phase5",
+    "primary",
+    "baseline",
+    "data-integrity"
+  ],
+  "created_at": "2026-05-28",
+  "updated_at": "2026-05-29",
+  "source": "Reproduction 2026-05-28 of option C (promote dense ema_cross to first-survivor audit).",
+  "why": "The +5.18 baseline came from results/clf_xau_d1.pre_cache_fix (987 events) — a run BEFORE an applied FRED-cache fix that dropped most events via NaN, leaving a non-representative subset. Re-running the CURRENT configs/xau_d1.yaml (identical good geometry tp=3.0/sl=1.0/h=40, n_folds=3) on corrected data: n_events=4103, baseline_sharpe_per_fold=[-2.67,-0.25,3.06] (median negative), meta dead/negative (all trades fold 0 at negative Sharpe; stack=false, 0/4 models beat baseline, max_pair_corr 0.94). The camino_d/multi_d1.yaml XAU run with positive baseline [3.88,2.95,5.1] (916 events, engaging meta, +Sharpes 2/3 folds) only scores positive because date_range starts 2020-06 (a gold bull window) = period selection, not robustness. NET: option C is FALSIFIED; no credible dense-trend survivor on XAU D1 over the full honest 22y window. Barrier geometry was a real MEASUREMENT fix, not edge.",
+  "value_rationale": "H: corrects a load-bearing belief steering strategy choice; prevents a wasted phase5 audit on a stale/window-selected number and redirects first-survivor search to cross-asset breadth (B0009).",
+  "scope": [
+    "Documented the C falsification (this entry + memory correction project_barrier_geometry_root_cause).",
+    "Treat any single-favorable-window (e.g. 2020+) positive as period selection unless it also holds on the full history.",
+    "Redirect first-survivor search to cross-asset breadth (B0009): find instrument+primary with positive baseline on its FULL honest window AND enough events for the meta to engage."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0049"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-28",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(backlog): quiesce cross-session reconciliation + B0079 prereq + B0068 done",
+      "sha": "HEAD"
+    }
+  ]
+}

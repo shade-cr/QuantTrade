@@ -1,0 +1,68 @@
+{
+  "id": "B0177",
+  "title": "Survival run_loop has no MT5 reconnection / per-iteration error handling",
+  "status": "done",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "execution",
+    "freeze",
+    "mt5",
+    "resilience"
+  ],
+  "created_at": "2026-06-15",
+  "updated_at": "2026-06-15",
+  "source": "Code audit 2026-06-15 (live execution core + launch subagents), finding C2",
+  "why": "scripts/run_survival_live.py:706-738 run_loop's `while True` only catches KeyboardInterrupt. Any transient MT5 exception (disconnect, terminal restart, expired session) propagates from risk_check/sched.tick and kills the process silently. No backoff, no broker.connect() retry, no per-iteration try/except. Over a frozen 5-day unsupervised run a transient MT5 disconnect leaves the intraday kill-switch not executing and positions unmanaged until forced liquidation — the exact scenario the risk layer exists to prevent. The stale-log issue (.bat doesn't redirect stdout) makes the death invisible except via the PID dashboard.",
+  "value_rationale": "The intraday kill-switch is the primary capital backstop; if the loop dies it stops running. Single highest correctness risk for an unsupervised frozen run. High.",
+  "scope": [
+    "Wrap each run_loop iteration in try/except with exponential backoff.",
+    "On MT5 errors, attempt broker.connect()/reinitialize before retrying; cap retries then escalate (notify).",
+    "Restart is safe (idempotent scheduler cursor + persisted latches) — verify a reconnect resumes without double-trade.",
+    "Test: simulated transient MT5BrokerError does not kill the loop; reconnect resumes."
+  ],
+  "recommendation": "Per-iteration try/except + bounded reconnect. Pairs with B0176 (watchdog) for full resilience.",
+  "out_of_scope": "Watchdog launch_cmd.json (B0176).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0176"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "event": "created",
+      "date": "2026-06-15",
+      "note": "From hackathon code audit, finding C2"
+    },
+    {
+      "date": "2026-06-15",
+      "event": "git_commit",
+      "reason": "fix(hackathon): B0176 â€” survival watchdog restart preserves Stage-2 pre-arming",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-15",
+      "event": "status_change",
+      "reason": "run_loop wraps each iteration in try/except: transient errors swallowed + broker reconnect, re-raise after max_consecutive_errors for clean watchdog restart. Also (risk-officer caveat): lottery_envelope_dd_frac default 1.0->0.5 + new --lottery-envelope-dd-frac flag; documented daily-kill UTC auto-resume under freeze in runbook 3.3/6.2. 6 new tests, suite 2208 passed.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-15",
+      "event": "git_commit",
+      "reason": "fix(hackathon): B0177 â€” run_loop resilience + lottery envelope latch tightening",
+      "sha": "HEAD"
+    }
+  ]
+}

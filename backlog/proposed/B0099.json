@@ -1,0 +1,53 @@
+{
+  "id": "B0099",
+  "title": "Phase 3: multi-book / portfolio / corporate actions / multi-account",
+  "status": "proposed",
+  "effort": "L",
+  "value": "M",
+  "tags": [
+    "hackathon",
+    "dashboard",
+    "webapp",
+    "execution"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "CEO request 2026-05-29: live web dashboard to monitor the service + active strategy; explicitly think ahead to a control plane (expose actions/functions, portfolio mgmt, corporate actions, multi-strategy). Stack approved: FastAPI+uvicorn+Jinja/htmx.",
+  "why": "Grow the control plane: multiple strategies/books, multiple accounts (MT5 demo + Syphonix competition), allocation between books, corporate-action handling, historical analytics. API-first phase 1 makes this additive.",
+  "value_rationale": "",
+  "scope": [
+    "multi-book state model + per-book views.",
+    "multi-account adapter selection (reuse Broker ABC).",
+    "corporate-actions + portfolio allocation UI/endpoints."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [
+      "B0096"
+    ],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "Dashboard/control-plane epic approved by CEO"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(dashboard): phase-1 read-only live monitor (FastAPI) for the survival book",
+      "sha": "HEAD"
+    }
+  ]
+}

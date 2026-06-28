@@ -1,0 +1,110 @@
+{
+  "id": "B0204",
+  "title": "§6.4 adaptive-λ operator advisor (lambda_advisor) — retire the stale §6.3 rung_advisor",
+  "status": "in_progress",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "stage2",
+    "barbell",
+    "ops",
+    "launch",
+    "advisor"
+  ],
+  "created_at": "2026-06-21",
+  "updated_at": "2026-06-21",
+  "source": "Launch-day finding (this session): rung_advisor implements the SUPERSEDED §6.3 capped sleeve",
+  "why": "scripts/rung_advisor.py (backed by tournament_sim/rung_policy.py) implements the SUPERSEDED §6.3 capped-momentum sleeve: it recommends --lottery-risk-frac (the wrong instrument) + a coupled --portfolio-kill, and can recommend FLAT. The RATIFIED posture is the §6.4 adaptive-λ static-long-crypto bet sized by --stage2-lambda (λ∈[1.5,2.4]), §14-safe by sizing, rule = NEVER flat. Running rung_advisor at an R1/R2 close would hand the operator the wrong instrument and could say 'go FLAT' (forbidden by §6.4). The §6.4 mechanical table lived only as runbook markdown — no executable advisor mirrored it.",
+  "value_rationale": "First live λ decision is the R1 close (~Jun 22 22:00). A correct, executable advisor that shares ONE pure rule with the sim (the principle that made rung_policy shared) removes live judgment and prevents a wrong-instrument / flat recommendation at the cut.",
+  "scope": [
+    "NEW tournament_sim/lambda_policy.py: pure §6.4 policy (no I/O/clocks/rng), transcribed EXACTLY from runbook §6.4 lines 362-373; (d,q,µ)->λ table, R1=1.5 blind, pre-final non-adaptive (2.0 / 1.5-lead / never flat), ceiling 2.4, margin_div<30 re-scale DOWN only.",
+    "NEW scripts/lambda_advisor.py: operator CLI; prints --stage2-lambda + the §6.1 relaunch command; NEVER prints --lottery-risk-frac or FLAT; ASCII-safe for the cp1252 console.",
+    "scripts/rung_advisor.py: loud deprecation banner -> redirect to §6.4/lambda_advisor (rung_policy left intact; still imported by tournament_sim/run.py + sims).",
+    "scripts/simulate_barbell.py: docstring-only xref on policy_lambda naming lambda_policy authoritative + documenting the ONE-corner deviation (sim floors µ<0 lenient-harvest at 0.1; runbook+policy floor 0.4).",
+    "Tests: tests/test_lambda_policy.py (23) + tests/test_lambda_advisor_cli.py (10)."
+  ],
+  "recommendation": "Built by execution-engineer (TDD, 33 tests green; full suite 2904 green). Reviewed vs runbook §6.4 — faithful. ESCALATE to CEO/risk: the sim-vs-runbook µ<0 floor (0.1 vs 0.4) — live advisor uses runbook-exact 0.4 (more consistent with NEVER-flat), sim numerics untouched on launch night; immaterial to P(top25) (the corner is 'comfortable + field dying'). Operator passes --margin-div (B0195) at each round close for the §14 re-scale.",
+  "out_of_scope": "Changing the validated sim policy_lambda numerics; the delta-rebalance roll MECHANISM (B0203); which λ to actually pick (CEO/operator reads the table).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0203",
+      "B0182"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-21",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0203",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0203"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0182",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0203"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0203",
+          "B0182"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

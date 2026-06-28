@@ -1,0 +1,105 @@
+{
+  "id": "B0072",
+  "title": "M1 — Strategy-card contract + dispatch seam",
+  "status": "discarded",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "execution"
+  ],
+  "created_at": "2026-05-28",
+  "updated_at": "2026-05-29",
+  "source": "hackathon-pm M0 bootstrap 2026-05-28; roadmap in plan eres-un-product-manager-bubbly-floyd.md",
+  "why": "The strategy-card JSON is the single research<->execution seam; without it execution would recompute research decisions and drift. Extracting evaluate_primary/compose_features makes live decisions identical to backtest decisions (the parity guarantee depends on it).",
+  "value_rationale": "Critical path to live paper-trading for the AI Engine Quantitative Hack; H = directly gates competition participation.",
+  "scope": [
+    "contracts/ package: schema.json + card.py (StrategyCard dataclasses, load/validate/dump, card_from_deployment_block)",
+    "pipeline/primary_dispatch.py: extract evaluate_primary() from script-private _select_primary/_select_primary_signal; scripts delegate",
+    "pipeline/feature_compose.py: extract compose_features() from run_multi_h4._build_features_for_asset; windowed-window last-row == full-series test",
+    "tests: test_strategy_card, test_primary_dispatch, test_feature_compose"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [
+      "B0073"
+    ],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-28",
+      "event": "created",
+      "reason": "seeded by hackathon-pm M0 bootstrap"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "field_update",
+      "reason": "add_link blocks->B0073",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0073"
+        ],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(coordination): M0 hackathon PM-coordinator infra",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "chore(coordination): mark M0 done; next action M1 (B0072)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "Superseded by the no-alpha survival-book pivot. The strategy-card contract + primary/meta dispatch seam exists to route META-LABELING decisions live; the survival book uses NO primaries/meta/cards -- its research<->live seam is compute_survival_target (SSOT shared by backtest+live), which already guarantees parity (B0077). The card machinery would only matter if a meta-labeling card were deployed, and edge search is exhausted (9 nulls). Re-open only if a meta strategy is ever blessed.",
+      "from": "proposed",
+      "to": "discarded"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "@ chore(backlog): reconcile M1-M7 execution epic with the survival-book reality",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(backlog): reconcile M1-M7 execution epic with the survival-book reality",
+      "sha": "HEAD"
+    }
+  ]
+}

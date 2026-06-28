@@ -1,0 +1,159 @@
+{
+  "id": "B0083",
+  "title": "BTC->SOL/ETH intraday lead-lag check (cheap)",
+  "status": "discarded",
+  "effort": "S",
+  "value": "L",
+  "tags": [
+    "hackathon",
+    "edge-search",
+    "intraday",
+    "primary"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "quant-phd-advisor literature survey 2026-05-29 (intraday edges on FX/metals/crypto at H1). See project-no-edge-h4-primary-direct memory + hackathon plan.",
+  "why": "Information enters via BTC, propagates to less-liquid alts with lag (Granger BTC->alts; RIBAF 2019, APFM 2026). SOL most illiquid -> largest lag.",
+  "value_rationale": "Edge-search for the hackathon competition book (H1, conservative vol-target). B0080 is the front-runner (best OOS evidence across all asset classes) and is spiked first.",
+  "scope": [
+    "Cheap 30-min check: cross-correlate BTC H1 returns with SOL/ETH at lags 0,+-1,+-2; confirm corr(BTC_t, SOL_t+1) > corr(SOL_t, BTC_t+1) (true lead) AND 'long SOL when BTC up last hour' hit-rate>53%.",
+    "Assets: SOL (best), ETH (marginal). Caveat: lead mostly lives sub-hourly; likely decayed to ~0 at H1 -- if M15/M5 available, test there. Spike last, do not over-invest. Expected gross 0.3-0.8."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0080",
+      "B0081",
+      "B0082"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "registered by hackathon-pm from quant-phd-advisor shortlist"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0080",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0081",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080",
+          "B0081"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0082",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080",
+          "B0081"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0080",
+          "B0081",
+          "B0082"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(backlog): register intraday-edge shortlist B0080-B0083 from quant-phd-advisor survey",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "BTC->alt lead-lag: no true lead (corr_fwd~0, not asymmetric), sub-coinflip hit-rate, net negative H1+M15 (spike b0083)",
+      "from": "proposed",
+      "to": "discarded"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(spike): crypto/lead-lag/pairs edges all fail OOS; edge search exhausted",
+      "sha": "HEAD"
+    }
+  ]
+}

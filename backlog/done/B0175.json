@@ -1,0 +1,50 @@
+{
+  "id": "B0175",
+  "title": "CLI main() must pass frequency= to build_regime_dossiers (post-B0154 regression)",
+  "status": "done",
+  "effort": "S",
+  "value": "L",
+  "tags": [
+    "phase5",
+    "bug",
+    "regime-stats"
+  ],
+  "created_at": "2026-06-15",
+  "updated_at": "2026-06-15",
+  "source": "merge-review of feat/phase5-m3-v3.2 (B0068) vs main, 2026-06-15",
+  "why": "B0154 rewrote the standalone CLI call site in phase5/regime_stats.py (~L665) and dropped frequency=args.frequency to build_regime_dossiers. Standalone `python -m phase5.regime_stats` for an H4 asset then computes effective_n with the D1 divisor (off by the H4 bars-per-day multiple). The batch path (build_all_regimes) passes frequency correctly, so Loop A normal generation and all D1 dossiers are unaffected; only standalone CLI H4 runs are wrong.",
+  "value_rationale": "One-line fix; prevents a silent effective_n miscalculation for H4 dossiers built via the standalone CLI. Low value because the affected path is rarely used, but cheap and firewall-safe.",
+  "scope": [
+    "Add frequency=args.frequency to the build_regime_dossiers(...) call in phase5/regime_stats.py main() (~L665)",
+    "Add/confirm a test asserting the CLI passes frequency through for an H4 asset"
+  ],
+  "recommendation": "Fix directly on a fresh branch off main; do NOT cherry-pick from feat/phase5-m3-v3.2 (the change would be smothered by B0154 conflicts). Firewall-safe: does not change feature content or dossier semantics for D1.",
+  "out_of_scope": "Do not merge feat/phase5-m3-v3.2; its 4 commits are already in main or superseded (B0068 done).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-15",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-15",
+      "event": "status_change",
+      "reason": "Fixed: CLI main() now passes frequency=args.frequency to build_regime_dossiers (phase5/regime_stats.py). TDD test tests/phase5/test_b0175_cli_frequency_kwarg.py. Full suite green.",
+      "from": "proposed",
+      "to": "done"
+    }
+  ]
+}

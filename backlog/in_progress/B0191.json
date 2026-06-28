@@ -1,0 +1,175 @@
+{
+  "id": "B0191",
+  "title": "Live field-monitor: estimate mu_field + our rank vs the cut line from the 5-min peer logs (enables B0182 rank-conditional posture)",
+  "status": "in_progress",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "execution",
+    "live-week",
+    "monitoring",
+    "decision-support"
+  ],
+  "created_at": "2026-06-16",
+  "updated_at": "2026-06-17",
+  "source": "Unlocked by B0158 (mid-round adjustment ALLOWED) + B0182 finalization to Branch A rank-conditional bold-during-cuts.",
+  "why": "B0182 is rank-conditional: in R1-R3 we escalate/de-escalate the crypto sleeve rung by reading (a) mu_field = field-median per-period equity return + attrition/blow-up rate, and (b) our rank vs the next cut line. PEER-LOG ACCESS IS WEB-ONLY/MANUAL (CEO 2026-06-16) -- no API/feed/export -- so this is a MANUAL-ENTRY DECISION AID, not an auto-ingesting live monitor: the operator transcribes the numbers off the web portal at each touchpoint and the tool maps them to a recommended rung. Without it the posture collapses to the inferior blind pre-commit. Operator playbook: runbook section 6.3.",
+  "value_rationale": "Directly enables the finalized winning posture (rank-conditional dominates blind). High value, now modest effort: it is a manual-entry decision table + Browne rung policy, NOT an ingestion pipeline -- peer-log access is web-only/manual (CEO 2026-06-16), which REMOVES the original hard dependency (peer-log API format).",
+  "scope": [
+    "PEER-LOG ACCESS RESOLVED (CEO 2026-06-16): leaderboard + peer data are WEB-ONLY/MANUAL -- no API/feed/export. Re-scoped from auto-ingesting monitor to a MANUAL-ENTRY rung decision aid.",
+    "Manual read inputs (operator transcribes off the web each touchpoint): our rank, N_active, hours-to-round-end, field-median P&L sign, blow-up/attrition count -> percentile + distance to cut line + sign of mu_field.",
+    "Rung-recommendation policy (Browne digital-option, B0182 finalized posture): map (rank vs cut line, hours-left, mu_field sign) -> recommended --lottery-risk-frac on the B0186 ladder, capped at the ~0.06 knee, section-14-safe; largest rung R1, taper R2/R3, flat finals, de-risk if mu_field<0.",
+    "Operator playbook lives in runbook section 6.3 (manual cadence ~3-5 touchpoints/round; one MANDATORY end-of-round read ~6-8h before each 22:00 BST boundary; safe flat/minimal launch default between reads; section-14-bounded latches as the unattended safety net).",
+    "Build/TDD the policy as a small CLI/sheet against a SYNTHETIC fixture; NO ingestion adapter needed (manual entry). Keep human-in-loop: tool recommends, operator relaunches per runbook section 6.1.",
+    "Surface the recommendation + recorded reads in the monitoring dashboard (related B0096)."
+  ],
+  "recommendation": "Web-only/manual access (CEO 2026-06-16) REMOVES the original hard dependency (peer-log API format) -- there is no feed to wire. Re-scope from 'live auto-monitor' to a 'manual-entry rung decision aid' + the runbook section 6.3 operator playbook. Keep human-in-loop (tool recommends a rung from hand-entered numbers; operator relaunches per runbook section 6.1). Coarse cadence is fine because the cut is at round-END -- schedule a MANDATORY read ~6-8h before each 22:00 BST boundary; safe flat/minimal defaults + the section-14-bounded latches cover unattended gaps. Build the policy table now against a synthetic fixture (no external dep).",
+  "out_of_scope": "Auto-executing rung changes without operator confirmation (keep human-in-loop). Finals phase (blinded -> no peer logs -> monitor inactive).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0182",
+      "B0158",
+      "B0096",
+      "B0150",
+      "B0192"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0158"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/reviews/2026-06-16-rank-conditional-posture-sim.md",
+      "relation": "analysis",
+      "label": "Rank-conditional posture sim: beats flat, underperforms static bold on top-25"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-16",
+      "event": "created",
+      "reason": "Unlocked by mid-round-adjustment-allowed (B0158) + B0182 Branch A; the enabler of the rank-conditional posture. Gating unknown = peer-log access format (org question)."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update",
+      "reason": "Peer-log access resolved to WEB-ONLY/MANUAL (CEO 2026-06-16); re-scope from auto-monitor to manual-entry decision aid.",
+      "field": "why",
+      "from": "B0182 is now rank-conditional: in R1-R3 we escalate/de-escalate the crypto sleeve rung by reading (a) mu_field = the field-median per-period equity return + attrition/blow-up rate, and (b) our rank vs the next cut line, from the section-8 5-min peer logs. Without a monitor that turns the raw peer feed into those two numbers + a rung recommendation, the posture collapses back to the INFERIOR blind pre-commit. This monitor is the enabler of the whole adaptive edge.",
+      "to": "B0182 is rank-conditional: in R1-R3 we escalate/de-escalate the crypto sleeve rung by reading (a) mu_field = field-median per-period equity return + attrition/blow-up rate, and (b) our rank vs the next cut line. PEER-LOG ACCESS IS WEB-ONLY/MANUAL (CEO 2026-06-16) -- no API/feed/export -- so this is a MANUAL-ENTRY DECISION AID, not an auto-ingesting live monitor: the operator transcribes the numbers off the web portal at each touchpoint and the tool maps them to a recommended rung. Without it the posture collapses to the inferior blind pre-commit. Operator playbook: runbook section 6.3."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update",
+      "reason": "Web-only/manual access removes the ingestion dependency.",
+      "field": "value_rationale",
+      "from": "Directly enables the finalized winning posture (rank-conditional dominates blind). High value, modest effort for the estimator/policy; the only hard dependency is the peer-log access FORMAT.",
+      "to": "Directly enables the finalized winning posture (rank-conditional dominates blind). High value, now modest effort: it is a manual-entry decision table + Browne rung policy, NOT an ingestion pipeline -- peer-log access is web-only/manual (CEO 2026-06-16), which REMOVES the original hard dependency (peer-log API format)."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update",
+      "reason": "Re-scoped to manual-entry decision aid (web-only access).",
+      "field": "scope",
+      "from": [
+        "mu_field estimator: field-median per-period equity return + attrition/blow-up rate from the peer logs (sign of mu_field decides escalate-vs-de-risk).",
+        "Rank tracker: our live rank + distance to the next cut line (R1 ~top-200, etc.).",
+        "Rung-recommendation policy (Browne digital-option): map (rank vs cut line, time-to-round-end, mu_field sign) -> recommended --lottery-risk-frac, capped at the ~0.06 knee, §14-safe.",
+        "Build/TDD against a SYNTHETIC peer-log fixture now; wire the real ingestion adapter at launch.",
+        "Surface in the monitoring dashboard (related B0096)."
+      ],
+      "to": [
+        "PEER-LOG ACCESS RESOLVED (CEO 2026-06-16): leaderboard + peer data are WEB-ONLY/MANUAL -- no API/feed/export. Re-scoped from auto-ingesting monitor to a MANUAL-ENTRY rung decision aid.",
+        "Manual read inputs (operator transcribes off the web each touchpoint): our rank, N_active, hours-to-round-end, field-median P&L sign, blow-up/attrition count -> percentile + distance to cut line + sign of mu_field.",
+        "Rung-recommendation policy (Browne digital-option, B0182 finalized posture): map (rank vs cut line, hours-left, mu_field sign) -> recommended --lottery-risk-frac on the B0186 ladder, capped at the ~0.06 knee, section-14-safe; largest rung R1, taper R2/R3, flat finals, de-risk if mu_field<0.",
+        "Operator playbook lives in runbook section 6.3 (manual cadence ~3-5 touchpoints/round; one MANDATORY end-of-round read ~6-8h before each 22:00 BST boundary; safe flat/minimal launch default between reads; section-14-bounded latches as the unattended safety net).",
+        "Build/TDD the policy as a small CLI/sheet against a SYNTHETIC fixture; NO ingestion adapter needed (manual entry). Keep human-in-loop: tool recommends, operator relaunches per runbook section 6.1.",
+        "Surface the recommendation + recorded reads in the monitoring dashboard (related B0096)."
+      ]
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update",
+      "reason": "Re-scope per web-only/manual peer-log access.",
+      "field": "recommendation",
+      "from": "Scaffold the estimator + policy now (synthetic fixture, no external dep). GATING UNKNOWN: the peer-log access format/API is unknown -> ASK THE ORG (#rules-and-faq) how the 5-min peer logs/leaderboard are exposed (API? portal export? MT5?). Wire ingestion once known / at launch. Keep the human (CEO) in the loop on the rung call; the monitor recommends, the operator adjusts.",
+      "to": "Web-only/manual access (CEO 2026-06-16) REMOVES the original hard dependency (peer-log API format) -- there is no feed to wire. Re-scope from 'live auto-monitor' to a 'manual-entry rung decision aid' + the runbook section 6.3 operator playbook. Keep human-in-loop (tool recommends a rung from hand-entered numbers; operator relaunches per runbook section 6.1). Coarse cadence is fine because the cut is at round-END -- schedule a MANDATORY read ~6-8h before each 22:00 BST boundary; safe flat/minimal defaults + the section-14-bounded latches cover unattended gaps. Build the policy table now against a synthetic fixture (no external dep)."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "Building the manual-entry rung decision aid + rank-conditional sim (CEO: carry on after B0190 finished).",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "analysis",
+      "reason": "Rank-conditional sim run (scripts/run_rank_conditional_sim.py, 800 trials x 3 regimes; tests/test_rank_conditional_sim.py + test_rung_policy.py = 21 green). FINDING: the manual single-end-of-round rank-conditional policy BEATS flat (P(reach top100) 0.205 vs 0.031, fair) but UNDERPERFORMS static bold_during_cuts on the PRIZE tail by ~10x (P(top25) 0.016 vs 0.198 fair; 0.019 vs 0.205 subfair; 0.006 vs 0.195 toxic). MECHANISM: top-25 is an order-statistic extreme bought by SUSTAINED dispersion (~8%/day); the manual policy injects only ~1.7%/day avg (mean rung R1=0.017) because it stays flat when inside the top-100 cut and escalates only the last 30% of a round -> it clears cuts but rarely builds the tail. It chases the CUT line, not the PRIZE line. Writeup: docs/reviews/2026-06-16-rank-conditional-posture-sim.md. Decision-aid CLI (scripts/rung_advisor.py) + engine (monte_carlo_rank_conditional) verified."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update",
+      "reason": "Attach rank-conditional sim findings doc.",
+      "field": "external_refs",
+      "from": [],
+      "to": [
+        {
+          "path": "docs/reviews/2026-06-16-rank-conditional-posture-sim.md",
+          "relation": "analysis",
+          "label": "Rank-conditional posture sim: beats flat, underperforms static bold on top-25"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-17",
+      "event": "field_update",
+      "reason": "add_link related->B0192",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0182",
+          "B0158",
+          "B0096",
+          "B0150"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0182",
+          "B0158",
+          "B0096",
+          "B0150",
+          "B0192"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    }
+  ]
+}

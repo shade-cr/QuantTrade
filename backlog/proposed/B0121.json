@@ -1,0 +1,61 @@
+{
+  "id": "B0121",
+  "title": "Pre-registered NO-GO / alpha-decay stop rule (DSR + MinTRL + PBO)",
+  "status": "proposed",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "validation",
+    "repo-scout",
+    "loop-a"
+  ],
+  "created_at": "2026-05-31",
+  "updated_at": "2026-05-31",
+  "source": "GitHub repo scout (4 Haiku explorers) + quant-phd-advisor literature review, 2026-05-31. Conversation: 'search quant trading repositories'.",
+  "why": "The team has concluded directional alpha on XAU is largely exhausted and values honest negatives, but there is no FORMAL pre-registered rule that converts 'we think it's dead' into an audit-defensible kill. quant-phd-advisor: DSR + Minimum Track Record Length + PBO are the correct instruments and the math is ALREADY in pipeline/metrics.py (psr_dsr.json). Only candidate in the signal group with both the correct instrument AND a conclusion already reached.",
+  "value_rationale": "VERDICT: Adopt (clean). Near-zero new math; directly serves the honest-negative goal; makes the research-exit a first-class repeatable output.",
+  "scope": [
+    "Pre-register, before each audit: reject if DSR < target confidence (e.g. 0.95) vs an SR0 baseline encoding N trials, or if T < MinTRL for observed SR",
+    "CRITICAL: N must count ALL trials honestly (every primary, barrier sweep, feature-set variation across the whole program) — under-counting N re-inflates DSR",
+    "Wire the threshold check + pre-registered N into the report; gate the verdict on it"
+  ],
+  "recommendation": "Adopt. Extend pipeline/metrics.py + the proposal-audit report path with the pre-registered NO-GO gate.",
+  "out_of_scope": "Not a substitute for fixing fold-starvation upstream — it makes the EXIT honest, not the gate pass.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551",
+      "relation": "source-repo",
+      "label": "Deflated Sharpe Ratio (Bailey & Lopez de Prado 2014)"
+    },
+    {
+      "path": "https://github.com/Farxida/prediction-market-ml",
+      "relation": "source-repo",
+      "label": "Farxida/prediction-market-ml (NO-GO research exit)"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-31",
+      "event": "created",
+      "reason": "repo-scout + quant-phd-advisor verdict"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "chore(backlog): register repo-scout + quant-phd-advisor verdicts (B0120-B0128)",
+      "sha": "HEAD"
+    }
+  ]
+}

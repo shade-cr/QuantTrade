@@ -1,0 +1,152 @@
+{
+  "id": "B0192",
+  "title": "Automate the web-only leaderboard read: Playwright 5-min capture -> parse -> feed recommend_rung (B0191 ingestion path)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "execution",
+    "live-week",
+    "monitoring",
+    "automation",
+    "playwright"
+  ],
+  "created_at": "2026-06-17",
+  "updated_at": "2026-06-17",
+  "source": "CEO idea 2026-06-17: the leaderboard is WEB-ONLY/MANUAL (no API). A Playwright headless screenshot/scrape every 5 min, read by an agent, turns the manual read into a semi-automated feed for the B0191 rank-conditional decision aid.",
+  "why": "B0191 was re-scoped to a MANUAL-entry decision aid because the leaderboard is web-only (no API). But a solo operator cannot reliably hand-read the web every few hours for 5 days (the runbook 6.3 'mandatory 3am BST end-of-round read' problem). A Playwright job on a persisted authenticated session that captures the leaderboard every 5 min and feeds the existing recommend_rung turns that chore into a glanceable recommendation AND re-opens FREQUENT reads (the sim modelled only a single end-of-round read). It is the ingestion adapter B0191 originally wanted before we learned 'web-only'. IMPORTANT CAVEAT (rank-conditional sim, docs/reviews/2026-06-16-rank-conditional-posture-sim.md): read FREQUENCY is NOT the binding constraint on the top-25 prize -- the policy's conservatism is (it goes flat once inside the top-100 cut). So the feed on its own improves operational responsiveness + cut-survival; to move the PRIZE tail it must be PAIRED with a top-25-chasing policy re-tune (B0182 option B).",
+  "value_rationale": "High operational value: removes the round-the-clock manual-read burden for a solo 5-day grind and enables responsive escalation. Gated on (a) portal access (NOT available during prep, CEO 2026-06-17), (b) portal ToS allowing automated access, (c) value-quantification (frequent-reads sim). Effort M: Playwright auth/persisted context + DOM-scrape-or-vision parse + glue to recommend_rung; main risk is the unknown portal structure + auth/2FA.",
+  "scope": [
+    "Playwright headless capture on a persisted authenticated session: every 5 min navigate + DOM-scrape (preferred) or screenshot+vision (fallback if the data is canvas/obfuscated) the leaderboard.",
+    "Parse to {our_rank, N_active, field-median P&L sign, attrition/blow-up count}; feed the existing tournament_sim.rung_policy.recommend_rung; write a recommendation + alert.",
+    "HUMAN-IN-LOOP: RECOMMEND only; the operator verifies and relaunches per runbook 6.1 (no auto-execution of rung/capital changes).",
+    "DQ/rules: a 5-min capture is ~0.003 req/s (vs the 500 req/s safe harbor) reading our OWN authorized view -- low risk; CONFIRM the portal ToS does not forbid automated access before deploying (tie to B0158).",
+    "Build/TDD against a saved/synthetic fixture page (portal access not yet available); wire the real selectors/parse at launch.",
+    "PRE-REQ value check: extend the sim to N reads/round + a top-25-chasing policy variant to confirm frequent reads actually lift P(top25) before investing in the scraper."
+  ],
+  "recommendation": "GATED -- do not build yet. Portal access is NOT available during prep (CEO 2026-06-17). First (1) quantify the value via the frequent-reads sim, (2) confirm portal ToS allows automation and capture the page structure once access opens, then build against the real page. Pair with a top-25-chasing policy re-tune (B0182 option B): the feed alone improves cut-survival/operations but does NOT by itself move the prize tail.",
+  "out_of_scope": "Auto-executing rung/capital changes (keep human-in-loop). The rung POLICY itself (B0191). The blinded finals (no leaderboard -> capture inactive).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0191",
+      "B0182",
+      "B0158"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/reviews/2026-06-16-rank-conditional-posture-sim.md",
+      "relation": "analysis",
+      "label": "Why the feed must pair with a policy re-tune (read frequency is not the top-25 constraint)"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-17",
+      "event": "created",
+      "reason": "CEO idea: automate the web-only leaderboard read via a 5-min Playwright capture feeding B0191's recommend_rung. Gated on portal access (not yet available) + ToS + a value-quantification sim; pairs with the B0182 top-25 policy re-tune."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "field_update",
+      "reason": "add_link related->B0191",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0191"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-17",
+      "event": "field_update",
+      "reason": "add_link related->B0182",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0191"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0191",
+          "B0182"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-17",
+      "event": "field_update",
+      "reason": "add_link related->B0158",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0191",
+          "B0182"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0191",
+          "B0182",
+          "B0158"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

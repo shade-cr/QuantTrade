@@ -1,0 +1,76 @@
+{
+  "id": "B0183",
+  "title": "Tournament Monte-Carlo: size the Stage-1 posture + Stage-2 rung empirically before the freeze",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "strategy",
+    "simulation",
+    "decision-support"
+  ],
+  "created_at": "2026-06-15",
+  "updated_at": "2026-06-16",
+  "source": "quant-phd-advisor recommendation 2026-06-15 (rank-tournament risk theory); B0182",
+  "why": "The theoretically-optimal Stage-2 tail-bet leverage has NO closed form: the 100 finalists' joint return distribution is endogenous (they are the competent/lucky tail and may themselves gamble per Seel-Strack). The advisor's prescription is to Monte-Carlo the tournament: simulate ~520 agents drawing terminal returns from a plausible cross-sectional distribution (calibrate mu_field<0 from the cost/impact model, dispersion from instrument vols x typical leverage), insert OURSELVES as (i) mu~0/sigma~0 flat and (ii) flat + a bounded tail bet of size X, and read off P(survive R1 top-200), P(reach top-100), P(reach top-25) for each schedule and several bold-bet sizes. Settles the one free launch parameter (the Stage-2 lottery rung) empirically instead of by assumption, and quantifies how much P(survive) a given tail bet costs.",
+  "value_rationale": "Directly sizes the only free dial in the frozen launch command (Stage-2 rung) and tests the flat-Stage-1 posture against the decisive mu_field assumption. ~1 afternoon of work; the alternative is guessing a launch-frozen parameter.",
+  "scope": [
+    "Build a cross-sectional tournament simulator: N~520 agents, terminal-return draws per round, relative cuts top 200/150/100 then top-25 prize tail, cumulative equity across rounds.",
+    "Parameterize mu_field (esp. the sign) and field dispersion; sweep scenarios (mu_field<0 mild/strong, =0; dispersion from instrument vol x leverage).",
+    "Insert our book as (a) survival-flat (mu~0, sigma~0.17%/day from B0182 drift quant), (b) flat + bounded tail bet of size X in the finalist leg, (c) flat + small edge (if OSR/L2 validates).",
+    "Output P(survive R1), P(top-100), P(top-25 | top-100) vs tail-bet size; find the rung that maximizes P(top-25) without materially denting P(survive).",
+    "Calibrate mu_field from the Jun-15 tick/L2 cost model AND, if visible, the paper-week (Jun 15-21) leaderboard equity dispersion -- the decisive empirical input.",
+    "Feed the chosen rung into the frozen launch command + runbook; CEO ratifies (B0182 dial decision)."
+  ],
+  "recommendation": "Build after the Jun-15 cost reality is known so mu_field can be calibrated, not assumed. Pair with the paper-leaderboard observation (estimates mu_field directly). Decision on the rung stays with the CEO (B0182).",
+  "out_of_scope": "The live execution mechanics (exist); proving the OSR/L2 edge (Jun-18 gate).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0150",
+      "B0158",
+      "B0162"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0182"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-15",
+      "event": "created",
+      "reason": "Advisor's cheap-validation recommendation: Monte-Carlo the tournament to size the Stage-2 rung and stress-test the flat-Stage-1 posture against the mu_field assumption."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "rescope",
+      "reason": "FULL OFFICIAL RULES 2026-06-16 redefine the objective the simulator must score. It is NOT pure equity rank. Per-round and final ranking = composite Final Score (§11): 0.70*ReturnRank + 0.15*DrawdownRank + 0.10*SharpeRank + 0.05*RiskDiscipline, each a 0-100 percentile among ACTIVE participants. Return=(Eq_final-1M)/1M (§12). Sharpe = mean/std of 15-MINUTE equity returns, non-annualized; std=0 -> Sharpe=0; <8 valid 15-min obs -> Sharpe Rank capped at 50. MaxDD measured per round (peak-to-trough on equity). Risk Discipline starts 100, resets each round, deductions per sustained margin/leverage/concentration breaches (§13). RED-LINE (§14): forced liquidation = IMMEDIATE ELIMINATION (an absorbing death state, not just a low score) -> the sim must model margin-call wipeout as elimination and any bold bet must be sized so worst-case cannot trigger it. Per-round resets: DD/Sharpe/RiskDiscipline reset each round; Return uses fixed 1M initial (cumulative-vs-1M; flag ambiguity vs per-round). Field N: rules say per-round qualifier counts TBC (overview gave 200/150/100); Top 100 to finals confirmed. The sim's output = our composite-score percentile and P(advance) under different OWN postures (flat survival book / +edge / +bounded bold bet), against a heterogeneous field (gamblers/flat/edge) with mu_field<0 from costs. KEY new insight to test: the 30% DD+Sharpe+discipline weight gives the low-DD survival book a structural floor that lifts it above median WITHOUT return edge -- quantify how much, and how a bold bet trades ReturnRank gain against DD/Sharpe loss + forced-liq elimination risk."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "analysis",
+      "reason": "BUILT + FIRST RESULTS 2026-06-16 (tournament_sim/ package, 24 tests TDD; scripts/run_tournament_sim.py; results/tournament_sim/findings_2026-06-16.md). Scores the official composite Final Score (0.70 Return + 0.15 DD + 0.10 Sharpe + 0.05 Discipline) over a 520-field, cuts 200/150/100 + top-25 finals tail, forced-liq=elimination, 800 trials x {fair,subfair,toxic}. FINDINGS: (1) return edge dominates -- P(top100) 0.03-0.34 flat vs 0.51-0.88 with ~Sharpe-1.5 edge; (2) flat survival book lands ~median (rank 41-43%) and fades by R3 (corrects the earlier 'floor above median' optimism); (3) NO posture without a finals variance bet reaches top-25 (P=0 for flat AND edge alone); (4) the full barbell (edge through R1-R3 + bounded bold finals) is the ONLY posture with meaningful P(top25)=0.085/0.146/0.217; (5) bold finals trades mean-rank for tail prob (convex, matches advisor C1). IMPLICATION: the Jun-18 OSR/L2 edge gate is the highest-leverage item; barbell endorsed but gated on the edge. LIMITATIONS (next iters): pre-data priors (recalibrate mu_field from live leaderboard §8); discipline modeled uniform 100 (conservative for us); sweep the bold-finals rung + edge level for the P(top25)-vs-P(survive) frontier; qualifier counts assumed 200/150/100 (rules TBC)."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "data_arrival",
+      "reason": "Real L2 spreads now available to replace the sim's pre-data cost priors: EURUSD ~0.09 bps, XAUUSD ~0.38, XAGUSD ~2.0 (raw MM quotes, pre competition risk-pricing). Tight spreads imply costs are LOW -> the field may be closer to 'fair' than 'subfair' -> the flat survival book is WEAKER than the central case (P(top100) ~0.51 with edge in fair vs 0.73 subfair), reinforcing that the edge is essential. Calibrate mu_field/impact from this data (via B0184) for the next sim pass."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "status_change",
+      "reason": "Tournament sim recalibrated with real spreads/swaps + non-uniform ?13 discipline (37 tests). Real tight spreads imply the 'fair' regime: flat survival book ~3% P(top100), return edge essential, barbell only path to top-25 (~0.10-0.20). Conclusions held+sharpened. Merged to chore branch; full suite green.",
+      "from": "proposed",
+      "to": "done"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "B0017",
+  "title": "Lever 3: Event-driven trade filtering (FOMC, CPI, NFP)",
+  "status": "blocked",
+  "effort": "M",
+  "value": "M",
+  "tags": [],
+  "created_at": "2026-05-26",
+  "updated_at": "2026-05-26",
+  "source": "2026-05-26 \"5 palancas\" lever 3.",
+  "why": "Gold has structurally predictable directional behavior around macro repricing events. Filtering trades to ±1 day from FOMC/CPI/NFP reduces events from ~250/y to 30-40/y, but with much higher signal-to-noise. Mechanism: macro repricing causes large moves; the rest is noise + market-making. Currently the pipeline has FRED macro features but no explicit calendar-based event filter.",
+  "value_rationale": "M (clean mechanism; lower event count than B0015/B0016)",
+  "scope": [
+    "new `pipeline/event_calendar.py` ingesting Fed meeting dates (FOMC minutes publication), BLS NFP/CPI release dates. Add feature `bars_to_next_macro_event` (negative if in post-event window, positive if pre-event). Build proposal \"Long XAU on next-day after FOMC release when (some condition)\". DA-review under the new calendar category (B0020)."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0000",
+      "B0015",
+      "B0016",
+      "B0020"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-26",
+      "event": "created",
+      "reason": "migrated from BACKLOG.md (auto-parsed)"
+    }
+  ]
+}

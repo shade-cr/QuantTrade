@@ -1,0 +1,196 @@
+{
+  "id": "B0202",
+  "title": "Stage-2 vmax-clamp phantom-qty corrupts the BOOK-ONLY portfolio-kill (LAUNCH BLOCKER)",
+  "status": "done",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "risk",
+    "bug",
+    "launch",
+    "stage2"
+  ],
+  "created_at": "2026-06-21",
+  "updated_at": "2026-06-21",
+  "source": "Final pre-launch risk control 2026-06-21 (CEO-requested §14 re-verify + risk gate + rehearsal). Two risk-officer (Opus) passes; second pass BLOCK, confirmed with a focused test through the real stage2_tick+risk_check.",
+  "why": "stage2_tick records the held leg as qty=<REQUESTED> (live_loop.py ~1420-1423), NOT res.fill_qty. The broker clamps the order to volume_max=100 lots INTERNALLY (ETH 290->100, SOL 6802->1000 base units; BTC fits). The static long-crypto bet then HOLDS (no multi-tick self-heal), so the recorded qty stays at the phantom requested value and is NEVER reconciled to broker truth — and the run_cycle pin (~2218-2226) re-buys the phantom each cycle. _stage2_held_marked_pnl (~602-635) and _stage2_basket_adverse_move (~637-663) both read pos['qty'], so the BOOK-ONLY portfolio-kill (commit c687fae) is contaminated by the P&L on ~$750k of phantom crypto exposure. Validated: a benign +5% crypto rally SPURIOUSLY TRIPS the 1.5% book kill (flattens the FX/metals book on a +$37.7k day); a crypto selloff + real -2% FX book DD is MASKED. Control (clamp disabled) -> 0.000% contamination, proving causation. NOT a §14/red-line risk (real position is SMALLER than recorded -> forced-liquidation safety intact); it corrupts the kill that protects the survival book through R1-R3. Parity is green (both brokers record the phantom identically); the validating test test_stage2_book_only_kill.py:77 uses volume_max=1e12 so the production failure mode was UNTESTED.",
+  "value_rationale": "Blocks arming the CEO-ratified Stage-2 launch posture (B0182/B0197) tonight 21:00Z. A spurious mid-round flatten of the survival book, or a masked book drawdown, is a material competition risk over the ~5-day live window.",
+  "scope": [
+    "execution/live_loop.py: at stage2_tick entry (~1420-1423) record qty=res.fill_qty (broker-truth filled base units), and set base_qty/avg_price from the actual fill; ensure _stage2_held_marked_pnl, _stage2_basket_adverse_move, and the run_cycle pin all read broker-truth qty.",
+    "tests/test_stage2_book_only_kill.py: add a regression with REAL broker-truth volume_max=100 + contract sizes (NOT 1e12) asserting book_daily_loss ~= 0 on a pure crypto rally/selloff while a held bet exists.",
+    "Re-rehearse the frozen command + re-run the risk gate after the fix; re-run spec-parity smoke at arm time (live vmax may exceed 100 -> clamp shrinks/disappears)."
+  ],
+  "recommendation": "Minimal fix per risk-officer: record qty=res.fill_qty on the entered leg; the held-pnl/guard/pin then become broker-truth-correct with no further change. ~1 line + regression test, well within the ~7h to arm. DO NOT ARM --stage2-lambda 1.5 until this lands, is re-tested, and re-rehearsed.",
+  "out_of_scope": "The realized-lambda~0.75 strategy question (vmax clamp halves the intended bet) — separate CEO-reserved decision.",
+  "links": {
+    "blocks": [
+      "B0182"
+    ],
+    "blocked_by": [],
+    "related": [
+      "B0197",
+      "B0195",
+      "B0203"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-21",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link blocks->B0182",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0182"
+        ],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0197",
+      "field": "links",
+      "from": {
+        "blocks": [
+          "B0182"
+        ],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0182"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0197"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0195",
+      "field": "links",
+      "from": {
+        "blocks": [
+          "B0182"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0197"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0182"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0197",
+          "B0195"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "fix_implemented",
+      "reason": "B0202 kill-fix: entry records BROKER TRUTH (re-read post-order, robust to fill_qty=None) not requested qty; book-only kill + survival guard now read true held qty. PLUS entry iterate-to-target (PhD opt-1, CEO-delegated 2026-06-21) builds the full lambda=1.5 equal-weight under the per-order volume_max clamp, bounded by stage2_max_entry_adds. risk-officer (Opus) = PROCEED_WITH_CAVEAT, no HIGH; over-deploy proven impossible, no buy-the-dip, bounded termination. Full suite green. Caveats (operator/monitor): confirm live MT5 adapter sets fill_qty on partials + monitor fills.jsonl R1; clock seam (schedule arm=wall-clock, roll=cursor) collapses on live MT5 (no cursor)."
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0203",
+      "field": "links",
+      "from": {
+        "blocks": [
+          "B0182"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0197",
+          "B0195"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0182"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0197",
+          "B0195",
+          "B0203"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "status_change",
+      "reason": "kill-switch corruption fixed (broker-truth fill) + entry iterate-to-target deploys the ratified lambda=1.5; reviewed PROCEED_WITH_CAVEAT, suite green. Remaining items are operator-monitoring (LOW), not code blockers.",
+      "from": "proposed",
+      "to": "done"
+    }
+  ]
+}

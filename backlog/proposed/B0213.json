@@ -1,0 +1,47 @@
+{
+  "id": "B0213",
+  "title": "Stage-2 entry build starves the last asset of account-gross headroom (SOL under-deploys, hits 20-add cap)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "M",
+  "tags": [
+    "stage2",
+    "barbell",
+    "sizing",
+    "headroom",
+    "live-observed"
+  ],
+  "created_at": "2026-06-22",
+  "updated_at": "2026-06-22",
+  "source": "LIVE R1 2026-06-22: after re-arming the static-long crypto sleeve at lambda=0.4, SOLUSD reached only ~63% of its lambda*E/3 target (adds_done=20, the stage2_max_entry_adds cap) while BTC/ETH filled. Observed directly in risk_state.json + broker truth.",
+  "why": "execution.live_loop.stage2_tick iterates the basket assets SEQUENTIALLY (assets = list(st.lottery_positions.keys())), and each per-tick add is clamped to the REMAINING account-gross headroom (add = min(delta, headroom/px)). During the simultaneous initial ramp the book (~0.49 gross) + the earlier-iterated legs (BTC, ETH) consume almost all of the combined 0.5+lambda budget first, so the LAST alphabetical asset (SOL) gets only crumbs per tick. It accumulates tiny adds, exhausts the stage2_max_entry_adds=20 cap before reaching target, and then holds the partial by design (B0202 'accept the section14-safe-or-below partial and hold'). Net effect: effective lambda runs BELOW target (observed ~0.35 vs 0.40) — MORE conservative, not a safety issue, but the bet is under-deployed and the asset weights are skewed away from the intended equal split.",
+  "value_rationale": "Makes the static-long sleeve actually reach its sized lambda target across all legs, removing an unintended (conservative) under-deployment and the alphabetical-order skew. Improves return-rank fidelity of the Stage-2 bet without changing its risk envelope.",
+  "scope": [
+    "TDD: a test where book gross + 2 filled legs leave thin per-tick headroom must STILL converge the last leg to its target within the add budget (no starvation).",
+    "Fix the per-tick headroom allocation: either (a) divide free headroom PROPORTIONALLY across the not-yet-at-target legs each tick, or (b) round-robin the iteration order per tick so no single leg monopolises headroom, or (c) re-drive under-deployed legs once earlier legs finish and headroom opens (the current cap is one-way for the entry build).",
+    "Keep the stage2_max_entry_adds cap as a thin-book backstop; ensure the fix does not let a genuinely illiquid leg chase fills forever.",
+    "Confirm no change to the section14 envelope, the roll, or the held-to-mark/no-stop semantics. Full suite green."
+  ],
+  "recommendation": "Likely (a) proportional headroom split across remaining legs each tick (deterministic, order-independent) plus (c) re-drive when headroom frees. The live control plane (Workstream B) already lets us re-drive an under-deployed leg without a restart, mitigating the symptom meanwhile.",
+  "out_of_scope": "No change to lambda sizing math (size_notional_qty), the section14 safety, the combined gross ceiling, or the barbell isolation. Pure entry-build fairness.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-22",
+      "event": "created",
+      "reason": "live-observed SOL under-deployment at lambda=0.4 R1"
+    }
+  ]
+}

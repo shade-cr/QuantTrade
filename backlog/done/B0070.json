@@ -1,0 +1,126 @@
+{
+  "id": "B0070",
+  "title": "Dossier path lacks frequency: dual-freq assets (BTC/ETH) have D1 dossiers clobbered by H4 (same signals/regime_stats/<ticker>/ path)",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "phase5",
+    "regimes",
+    "multi-asset",
+    "dossier",
+    "bug"
+  ],
+  "created_at": "2026-05-28",
+  "updated_at": "2026-05-29",
+  "source": "B0067 investigation 2026-05-28",
+  "why": "build_one_cell and regime_stats.main() write dossiers to signals/regime_stats/<ticker>/<regime>.json with NO frequency component. For assets that build BOTH frequencies (BTC/ETH: D1 and H4), the H4 run (runs after D1) overwrites the D1 dossiers at the same path. Verified: BTCUSD on-disk dossiers sum to 3224 n_bars = the H4 labeled count, so the D1 dossiers (547 labeled) are clobbered. The regime PARQUET is per-freq (BTCUSD_d1/h4_regimes.parquet) but the DOSSIER dir is per-ticker only. Latent since the dossier scheme predates multi-asset H4 (piece #3); now actively corrupts which frequency the hypothesizer/loop reads.",
+  "value_rationale": "The autonomous loop consumes dossiers by (asset, regime) with no freq; today it silently gets H4 stats for dual-freq assets even when reasoning about D1. Corrupts the regime-conditioning input.",
+  "scope": [
+    "Add frequency to the dossier path (signals/regime_stats/<ticker>_<freq>/<regime>.json or <ticker>/<freq>/<regime>.json)",
+    "Update build_one_cell + regime_stats.main() writers + manifest dossier paths",
+    "Update SKILL.md canonical File-layout + any consumer (loop_a_tick, run_proposal) that reads dossiers by asset",
+    "Regenerate all dossiers; consider folding in the B0067 self-healing skip-cleanup"
+  ],
+  "recommendation": "Per-(ticker,freq) dossier dir. Coordinate with consumers (loop_a/run_proposal) which currently address dossiers by asset only — they need a freq argument.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-28",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "docs(spec): B0067 fix cross-ref to B0070 (dossier-path-frequency ticket)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "docs(spec): B0070 frequency-aware dossier paths + Loop A (asset,freq) cells",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "docs(B0070): incorporate expert review â€” exact dir enumeration (B1), test_b0043 fixture (B2), keep substring infer + no-H4 constraint (B3), current_tick migration (B4), 5 load_dossier sites + cmd_pr",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "docs(plan): B0070 frequency-aware dossier paths implementation plan (7 tasks, atomic-ordered)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(phase5): B0070 dossier_dirname helper (single source of truth for <ticker>_<freq> dir)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(phase5): B0070 writers write dossiers to <ticker>_<freq>/ (no D1/H4 collision)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(phase5): B0070 orchestrate cmd_propose is frequency-aware (dossier path + id token)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "feat(loop-a): B0070 idempotent state migration to (asset,frequency) cells",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "chore(loop-a): B0070 migrate state to (asset,freq) cells + regen dossiers to <ticker>_<freq>/; recover BTC/ETH D1",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "docs(phase5): B0070 document <ticker>_<freq>/ dossier path + (asset,freq) Loop A state + freq-embedded id",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "status_change",
+      "reason": "Frequency-aware dossier paths (<ticker>_<freq>/) + Loop A (asset,freq) cells + freq-embedded proposal id. dossier_dirname helper, writers/readers, load_state migration, LRU/id-builder/current_tick threading, regen (BTC/ETH D1 recovered), docs. 127 phase5 tests green; loop_a status smoke ok. 2026-05-28.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "docs(loop-a): B0070 fix stale prerequisite dossier path (final-review nit)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(backlog): quiesce cross-session reconciliation + B0079 prereq + B0068 done",
+      "sha": "HEAD"
+    }
+  ]
+}

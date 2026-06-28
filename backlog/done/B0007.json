@@ -1,0 +1,91 @@
+{
+  "id": "B0007",
+  "title": "M3 v3.2 audit patch spike (B1/B2/B3 remediation)",
+  "status": "done",
+  "effort": "L",
+  "value": "H",
+  "tags": [
+    "phase5",
+    "h4",
+    "audit",
+    "infrastructure",
+    "methodology",
+    "portfolio"
+  ],
+  "created_at": "2026-05-26",
+  "updated_at": "2026-05-26",
+  "source": "",
+  "why": "M3 v3 has three documented blindspots: B1 (no upper bound on Sharpe → 30% false-positive rate on trivial nulls per [phase5/audit_null_distribution.md](phase5/audit_null_distribution.md)), B2 (regime_diversity gate false-positives on single-sided strategies in opposite-direction regimes), B3 (3-layer CV minimum-sample compounding rejects regime-gated H4 as ValueError). All three were deferred from the spike to avoid audit-design-leak; patches must be derived from the null distribution + independently-justified percentiles, not reverse-engineered from this spike's outcomes.",
+  "value_rationale": "H (unblocks H4 + regime-gating evaluation; closes audit's known false-positive surface)",
+  "scope": [
+    "separate spike branch (NOT `feat/phase5-ai-hypothesizer`). **Patch architecture is NOT pre-committed.** Sequence is fixed: (1) Run B0008's expanded probe matrix to completion. (2) Write `phase5/PATCH_DESIGN_PREREGISTRATION.md` deriving candidate patch shapes WITHOUT reference to v3 outcomes — each candidate must specify (a) what null-distribution property motivates it, (b) the percentile of the null at which it would fire, (c) the false-positive rate under that null. (3) Only after the preregistration doc lands, propose specific patches. Patch design itself must pass its own DA review. v3.2 must NOT re-audit this spike's proposals. The B4 portfolio blindspot recognized in B0019a folds into this scope at step 2."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0008"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "backlog_reviews/20260526-backlog-full-review_v1.json",
+      "relation": "reference",
+      "label": "review"
+    },
+    {
+      "path": "backlog_reviews/20260527-m3-v3.2-patch-preregistration_v1.json",
+      "relation": "reference",
+      "label": "backlog_reviews/20260527-m3-v3.2-patch-preregistration_v1.json"
+    },
+    {
+      "path": "phase5/B0007_ARCHIVE.md",
+      "relation": "reference",
+      "label": "phase5/B0007_ARCHIVE.md"
+    },
+    {
+      "path": "phase5/AUDIT_REVIEW.md",
+      "relation": "reference",
+      "label": "phase5/AUDIT_REVIEW.md"
+    },
+    {
+      "path": "signals/devils_advocate_reviews/20260526-audit-patch-scope-decision_v1.json",
+      "relation": "reference",
+      "label": "signals/devils_advocate_reviews/20260526-audit-patch-scope-decision_v1.json"
+    },
+    {
+      "path": "phase5/audit_null_distribution.md",
+      "relation": "reference",
+      "label": "phase5/audit_null_distribution.md"
+    }
+  ],
+  "da_reviews": [
+    {
+      "path": "backlog_reviews/20260526-backlog-full-review_v1.json",
+      "verdict": "BLOCK",
+      "severity_counts": {},
+      "date": "20260526"
+    }
+  ],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-26",
+      "event": "created",
+      "reason": "migrated from BACKLOG.md (auto-parsed)"
+    },
+    {
+      "date": "2026-05-26",
+      "event": "git_commit",
+      "reason": "feat(phase5): close 7 tickets â€” Loop A/H4 infra hardening + reporting",
+      "sha": "HEAD"
+    }
+  ]
+}

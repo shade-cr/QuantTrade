@@ -1,0 +1,76 @@
+{
+  "id": "B0167",
+  "title": "Second sleeve: BTC->ETH/SOL lead-lag event follower (leads >=30s-1min, 5-20min holding, own falsification bar)",
+  "status": "done",
+  "effort": "M",
+  "value": "M",
+  "tags": [
+    "hackathon",
+    "microstructure",
+    "B0162-epic"
+  ],
+  "created_at": "2026-06-11",
+  "updated_at": "2026-06-12",
+  "source": "Split of epic B0162 per methodology survey (docs/superpowers/specs/2026-06-11-l2-microstructure-methodology-survey.md)",
+  "why": "Survey rank-3: documented 15-60s BTC->alt lead, high monthly decay risk. Independent sleeve, must NOT gate the primary. Leads >=30s for timestamp-noise robustness (broker-arrival ts).",
+  "value_rationale": "",
+  "scope": [
+    "BTC 1-min move >3sigma event detector; follower entry if target not yet moved; 5-20min triple-barrier exit.",
+    "Hayashi-Yoshida lead-lag measurement on the sample to confirm the lead exists in THIS month before any backtest.",
+    "Own pre-registered bar (N>=50 events) in B0165 doc."
+  ],
+  "recommendation": "",
+  "out_of_scope": "Must not delay or gate the primary (B0166).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [
+      "B0163",
+      "B0164",
+      "B0165"
+    ],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0162"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-11",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-11",
+      "event": "git_commit",
+      "reason": "feat(B0162): CEO commits Jun 15-21 L2/microstructure build; methodology survey accepted + epic split B0163-B0168",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "status_change",
+      "reason": "pm-day 2026-06-12: dispatched to execution-engineer (pre-data code build); HY precondition check runs on Jun-15 data",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "status_change",
+      "reason": "B0167 code-build scope DONE (pre-data, synthetic fixtures only): pipeline/leadlag.py (Hayashi-Yoshida lead-lag estimator + ll_events + ll_signal + causal 1-min clock) and scripts/run_ll_validation.py (HY precondition FIRST with dead-on-arrival record, registered trials 7-8 only, OTR triple-barrier 20-min timeout, base+kill fills, structural holdout refusal). 43 new tests, full suite 1903 passed. OPEN for Jun-15: the real-data HY precondition check (BTC leading >=30s, train days only) and the trials 7-8 train->validation runs; confirmatory holdout (label b0167_ll_confirmatory) remains a separate manual step per B0165 section 3.",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "docs: B0167 LL interpretation pins in pre-registration Â§7 (K-neutral) + risk-officer B0168 BLOCK review record",
+      "sha": "HEAD"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "id": "B0105",
+  "title": "Dashboard 'next rebalance' countdown is calendar-naive (counts to next UTC midnight, ignores weekend/market closure)",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "hackathon",
+    "dashboard",
+    "webapp",
+    "ops",
+    "cosmetic"
+  ],
+  "created_at": "2026-05-30",
+  "updated_at": "2026-05-30",
+  "source": "CEO observation 2026-05-30 (Sat 00:0X UTC): dashboard showed 'next rebalance in 0h52m ~ 00:00 UTC' but no rebalance fired — diagnosed as FX weekend (no new EURUSD D1 bar). The countdown is misleading on weekends.",
+  "why": "webapp/templates/dashboard.html:259-263 computes next rebalance as Date.UTC(...getUTCDate()+1,0,0,0) = next UTC midnight, unconditionally. It does not model the market calendar: the daily rebalance fires on a NEW closed D1 bar of the cursor-driving symbol (EURUSD, universe[0]), which has no weekend bar. So on Fri/Sat/Sun the countdown counts down to a midnight at which nothing happens.",
+  "value_rationale": "Medium: cosmetic but actively misleading during the live competition (the 5-day window includes a weekend). A trader watching the dashboard would expect a rebalance that never comes.",
+  "scope": [
+    "Compute next-rebalance from the actual market calendar / next real D1 close of the cursor symbol, not naive UTC midnight.",
+    "On weekend/closed-market, show 'mercado cerrado - reabre domingo ~22:00 UTC' instead of a countdown.",
+    "Optionally surface the cursor symbol driving the schedule."
+  ],
+  "recommendation": "Front-end + a small state_reader hint (is_market_open / next_session_open). Keep it read-only; no service change.",
+  "out_of_scope": "Changing the rebalance trigger logic itself (it is correct).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-30",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(execution): B0104 step 5 â€” bounded equity curve (rotation + rollup)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "status_change",
+      "reason": "Fixed: frontend-only fix in dashboard.html. Added market-calendar-aware countdown using IIFE: detects Sat (dow===6), Sun before 22:00 (dow===0 && hr<22), Fri after 22:00 (dow===5 && hr>=22) as closed. On closed: shows cerrado · lun ~00:00 UTC (en Xh Ym) in muted color; on open: shows normal countdown. No service restart needed. 1131 tests pass.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "fix(dashboard): B0105 â€” market-calendar-aware rebalance countdown",
+      "sha": "HEAD"
+    }
+  ]
+}

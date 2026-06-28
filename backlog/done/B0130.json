@@ -1,0 +1,72 @@
+{
+  "id": "B0130",
+  "title": "MDA feature importance: score by neg-log-loss/F1, not accuracy@0.5",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "feature-importance",
+    "ldp-audit",
+    "correctness"
+  ],
+  "created_at": "2026-06-03",
+  "updated_at": "2026-06-03",
+  "source": "LdP book audit (6 parallel read-only auditors vs AFML + Machine Learning for Asset Managers, books in D:/PROJECTS/QuantTradingDocs), 2026-06-03. Conversation: 'audita el proyecto usando los libros'.",
+  "why": "mda_importance scorer is accuracy_score at a hard 0.5 cut (run_xau_d1.py:396-397, run_multi_h4.py:755). AFML 8 (Snippet 8.3) and MLfAM Snippet 6.3 score MDA by NEGATIVE LOG-LOSS, and AFML explicitly warns that accuracy misleads on imbalanced meta-labels (AFML_book.txt:3514) -- exactly the documented <30-trade fold-starvation regime. neg_log_loss is ALREADY used for the hyperparam search (run_xau_d1.py:417) and was not reused for MDA. The 0.5 cut also ignores the per-fold inner-CV-selected threshold.",
+  "value_rationale": "Cheap correctness fix; makes MDA rankings trustworthy and makes the (correctly plumbed) sample weights actually bite.",
+  "scope": [
+    "Replace _mda_scorer accuracy@0.5 with -log_loss(y_true, y_prob, sample_weight=...) (or F1) in run_xau_d1.py and run_multi_h4.py",
+    "Permutation location is already correct (OOS test fold, purged WF) -- do not change that",
+    "Re-run ema_cross positive control; ranking should stay consistent but resolution improve"
+  ],
+  "recommendation": "Adopt neg-log-loss scorer to match AFML 8.3 / MLfAM 6.3.",
+  "out_of_scope": "MDI (not used, correctly). Clustered importance (separate entry).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0131",
+      "B0125"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "D:/PROJECTS/QuantTradingDocs/extracted/MLfAM.txt",
+      "relation": "source",
+      "label": "MLfAM Snippet 6.3 (neg log_loss MDA)"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-03",
+      "event": "created",
+      "reason": "LdP book audit: MDA uses accuracy@0.5 vs book neg-log-loss"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "status_change",
+      "reason": "Implemented: MDA scorer switched to neg_log_loss_scorer (AFML 8.3) in run_xau_d1 + run_multi_h4; reusable helper in feature_importance.py. Tests green.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "fix: LÃ³pez-de-Prado audit fixes B0129-B0133 (purge, MDA, CFI, DSR, calib)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-03",
+      "event": "git_commit",
+      "reason": "test(regression): re-anchor Phase 1 baseline to post-audit-fix numbers (B0129-B0133)",
+      "sha": "HEAD"
+    }
+  ]
+}

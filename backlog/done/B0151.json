@@ -1,0 +1,69 @@
+{
+  "id": "B0151",
+  "title": "Deadline-aware equity lock + crypto-only weekend/finals mode for live loop",
+  "status": "done",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "execution"
+  ],
+  "created_at": "2026-06-10",
+  "updated_at": "2026-06-13",
+  "source": "session 2026-06-10 barbell plan (cut 24-jun evening BST; finals Sat 27-jun crypto-only)",
+  "why": "Top-100 cut is by account equity at a fixed BST timestamp (18:00 per Discord vs 22:00 per Luma - VERIFY in #rules-and-faq); marked-to-market equity benefits from deliberate de-risking before the print. From Fri 26-jun ~22:00 BST until the Sat 27-jun final only crypto moves equity - holding crypto into the weekend must be an explicit decision, not a default.",
+  "value_rationale": "",
+  "scope": [
+    "--flatten-at <ts> / lock-equity command: reduce gross to 0 (or to crypto-only) at a scheduled UTC time, idempotent, logged",
+    "crypto-only mode: rebalance restricted to BTC/ETH/SOL when FX/metals closed or when flagged",
+    "runbook entry: decision tree for 24-jun cut and 26-jun weekend hold/flatten"
+  ],
+  "recommendation": "Small, high-leverage. Build + test in week 1, rehearse the flatten on a quiet day.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-10",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-10",
+      "event": "status_change",
+      "reason": "implementation started",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-10",
+      "event": "status_change",
+      "reason": "Implemented 7afa2d4, risk-officer remediation 88ce179. Equity lock (one-way, persisted, both tick paths, --clear-equity-lock w/ pid guard), --flatten-mode all|non_crypto, --crypto-only (no upward renorm). tz-naive timestamps rejected. Runbook 6.1 decision tree. Operational follow-ups: verify cut time in #rules-and-faq; flatten drill on a quiet day.",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-13",
+      "event": "git_commit",
+      "reason": "docs(strategy): adopt Fable 5 barbell posture + reconcile with PnL-ranking + build state",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-13",
+      "event": "git_commit",
+      "reason": "chore: commit-trail backlog annotations + live equity curve",
+      "sha": "HEAD"
+    }
+  ]
+}

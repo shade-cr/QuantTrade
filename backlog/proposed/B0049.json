@@ -1,0 +1,160 @@
+{
+  "id": "B0049",
+  "title": "D1 regime-conditional sparse (CUSUM) primaries are event-starved below the WF floor — looser variants insufficient; needs H4 or per-episode criterion (T011D2 + T015D2)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "loop-a",
+    "phase5",
+    "primary"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-27",
+  "source": "Manual M3 audit of T011D2 (2026-05-27).",
+  "why": "Two independent Loop A survivors now falsified on the SAME walk-forward refusal cliff, not on edge: T011D2 (COT+CUSUM AND, long) fired 35 events in BULL_QUIET; T015D2 (CUSUM-down + volume>=0.60, short) fired 73 in BEAR_QUIET. The WF floor at the relaxed Loop A geometry (n_folds=2) is train_min(~36) + 2x100 = ~236 events; both fall far short. CONCRETE PROJECTION 2026-05-27 (B0048 lesson applied — counted events before auditing): of 308 raw T015D2 short events over 22y, the per-regime split is BULL_QUIET 157 / BEAR_QUIET 73 / BULL_STRESSED 28 / BEAR_STRESSED 2. BEAR_STRESSED has only 47 bars in the entire 22y history, so the proposed wider-scope re-run (BEAR_QUIET+BEAR_STRESSED) yields just 73->75 events — still FAILS 236. No coherent regime-conditional scope reaches 236: even the largest single regime (BULL_QUIET, 157) falls short, and removing the volume gate within BEAR_QUIET only ~doubles to ~146 (CUSUM is a sparse event detector by design, AFML 3.3). Only pooling all 4 regimes (~308) clears the floor, but that abandons regime-conditioning and defeats the Phase 5 premise. CONCLUSION: looser within-regime variants (the original B0049 idea) are INSUFFICIENT on D1. The real fixes are structural: (a) move these hypotheses to H4 (Paso 2), where ~4-6x bar density per regime lifts event counts past the floor; or (b) make the per-episode survival sign-test the PRIMARY robustness criterion (the proposals already declare per_episode_survival_fraction / per_episode_min_trades, but make_folds raises the WF geometry error BEFORE any per-episode logic runs — an architectural mismatch: the pipeline enforces WF-Sharpe folds, not the per-episode criterion the hypothesis committed to). A bare all-4-pooled run is only useful as a non-regime-conditional baseline (does this primary have ANY edge), a different question. H4 RE-HOME REFUTED 2026-05-27 (projected before building, B0048 discipline): H4 XAUUSD is only 5.0y (2021-05 -> 2026-05, 7740 bars) and that window is predominantly the gold BULL market, so BEAR_QUIET is RARE on H4: just 399 bars (5.2%) vs D1 1286 (22.8%). The primary fires only 31 events in H4 BEAR_QUIET, all inside ONE 3-month episode (2023-09 -> 2024-01) — far below the H4 WF floor (n_folds=2, train_min=50 -> needs ~250). So H4 makes it WORSE (31 < D1 73), not better: the 4-6x per-time density is more than offset by 5y vs 22y history, and the 2013-15 gold bear (where most D1 BEAR_QUIET events live) is simply absent from the H4 window. No extended XAU H4 dataset exists (only XAG/ETH/BTC are extended). Even the densest H4 regime, BULL_QUIET at 224 events, narrowly misses the 250 floor. NET: neither D1 nor H4 XAU can audit a regime-conditional sparse primary via walk-forward. The per-episode sign-test path is now the ONLY viable single-asset D1 route; cross-asset to longer/deeper-bear-history instruments (e.g. XAGUSD D1, gated on B0009 cross-asset regime parquets) is the alternative generalization route.",
+  "value_rationale": "M: the causal story is plausible and orthogonal to trend, but it is one hypothesis among many and the looser variants risk diluting the original mechanism, so payoff is uncertain.",
+  "scope": [
+    "Decide the structural fix: (a) re-home sparse regime-conditional primaries to H4, or (b) wire the per-episode sign-test as a first-class audit path that runs when WF geometry is infeasible.",
+    "If (b): make_folds / _run_one_primary must detect WF-infeasibility and fall through to a per-episode evaluator instead of raising, gated on the proposal declaring per_episode_* criteria.",
+    "Looser within-regime variants (lower volume_pct_threshold, OR-gate, lower cusum mult) are documented INSUFFICIENT on D1 — do not pursue as the primary fix; only as H4 tuning.",
+    "Optional: a non-regime-conditional all-4-pooled baseline run to measure whether the bare primary has any unconditioned edge (separate question from the regime hypothesis)."
+  ],
+  "recommendation": "",
+  "out_of_scope": "Re-auditing T011D2 with relaxed walk-forward geometry — that would override its committed falsification floor.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0048"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "signals/proposals/20260526-XAUUSD-BULL_QUI-T011D2M.json",
+      "relation": "supersedes_intent",
+      "label": "T011D2 (falsified on event floor)"
+    },
+    {
+      "path": "signals/audit_results/20260527-XAUUSD-BEAR_QUI-T015D2M.json",
+      "relation": "corroborates",
+      "label": "T015D2 (falsified on same event floor: 73<236; BEAR_STRESSED only 47 bars)"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "Spawned from T011D2 audit falsification"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "add_link related->B0048",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0048"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "Generalized from T015D2 wider-scope projection",
+      "field": "title",
+      "from": "Less-selective COT+CUSUM primary variant — D1 AND-gate too sparse to audit",
+      "to": "D1 regime-conditional sparse (CUSUM) primaries are event-starved below the WF floor — looser variants insufficient; needs H4 or per-episode criterion (T011D2 + T015D2)"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "T015D2 corroboration + projection data + structural conclusion",
+      "field": "why",
+      "from": "T011D2's primary ANDs two restrictive conditions — COT net-noncomm 52w-z rolling-quantile >= 0.75 AND a CUSUM(2*ATR14) upward event, long-only — which yields only 35 events over 22y in BULL_QUIET on XAU D1: too sparse for the walk-forward machinery. The mechanism (speculative conviction tier conditioning continuation) may still hold; the gating is just too tight for D1. Candidate looser variants to make it auditable without goalpost-moving on T011D2 itself: lower cot_quantile_floor to 0.50, OR-combine the two conditions instead of AND, lower cusum_h_atr_mult, or move to H4 where event density is higher. Each variant needs its own ex-ante falsification criterion committed before any run.",
+      "to": "Two independent Loop A survivors now falsified on the SAME walk-forward refusal cliff, not on edge: T011D2 (COT+CUSUM AND, long) fired 35 events in BULL_QUIET; T015D2 (CUSUM-down + volume>=0.60, short) fired 73 in BEAR_QUIET. The WF floor at the relaxed Loop A geometry (n_folds=2) is train_min(~36) + 2x100 = ~236 events; both fall far short. CONCRETE PROJECTION 2026-05-27 (B0048 lesson applied — counted events before auditing): of 308 raw T015D2 short events over 22y, the per-regime split is BULL_QUIET 157 / BEAR_QUIET 73 / BULL_STRESSED 28 / BEAR_STRESSED 2. BEAR_STRESSED has only 47 bars in the entire 22y history, so the proposed wider-scope re-run (BEAR_QUIET+BEAR_STRESSED) yields just 73->75 events — still FAILS 236. No coherent regime-conditional scope reaches 236: even the largest single regime (BULL_QUIET, 157) falls short, and removing the volume gate within BEAR_QUIET only ~doubles to ~146 (CUSUM is a sparse event detector by design, AFML 3.3). Only pooling all 4 regimes (~308) clears the floor, but that abandons regime-conditioning and defeats the Phase 5 premise. CONCLUSION: looser within-regime variants (the original B0049 idea) are INSUFFICIENT on D1. The real fixes are structural: (a) move these hypotheses to H4 (Paso 2), where ~4-6x bar density per regime lifts event counts past the floor; or (b) make the per-episode survival sign-test the PRIMARY robustness criterion (the proposals already declare per_episode_survival_fraction / per_episode_min_trades, but make_folds raises the WF geometry error BEFORE any per-episode logic runs — an architectural mismatch: the pipeline enforces WF-Sharpe folds, not the per-episode criterion the hypothesis committed to). A bare all-4-pooled run is only useful as a non-regime-conditional baseline (does this primary have ANY edge), a different question."
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "Load-bearing: blocks ALL Loop A D1 sparse-primary survivors from reaching a Sharpe verdict, not one hypothesis",
+      "field": "value",
+      "from": "M",
+      "to": "H"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "Reframed around structural fixes after within-regime relaxation shown insufficient",
+      "field": "scope",
+      "from": [
+        "Draft 1-2 looser variants (lower quantile floor, OR-gate, or H4 timeframe) as new proposals.",
+        "Each must commit its own falsification_criterion (including a realistic n_trades_total_min) ex ante.",
+        "Re-run pre-flight + M3 audit per variant."
+      ],
+      "to": [
+        "Decide the structural fix: (a) re-home sparse regime-conditional primaries to H4, or (b) wire the per-episode sign-test as a first-class audit path that runs when WF geometry is infeasible.",
+        "If (b): make_folds / _run_one_primary must detect WF-infeasibility and fall through to a per-episode evaluator instead of raising, gated on the proposal declaring per_episode_* criteria.",
+        "Looser within-regime variants (lower volume_pct_threshold, OR-gate, lower cusum mult) are documented INSUFFICIENT on D1 — do not pursue as the primary fix; only as H4 tuning.",
+        "Optional: a non-regime-conditional all-4-pooled baseline run to measure whether the bare primary has any unconditioned edge (separate question from the regime hypothesis)."
+      ]
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "Link T015D2 corroborating audit",
+      "field": "external_refs",
+      "from": [
+        {
+          "path": "signals/proposals/20260526-XAUUSD-BULL_QUI-T011D2M.json",
+          "relation": "supersedes_intent",
+          "label": "T011D2 (falsified on event floor)"
+        }
+      ],
+      "to": [
+        {
+          "path": "signals/proposals/20260526-XAUUSD-BULL_QUI-T011D2M.json",
+          "relation": "supersedes_intent",
+          "label": "T011D2 (falsified on event floor)"
+        },
+        {
+          "path": "signals/audit_results/20260527-XAUUSD-BEAR_QUI-T015D2M.json",
+          "relation": "corroborates",
+          "label": "T015D2 (falsified on same event floor: 73<236; BEAR_STRESSED only 47 bars)"
+        }
+      ]
+    },
+    {
+      "date": "2026-05-27",
+      "event": "field_update",
+      "reason": "H4 re-home refuted by pre-build event projection",
+      "field": "why",
+      "from": "Two independent Loop A survivors now falsified on the SAME walk-forward refusal cliff, not on edge: T011D2 (COT+CUSUM AND, long) fired 35 events in BULL_QUIET; T015D2 (CUSUM-down + volume>=0.60, short) fired 73 in BEAR_QUIET. The WF floor at the relaxed Loop A geometry (n_folds=2) is train_min(~36) + 2x100 = ~236 events; both fall far short. CONCRETE PROJECTION 2026-05-27 (B0048 lesson applied — counted events before auditing): of 308 raw T015D2 short events over 22y, the per-regime split is BULL_QUIET 157 / BEAR_QUIET 73 / BULL_STRESSED 28 / BEAR_STRESSED 2. BEAR_STRESSED has only 47 bars in the entire 22y history, so the proposed wider-scope re-run (BEAR_QUIET+BEAR_STRESSED) yields just 73->75 events — still FAILS 236. No coherent regime-conditional scope reaches 236: even the largest single regime (BULL_QUIET, 157) falls short, and removing the volume gate within BEAR_QUIET only ~doubles to ~146 (CUSUM is a sparse event detector by design, AFML 3.3). Only pooling all 4 regimes (~308) clears the floor, but that abandons regime-conditioning and defeats the Phase 5 premise. CONCLUSION: looser within-regime variants (the original B0049 idea) are INSUFFICIENT on D1. The real fixes are structural: (a) move these hypotheses to H4 (Paso 2), where ~4-6x bar density per regime lifts event counts past the floor; or (b) make the per-episode survival sign-test the PRIMARY robustness criterion (the proposals already declare per_episode_survival_fraction / per_episode_min_trades, but make_folds raises the WF geometry error BEFORE any per-episode logic runs — an architectural mismatch: the pipeline enforces WF-Sharpe folds, not the per-episode criterion the hypothesis committed to). A bare all-4-pooled run is only useful as a non-regime-conditional baseline (does this primary have ANY edge), a different question.",
+      "to": "Two independent Loop A survivors now falsified on the SAME walk-forward refusal cliff, not on edge: T011D2 (COT+CUSUM AND, long) fired 35 events in BULL_QUIET; T015D2 (CUSUM-down + volume>=0.60, short) fired 73 in BEAR_QUIET. The WF floor at the relaxed Loop A geometry (n_folds=2) is train_min(~36) + 2x100 = ~236 events; both fall far short. CONCRETE PROJECTION 2026-05-27 (B0048 lesson applied — counted events before auditing): of 308 raw T015D2 short events over 22y, the per-regime split is BULL_QUIET 157 / BEAR_QUIET 73 / BULL_STRESSED 28 / BEAR_STRESSED 2. BEAR_STRESSED has only 47 bars in the entire 22y history, so the proposed wider-scope re-run (BEAR_QUIET+BEAR_STRESSED) yields just 73->75 events — still FAILS 236. No coherent regime-conditional scope reaches 236: even the largest single regime (BULL_QUIET, 157) falls short, and removing the volume gate within BEAR_QUIET only ~doubles to ~146 (CUSUM is a sparse event detector by design, AFML 3.3). Only pooling all 4 regimes (~308) clears the floor, but that abandons regime-conditioning and defeats the Phase 5 premise. CONCLUSION: looser within-regime variants (the original B0049 idea) are INSUFFICIENT on D1. The real fixes are structural: (a) move these hypotheses to H4 (Paso 2), where ~4-6x bar density per regime lifts event counts past the floor; or (b) make the per-episode survival sign-test the PRIMARY robustness criterion (the proposals already declare per_episode_survival_fraction / per_episode_min_trades, but make_folds raises the WF geometry error BEFORE any per-episode logic runs — an architectural mismatch: the pipeline enforces WF-Sharpe folds, not the per-episode criterion the hypothesis committed to). A bare all-4-pooled run is only useful as a non-regime-conditional baseline (does this primary have ANY edge), a different question. H4 RE-HOME REFUTED 2026-05-27 (projected before building, B0048 discipline): H4 XAUUSD is only 5.0y (2021-05 -> 2026-05, 7740 bars) and that window is predominantly the gold BULL market, so BEAR_QUIET is RARE on H4: just 399 bars (5.2%) vs D1 1286 (22.8%). The primary fires only 31 events in H4 BEAR_QUIET, all inside ONE 3-month episode (2023-09 -> 2024-01) — far below the H4 WF floor (n_folds=2, train_min=50 -> needs ~250). So H4 makes it WORSE (31 < D1 73), not better: the 4-6x per-time density is more than offset by 5y vs 22y history, and the 2013-15 gold bear (where most D1 BEAR_QUIET events live) is simply absent from the H4 window. No extended XAU H4 dataset exists (only XAG/ETH/BTC are extended). Even the densest H4 regime, BULL_QUIET at 224 events, narrowly misses the 250 floor. NET: neither D1 nor H4 XAU can audit a regime-conditional sparse primary via walk-forward. The per-episode sign-test path is now the ONLY viable single-asset D1 route; cross-asset to longer/deeper-bear-history instruments (e.g. XAGUSD D1, gated on B0009 cross-asset regime parquets) is the alternative generalization route."
+    }
+  ]
+}

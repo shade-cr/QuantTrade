@@ -1,0 +1,25 @@
+{
+  "id": "I0001",
+  "title": "GLD holdings change-of-regime (slope, no threshold)",
+  "status": "open",
+  "tags": [],
+  "created_at": "2026-05-26",
+  "updated_at": "2026-05-26",
+  "description": "postmortem B0015a indica class-imbalance estructural con threshold absoluto; slope-of-MA daría eventos balanceados sin perder señal.",
+  "source": "conversation 2026-05-26 sobre generación de ideas",
+  "context": "",
+  "links": {
+    "related_backlog": [],
+    "related_ideas": [],
+    "promoted_to": null,
+    "discarded_reason": null
+  },
+  "history": [
+    {
+      "date": "2026-05-26",
+      "event": "captured",
+      "via": "/capture",
+      "note": "migrated from IDEAS.md"
+    }
+  ]
+}

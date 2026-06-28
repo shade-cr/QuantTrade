@@ -1,0 +1,47 @@
+{
+  "id": "B0173",
+  "title": "Persist vpin_train_dist/rv_train_dist through validation -> POOLED.json so the GO bundle needs no out-of-band toxicity input",
+  "status": "proposed",
+  "effort": "S",
+  "value": "H",
+  "tags": [],
+  "created_at": "2026-06-12",
+  "updated_at": "2026-06-12",
+  "source": "pm-day 2026-06-12 (B0171 honest-gap report)",
+  "why": "The section-4 toxicity-veto training distributions are a HARD input to the live toxicity veto (loader refuses empty arrays) but are computed transiently in run_osr_validation and not persisted; the bundle writer currently takes them as an explicit operator argument re-derived at freeze - the one manual, error-prone step left in the Jun-18 GO path.",
+  "value_rationale": "",
+  "scope": "Add vpin_train_dist + rv_train_dist arrays to the run_osr_validation report (training-days-only artifacts, plumbing not strategy), pass through osr_pooled_selection frozen_artifacts, consume in write_osr_bundle_from_pooled (drop the toxicity_dists operator argument or keep as override-with-loud-warning). Optionally: thin GO-day driver CLI for write_osr_bundle_from_pooled if runbook prose is judged insufficient under Jun-18 pressure. Tests mirror existing pins. Consider risk-officer re-look at the full pooled GO path once closed (bundle seam changed since the B0168 PROCEED_WITH_CAVEAT).",
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0168",
+      "B0162"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0171"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-12",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "chore(state): B0171 done, B0173 spawned (toxicity-dists persistence); iteration recorded",
+      "sha": "HEAD"
+    }
+  ]
+}

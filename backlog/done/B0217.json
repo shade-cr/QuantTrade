@@ -1,0 +1,82 @@
+{
+  "id": "B0217",
+  "title": "LIVE R3 incident: ETH/BTC pair auto-guard had wrong z-window + crypto close not chunked (both fixed, committed bf4d8a6)",
+  "status": "done",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "live-window",
+    "execution",
+    "incident",
+    "crypto",
+    "pair-trade",
+    "tooling"
+  ],
+  "created_at": "2026-06-24",
+  "updated_at": "2026-06-24",
+  "source": "Live R3 manual pair-trade session 2026-06-24 (operator + Claude)",
+  "why": "During live R3, after stopping the survival service to trade manually, an ETH/BTC dollar-neutral pair (long ETH 63 / short BTC 1.67) was opened. Two execution bugs surfaced in the new operator tooling: (1) pair_guard.py computed the H1 z-score on a 96-bar window while pair_monitor_ethbtc.py uses 168 bars -> different z; the guard read -2.64 while the monitor displayed deeper, so it did NOT fire at the -3 the operator was watching. (2) When realigned to 168 the guard fired at z=-3.21 but the single-order close left a naked leg: the venue fills crypto closes PARTIALLY (a 1.67-lot BTC close filled ~1.0) and rejected the rest (retcode 10006), leaving ETH long 5 + BTC short 1.67 until cleaned up by hand with a re-read/retry loop. Same bug class as B0211 equity-lock chunking.",
+  "value_rationale": "Execution-reliability fix for live capital tooling; prevents a stop leaving a naked directional leg. Low effort, medium value (only matters while trading crypto manually).",
+  "scope": [
+    "FIXED in commit bf4d8a6: pair_guard H1_WIN=96->168 to match the monitor; shared robust close_all_legs/close_position in pair_close.py that re-reads remaining volume, chunks by volume_max, retries partial fills + transient rejects (10006/10039); pair_guard imports it (single source of truth). Both scripts compile clean, guard imports OK, dry-run verified flat."
+  ],
+  "recommendation": "Tools now reliable for crypto. Before next autonomous use, get a live end-to-end test of the chunked close with an actual open pair (could not test while flat). Keep z-window in sync between monitor and any future guard.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0211",
+      "B0216",
+      "B0219"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-24",
+      "event": "created",
+      "reason": "Live R3 execution incident recorded per CLAUDE.md mandate (log live incidents at the moment). Pair experiment realized ~-3994 USD; account flat at 1,000,342 (+342 over 1M start), still #51 above the cut."
+    },
+    {
+      "date": "2026-06-24",
+      "event": "field_update",
+      "reason": "add_link related->B0219",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0211",
+          "B0216"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0211",
+          "B0216",
+          "B0219"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

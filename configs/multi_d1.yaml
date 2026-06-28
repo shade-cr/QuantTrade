@@ -1,0 +1,135 @@
+assets:
+- EURUSD
+- GBPUSD
+- USDJPY
+- XAGUSD
+- BTCUSD
+- ETHUSD
+- XAUUSD
+asset_overrides: {}
+date_range:
+  start: '2020-06-01'
+bars_per_year_by_class:
+  fx: 260
+  metal: 260
+  crypto: 365
+primary_screening:
+  enabled: true
+  hurst_threshold_trending: 0.52
+  hurst_threshold_mr: 0.48
+  force_both_primaries: []
+  force_all_primaries: true
+  hurst_failure_policy: train_all
+triple_barrier:
+  horizon: 40
+  tp_atr_mult: 3.0
+  sl_atr_mult: 1.0
+  atr_period: 14
+primary:
+  candidates:
+  - ema_cross
+  - momentum_zscore
+  - vix_regime_riskflow
+  ema_cross:
+    fast: 20
+    slow: 50
+    dead_zone_atr: 0.25
+  momentum_zscore:
+    lookback: 20
+    threshold: 0.2
+  cusum_filter:
+    threshold_atr: 2.0
+  bollinger_meanrev:
+    period: 20
+    k_stdev: 2.0
+  vix_regime_riskflow:
+    vix_lookback: 252
+    vix_low_pct: 0.25
+    vix_high_pct: 0.75
+    dxy_ema_fast: 5
+    dxy_ema_slow: 20
+  cointegration_spread:
+    pairs_config: configs/cointegration_pairs.yaml
+    zscore_lookback: 20
+    entry_threshold: 2.0
+    exit_threshold: 0.5
+    coint_pvalue_cutoff: 0.1
+features:
+  tier: 2
+  include_session_one_hot: false
+  include_cross_asset: true
+funding_features:
+  enabled: false
+walk_forward:
+  n_folds: 3
+  train_min_bars: 400
+  purge_bars: 40
+  embargo_pct: 0.01
+models:
+- xgb
+- catboost
+- rf
+hyperparam_search:
+  method: random
+  n_iter: 20
+  cv_splits: 3
+  cv_purge_bars: 40
+calibration:
+  method: sigmoid
+  calib_holdout_pct: 0.15
+  min_minority_for_isotonic: 50
+stacking:
+  baseline: trade_all_primary
+  min_models_beating_baseline: 2
+  min_folds_beating_baseline: 3
+  max_oof_corr: 0.7
+  min_trades_per_fold: 30
+  meta_learner: logistic_regression
+  meta_C: 1.0
+  meta_penalty: l2
+  meta_n_folds: 4
+metrics:
+  cost_per_trade_bps: 10
+  threshold_grid:
+  - 0.5
+  - 0.52
+  - 0.54
+  - 0.56
+  - 0.58
+  - 0.6
+  - 0.62
+  threshold_selection: inner_cv
+threshold_selection:
+  method: inner_cv
+  inner_splits: 3
+  min_trades_per_inner_fold: 20
+sessions:
+  enabled: false
+best_model:
+  min_trades_per_fold: 30
+  min_folds_with_trades: 2
+deployment:
+  hard_gates:
+    n_trades_min: 50
+    max_drawdown_pct_max: 0.2
+    psr_min: 0.85
+  dsr_tiers:
+    full: 0.95
+    half: 0.5
+    quarter: 0.2
+    paper_only: 0.05
+friction:
+  config_path: configs/friction.yaml
+sentiment:
+  enabled: false
+  cache_dir: cache/sentiment
+cot:
+  enabled: false
+  cache_dir: cache/cot
+output_dir: results/camino_d_d1_full
+random_seed: 42
+dry_run:
+  enabled_via_cli_flag: true
+  n_iter: 5
+  n_folds: 1
+  max_minutes_per_asset_warn: 60

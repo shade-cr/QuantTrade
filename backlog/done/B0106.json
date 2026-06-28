@@ -1,0 +1,66 @@
+{
+  "id": "B0106",
+  "title": "Survival live loop writes no periodic heartbeat log line (dashboard log panel appears empty on a healthy quiet service)",
+  "status": "done",
+  "effort": "S",
+  "value": "L",
+  "tags": [
+    "hackathon",
+    "execution",
+    "ops",
+    "monitoring",
+    "dashboard",
+    "cosmetic"
+  ],
+  "created_at": "2026-05-30",
+  "updated_at": "2026-05-30",
+  "source": "CEO observation 2026-05-30: dashboard log panel empty + logs/survival_service.log has only the startup banner. Diagnosed as by-design quiet logging (logs per daily cycle + alarms only; 60s risk ticks emit no line).",
+  "why": "The interleaved loop only logs per daily CYCLE (rebalance) and on alarms; the 60s fast-risk ticks append equity + snapshot but emit no log line. On a quiet weekend (no cycle, no alarm) the log stays at 1 line and the dashboard's log_tail (webapp/state_reader.py ~line 215) shows nothing — indistinguishable at a glance from a dead service.",
+  "value_rationale": "Low: purely observability ergonomics; the service is verifiably alive via heartbeat mtime + intraday equity marks. But a periodic 'alive' line removes the 'is it dead?' doubt.",
+  "scope": [
+    "Emit a throttled heartbeat log line every N minutes (e.g. 15m) from run_loop: '[hb] alive, equity=..., cursor=..., dd_latched=...'.",
+    "Throttle so it does not spam (one line per N min, not per 60s tick).",
+    "Ensure it does not interfere with the armed risk path (pure logging)."
+  ],
+  "recommendation": "Cheap addition in scripts/run_survival_live.py run_loop; ship alongside or after B0104 step 5.",
+  "out_of_scope": "Structured metrics/telemetry (separate concern).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-30",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(execution): B0104 step 5 â€” bounded equity curve (rotation + rollup)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "status_change",
+      "reason": "Fixed: added periodic [heartbeat] print in run_loop every 10 ticks (~10 min at 60s interval). Fires at tick=0 (startup confirmation) then every 10 ticks. Guarded by on_risk is None so it does not fire in test callbacks. 1110 tests pass.",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "fix(ops): B0106 heartbeat log + webapp equity/DD fixes",
+      "sha": "HEAD"
+    }
+  ]
+}

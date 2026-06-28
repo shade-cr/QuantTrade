@@ -1,0 +1,151 @@
+{
+  "id": "B0113",
+  "title": "Equity-inclusive risk-engine roadmap (deferred techniques, sequenced)",
+  "status": "proposed",
+  "effort": "L",
+  "value": "M",
+  "tags": [
+    "survival-book",
+    "equity",
+    "roadmap",
+    "deferred"
+  ],
+  "created_at": "2026-05-30",
+  "updated_at": "2026-05-30",
+  "source": "quant-phd-advisor re-review (2026-05-30) under the long-horizon + future-equity frame, verified against a reproduced full-history backtest (scripts/backtest_survival_book.py, 2000-01-03 -> 2026-05-29, 26.4y).",
+  "why": "Several techniques are 'theater' on today's 8-asset, equity-free, N=8 spot book but GRADUATE to genuinely valuable once equity/equity-index exposure is added (larger N, real cluster structure, the leverage-effect Sharpe channel). Captured here so they are not lost and are sequenced correctly. Sequence: (1) Harvey vol-targeting Sharpe channel activates FOR FREE on an equity sleeve (leverage effect gives vol-targeting a RETURN benefit it cannot earn on FX/metals/crypto); already implemented, just starts paying. (2) Factor/structured risk model (Barra-style / Fama-French-anchored) once a cross-section of equity exposures exists (a single index does not justify it). (3) Nonlinear Ledoit-Wolf shrinkage (2017) turns ON as N grows (p/n rises); at today's N=8 with a years-long window n>>p so linear shrinkage ~= sample matrix -- DEFERRED, not adopted now. (4) HRP/clustering as a DSR/CPCV-GATED CANDIDATE at N>=15-20 (replication evidence is split; HRP underperforms inverse-vol in the correlated-group case, so it must beat inverse-vol, not be adopted on faith). (5) Non-directional premia via equity-index futures (roll/carry/dividend futures) re-open the frontier that is structurally closed to a spot-only book -- same instrument-access gate as crypto perps (B0100).",
+  "value_rationale": "M: high future value but entirely gated on the equity-universe expansion and instrument access; nothing actionable until then.",
+  "scope": [
+    "Activate/verify Harvey Sharpe channel on the equity sleeve when added.",
+    "Factor risk model at moderate equity N.",
+    "Nonlinear Ledoit-Wolf shrinkage when N>=~15-20.",
+    "HRP/clustering as a DSR/CPCV-gated candidate vs inverse-vol (never faith-based).",
+    "Equity-index-futures non-directional premia (instrument-access gated)."
+  ],
+  "recommendation": "Do NOT start until equity is in the universe. The Harvey vol-targeting Sharpe channel is itself DSR/PBO-gated on the equity sleeve (NOT auto-credited as validated alpha). Keep DCC-GARCH out indefinitely. NOTE: retiring the hackathon-window tournament tilt and any change to the LIVE lottery sleeve's status must be its OWN tracked B-ID, not a clause here.",
+  "out_of_scope": "Any spot-only harvesting of premia that need futures/perps.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0111",
+      "B0100"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [
+    {
+      "path": "signals/risk_reviews/survival_book_B0108-B0113_review.txt",
+      "verdict": "PROCEED_WITH_CAVEAT",
+      "severity_counts": {},
+      "date": "2026-05-30"
+    }
+  ],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-30",
+      "event": "created",
+      "reason": "from quant re-review"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "add_link related->B0111",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0111"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "add_link related->B0100",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0111"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0111",
+          "B0100"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "risk-officer: Harvey DSR-gated; live-sleeve retirement needs its own B-ID",
+      "field": "recommendation",
+      "from": "Do NOT start until equity is in the universe. Keep DCC-GARCH out indefinitely (EWMA/B0111 dominates). Retired here: the hackathon-window time-aware/tournament tilt (no economic basis over months-to-years; the isolated lottery sleeve already covers positive-skew appetite).",
+      "to": "Do NOT start until equity is in the universe. The Harvey vol-targeting Sharpe channel is itself DSR/PBO-gated on the equity sleeve (NOT auto-credited as validated alpha). Keep DCC-GARCH out indefinitely. NOTE: retiring the hackathon-window tournament tilt and any change to the LIVE lottery sleeve's status must be its OWN tracked B-ID, not a clause here."
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "DA review PROCEED_WITH_CAVEAT",
+      "field": "da_reviews",
+      "from": [],
+      "to": [
+        {
+          "path": "signals/risk_reviews/survival_book_B0108-B0113_review.txt",
+          "verdict": "PROCEED_WITH_CAVEAT",
+          "severity_counts": {},
+          "date": "2026-05-30"
+        }
+      ]
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(survival): quant-reviewed improvement backlog + vol-estimate floor (B0114)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(survival): quant-reviewed improvement backlog + vol-estimate floor (B0114)",
+      "sha": "HEAD"
+    }
+  ]
+}

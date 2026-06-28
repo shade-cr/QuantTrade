@@ -1,0 +1,808 @@
+{
+  "id": "B0182",
+  "title": "Stage-1 numerator calibration: equity-ranked daily cuts make a flat survival book a slow elimination",
+  "status": "in_progress",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "strategy",
+    "decision",
+    "survival-book"
+  ],
+  "created_at": "2026-06-15",
+  "updated_at": "2026-06-26",
+  "source": "CEO observation 2026-06-15 on the official FAQ ('rankings based on account equity at the end of each round')",
+  "why": "CLAUDE.md frames Stage 1 as 'control the denominator (variance) to survive', which assumed survival = absolute don't-lose. But ranking is on ACCOUNT EQUITY at each round end -> survival is RELATIVE: you clear a cut only by out-equitying the bottom slice of the field at that timestamp. A near-flat survival book (expected ~0 drift over a 1-day window) ranks by how many competitors are below it, not by its own safety; if much of the field is net-up it gets cut. So Stage 1 cannot be flat -- it needs positive drift to clear Top200->150->100. The opposite error is also live: over-trading reintroduces the 1-day variance that gets you cut on a bad print. HOW MUCH numerator to run in Stage 1 is the open dial, and it is set by field size + blow-up rate (with 30:1 leverage a large fraction typically blows up -> bottom slice self-selects losers -> modest drift suffices; small/disciplined field -> steep cuts -> need aggression). Distinct from the finalist leg (Jun 24-26) which needs convexity to win the 1st-25th rank, not just survive.",
+  "value_rationale": "Field=520 (CEO 2026-06-15). R1 (520->200, top 38.5%, ~1 day) is the binding cut; R2/R3 are gentle among survivors. Flat book clears R1 only if the field is net-down-skewed (>=61.5% below breakeven, plausible via cost/spread/impact drag + leverage blow-ups, but uncertain). CRITICAL caveat: without positive expectancy, adding trades = symmetric variance that is as likely to SINK you below the R1 cut as lift you above -- variance is the tool for the final top-25 tail, not for clearing a ~median cut. So Stage-1 drift must come from EDGE (L2/OSR intraday book, gated Jun-18) or be accepted as a field-dependent gamble. Mis-sizing fails either way; frozen at launch.",
+  "scope": [
+    "QUANTIFY: survival book's expected equity drift + dispersion over 1-day and 5-day windows (from the live curve / backtest), to see whether it clears a cut on its own.",
+    "MODEL the cut as a relative-rank problem under assumed field size + blow-up-rate scenarios (e.g. field 250 vs 1000; blow-up 20% vs 60%); find the drift needed to stay above each cutoff.",
+    "Ground the optimal-risk question in tournament / goal-reaching theory (Browne 'reaching a goal / beating a benchmark', relative-performance risk-taking) via quant-phd-advisor before picking a dial.",
+    "CEO DECISION (reserved): the Stage-1 aggression level -- keep survival-book discipline, or turn on bounded return-generation (and which sleeve) to produce the drift needed to clear equity cuts.",
+    "Feed the answer into the frozen launch command (Stage 1 risk fraction) and the runbook; coordinate with the finalist-leg variance plan (barbell Stage 2)."
+  ],
+  "recommendation": "RESERVED to CEO. Do not pick a number unilaterally. First resolve field size (organizer question on B0158) and quantify the survival book's own drift; those two bound the calibration. Likely outcome: Stage 1 is NOT flat but a low-vol positive-drift book sized to clear the bottom slice with margin, with the heavier convex bet reserved for the finalist leg.",
+  "out_of_scope": "Re-building sleeve/sizing mechanics (exist); the finalist-leg variance design (barbell Stage 2).",
+  "links": {
+    "blocks": [],
+    "blocked_by": [
+      "B0202"
+    ],
+    "related": [
+      "B0150",
+      "B0151",
+      "B0158",
+      "B0192",
+      "B0204",
+      "B0214",
+      "B0216",
+      "B0218",
+      "B0219"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [
+      "B0183",
+      "B0197"
+    ],
+    "spawned_by": [
+      "B0158"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-15",
+      "event": "created",
+      "reason": "CEO observation: equity-ranked daily cuts mean a static/flat survival book is a slow elimination; Stage 1 needs calibrated positive drift. Field size is the key unknown."
+    },
+    {
+      "date": "2026-06-15",
+      "event": "field_update",
+      "reason": "Field size resolved to ~520; R1 identified as the binding cut; added variance-without-edge caveat.",
+      "field": "value_rationale",
+      "from": "Mis-calibrating Stage-1 risk fails either way: too flat -> eliminated by Jun 24 on relative equity; too hot -> eliminated by variance on a bad day. Gets the whole live week wrong; frozen at launch so it must be right up front.",
+      "to": "Field=520 (CEO 2026-06-15). R1 (520->200, top 38.5%, ~1 day) is the binding cut; R2/R3 are gentle among survivors. Flat book clears R1 only if the field is net-down-skewed (>=61.5% below breakeven, plausible via cost/spread/impact drag + leverage blow-ups, but uncertain). CRITICAL caveat: without positive expectancy, adding trades = symmetric variance that is as likely to SINK you below the R1 cut as lift you above -- variance is the tool for the final top-25 tail, not for clearing a ~median cut. So Stage-1 drift must come from EDGE (L2/OSR intraday book, gated Jun-18) or be accepted as a field-dependent gamble. Mis-sizing fails either way; frozen at launch."
+    },
+    {
+      "date": "2026-06-15",
+      "event": "field_update",
+      "reason": "ACTIONABLE: observe the Jun 15-21 PAPER-TRADING leaderboard to empirically estimate the field's equity distribution + blow-up rate BEFORE the freeze -- this resolves whether flat clears R1 on data instead of assumption, and calibrates the Stage-1 risk dial. Highest-value pre-freeze diagnostic."
+    },
+    {
+      "date": "2026-06-15",
+      "event": "analysis",
+      "reason": "THEORY GROUNDED 2026-06-15 (quant-phd-advisor, opus). Rank-tournament risk theory ENDORSES the barbell and refines the 'must trade' intuition with one decisive hinge = sign of mu_field (field's median drift after costs). Lit: Browne 1999 (goal-reaching = digital option; risk non-monotone in position), Dubins-Savage bold-vs-timid (in a SUBFAIR game, timid play is strictly dominated when chasing a target ABOVE you, but when ALREADY above the bar you should NOT play -- every bet lowers P(stay above)), Seel-Strack 2013 (negative drift induces excessive gambling; worst losses at moderately negative drift), Brown-Harlow-Starks 1996 (interim losers raise vol), Chen-Hughson-Stoughton (leaders LOCK IN by cutting risk). LdP corpus SILENT on within-tournament risk (only the tournament-DESIGN paper). KEY RESULT (C3): if mu_field<0 (costs+impact+blowups+forced gambling), a near-zero-drift flat book has mu~0 > mu_field -> it is a de-facto positive-RELATIVE-drift player and flat is the DOMINANT Stage-1 strategy, NOT a slow elimination. The CEO's 'we must trade' worry is correct ONLY if mu_field>=0. Drift quant confirms the survival book IS that mu~0 flat player (+0.6bps/day, flat line on the leaderboard). C1 confirmed: without edge, variance does NOT help a ~median cut (symmetric) but IS the only lever to the top-25 tail. RISK SCHEDULE (no edge): R1-R3 minimum variance/flat; finalist leg switch to BOLD (single late bounded isolated lottery-sleeve bet, hard-latched envelope so a loss cannot retro-drop you below the secured cut). Switch governed by RANK position, not calendar. With a validated edge (OSR/L2 Jun-18): run 1/4-1/2 Kelly through R1-R3, smaller tail bet. DECISIVE UNKNOWN flagged as costliest error: the sign of mu_field -- resolve via Jun-15 cost reality + paper-week leaderboard dispersion. Tail-bet leverage has no closed form (survivors' joint dist is endogenous) -> size by Monte-Carlo (B0183)."
+    },
+    {
+      "date": "2026-06-15",
+      "event": "field_update",
+      "reason": "add_link spawned->B0183",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-16",
+      "event": "decision_packet",
+      "reason": "One-page CEO decision packet synthesizing B0183 sim + B0186 calibration: recommend rung 0.05 (~5.9pct/day) crypto sleeve in finals (barbell), bold_during_cuts pre-armed as edge-fail contingency, +portfolio-kill 0.055; docs/submission/b0182-posture-decision-packet.md"
+    },
+    {
+      "date": "2026-06-16",
+      "event": "advisor_review",
+      "reason": "quant-phd-advisor (opus) brief 2026-06-16 (confidence 0.7): recalibrated field is FAIR (mu_field~=0), which FALSIFIES the memo premise that flat dominates Stage 1 (that required mu_field<0). With mu_field~=0 + no edge, flat = near-certain cut (P~=0.96); variance is the only lever to move an order-statistic prob (rank-tournament: C1 + Browne digital-option + Seel-Strack). RECOMMEND bold-during-cuts, with refinements vs the packets 0.05-finals: (size) lean ~0.06 risk_frac (~7%/day, the P(R3) knee; sim peaks 8-12%/day, falls at 15%); (trigger) RANK-conditional > calendar (escalate near/below the wall, cut when safely above) IF freeze allows; (sequencing) per-round reset => 3 independent convex draws, LARGEST rung in R1 (hardest wall top-38.5%), taper R2/R3, FLAT in finals, do NOT stack cut+finals variance (sim: 0.198->0.117). BINDING CAVEAT: posture FLIPS on sign of mu_field, readable live from 5-min peer logs (field-median return + attrition) ONLY if mid-round modification is allowed -> resolving freeze-scope (B0158) is the highest-leverage pre-freeze action."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "ceo_decision",
+      "reason": "CEO DECISION 2026-06-16: ADOPT bold-during-cuts as the Stage-2 posture (supersedes the original flat-cuts + bold-finals barbell, whose mu_field<0 premise the Jun-16 recalibration falsified). Defaults per advisor: rung ~0.06 (P(R3) knee), LARGEST rung in R1 (hardest wall, top-38.5%), taper R2/R3, FLAT in finals, do NOT stack cut+finals variance. RUNG/TRIGGER FINALIZATION GATED on B0158 freeze-scope: if mid-round modification is ALLOWED -> rank-conditional (flat R1 while reading mu_field from 5-min peer logs, then escalate by rank vs the cut line); if STRICT freeze -> pre-commit ~0.06 blind on the fair prior. Next PM action: drive B0158 to resolution."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "field_update_note",
+      "reason": "OSR/L2 gate FAILED (CEO NO-GO 2026-06-16) -> there is no return edge -> the bold-during-cuts posture is now the OPERATIVE path (not a contingency). Rung/trigger still gated on B0158 freeze-scope."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "ceo_decision",
+      "reason": "FINALIZED 2026-06-16 (freeze-scope = mid-round adjustment ALLOWED): adopt Branch A rank-conditional bold-during-cuts. POLICY: R1-R3 (TRANSPARENT, 5-min peer logs) -> start flat/minimal, continuously read mu_field (field-median per-period return + attrition/blow-up rate) and our rank vs the next cut line; if at/below the cut line as round-end nears -> escalate the crypto sleeve rung toward the knee (~0.06 risk_frac, ~7%/day) to buy clearing variance (Browne digital-option: more variance the further below target); if comfortably inside the line -> stay flat (protect DD-rank); if mu_field clearly NEGATIVE (field self-destructing) -> de-risk, flat out-survives. R2/R3 same logic, lower urgency, per-round reset = 3 independent convex draws, largest variance at the hardest wall (R1). FINALS (Jun24-26 BLINDED -> no peer logs, no live read) -> flat / do NOT stack a second variance leg. All rungs §14-safe. Requires: (a) operator can adjust --lottery-risk-frac/arming live (already supported), (b) a LIVE FIELD-MONITOR to estimate mu_field + our rank from the 5-min peer logs (NEW tooling)."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "analysis",
+      "reason": "B0191 rank-conditional SIM (scripts/run_rank_conditional_sim.py + tournament_sim.run.monte_carlo_rank_conditional; FIRST dynamic within-round model, 800 trials/regime): the finalized rank-conditional MANUAL policy UNDERPERFORMS a static pre-committed bold_during_cuts rung on the prize tail -- P(top25)=0.016 vs 0.198 (fair), P(reach top100)=0.205 vs 0.251; robust across fair/subfair/toxic. Still beats flat (P(top100) 0.205 vs 0.031). CAUSE (not a bug): escalate-only-when-behind + late + bounded optimizes cut-survival + DD-rank, NOT the right-tail return the top-25 needs -- going flat exactly when ahead kills the tail. Under the 70%-return composite the tail is the prize, so a STATIC always-bold cut-phase rung dominates on P(top25); rank-conditional value is risk-efficiency + correct de-risk when mu_field<0 (approx flat in toxic). DECISION-RELEVANT for CEO: reconsider B0182 toward a pre-committed ~0.05-0.06 static cut-phase rung (max prize prob) vs keep rank-conditional (adaptivity/safety, concedes tail). Runbook 6.3 carries a sim-caveat box. Evidence logged; decision reserved to CEO."
+    },
+    {
+      "date": "2026-06-16",
+      "event": "analysis",
+      "reason": "Rank-conditional sim run (scripts/run_rank_conditional_sim.py, 800 trials x 3 regimes; tests/test_rank_conditional_sim.py + test_rung_policy.py = 21 green). FINDING: the manual single-end-of-round rank-conditional policy BEATS flat (P(reach top100) 0.205 vs 0.031, fair) but UNDERPERFORMS static bold_during_cuts on the PRIZE tail by ~10x (P(top25) 0.016 vs 0.198 fair; 0.019 vs 0.205 subfair; 0.006 vs 0.195 toxic). MECHANISM: top-25 is an order-statistic extreme bought by SUSTAINED dispersion (~8%/day); the manual policy injects only ~1.7%/day avg (mean rung R1=0.017) because it stays flat when inside the top-100 cut and escalates only the last 30% of a round -> it clears cuts but rarely builds the tail. It chases the CUT line, not the PRIZE line. Writeup: docs/reviews/2026-06-16-rank-conditional-posture-sim.md. DECISION-RELEVANT for B0182 (CEO-reserved): the finalized rank-conditional posture is a cut-survival / lateral-prize optimizer, NOT a top-25 optimizer. If the top-25 tail is the goal: (A) pre-commit static bold_during_cuts (needs the continuous cut-phase vehicle, still an open item), or (B) re-tune the policy to chase the top-25 line (higher R1 default, escalate even when inside the top-100 cut but below the prize tail, more/earlier reads). Surfaced, not decided."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "field_update",
+      "reason": "add_link related->B0192",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-17",
+      "event": "advisor_recommendation",
+      "reason": "quant-phd-advisor (Opus) 2026-06-17, CEO-delegated. RECOMMENDS: ARM the sleeve. Rung = --lottery-risk-frac 0.05 with --portfolio-kill 0.055, run as SUSTAINED variance across R1-R3 (per-round reset): R1=0.05, R2/R3=0.04; FLAT in the blinded final EXCEPT one event-scoped PCE leg at 0.04 (Jun25). Do NOT stack sustained finals variance on cut-phase (0.198->0.117). Grounded: B0183/B0187 static_bold P(top25)=0.198 vs flat 0.00 vs rank-conditional 0.016 (B0191) vs finals-only 0.005; 0.05 sits just inside the ~8%/day sim knee; worst-case -5%, margin ~1.7% -> zero sec14 wipeout path. CONFIDENCE 0.75 on posture, DROPS to 0.5 on EXECUTION: depends on a CONTINUOUS/RE-ARM cut-phase vehicle (arm across all R1-R3 windows without an exogenous event-time) that is NOT confirmed built (B0191 caveat 2, runbook 6.3). IF that vehicle does not exist -> FALLBACK to finals-only PCE leg at 0.04 (sleeve as built). Also flags: b0182-posture-decision-packet.md ('0.05 in finals') is SUPERSEDED by the live model; do not ratify the old packet as-is. Decisive cheap check before freeze: dry-run run_survival_live.py with a non-event cut-phase arming config on a scratch state-root, confirm the sleeve re-arms across consecutive windows. PENDING CEO ratification."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "ceo_decision",
+      "reason": "CEO chose OPTION 1 (2026-06-17): BUILD the per-round re-arm vehicle so ONE frozen launch command sustains variance across R1-R3 autonomously (advisor's preferred posture; rung R1=0.05, R2/R3=0.04, --portfolio-kill 0.055; finals flat + one PCE leg 0.04). Confirmed at code level: current sleeve arms for a SINGLE --lottery-event-time only (execution/live_loop.py _maybe_arm_lottery; run_survival_live.py cross-field guard) -> sustained cuts is NOT buildable from one frozen command today. HARD GATE before the Jun-21 freeze: the build must pass (a) risk-officer PROCEED (no BLOCK), and (b) a dry-run re-arm test showing the sleeve re-arms across consecutive R1-R3 windows on a scratch state-root. IF the gate is not cleanly met -> AUTO-FALLBACK to finals-only PCE leg: --lottery-arm --lottery-event-time 2026-06-25T12:30:00+00:00 --lottery-risk-frac 0.04 --portfolio-kill 0.045. Build to be handed to the in-flight execution-engineer after its broker-reconcile + sec2.5 work lands (avoid parallel edits to live_loop.py/run_survival_live.py). B0182 stays OPEN until the build clears the gate and the rung is frozen."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "build_outcome",
+      "reason": "Per-round re-arm vehicle BUILT + verified (commit ff5f70d; 2435 tests pass, parity 3/3, dry-run re-arm GATE test_lottery_schedule_rearm_gate.py passes). --lottery-schedule TS=FRAC (repeatable) / --lottery-schedule-file; per-window sec14 guardrails + per-round latch reset; single-event path preserved. DECISIVE FINDING (eng honest verdict): a ROUND-BOUNDARY anchor (21:00Z = admin leaderboard cut, NOT a market event) produces NOISE-TRIGGERED, RANDOM-DIRECTION variance, not catalyst momentum -> likely NEGATIVE drift (spread/whipsaw/ATR stop-out bleed), NOT the mean-R~0 of the catalyst-calibrated PCE leg. The advisor's ~8%/day sustained-cuts sim assumed a catalyst; this may falsify the P(top25)~0.198 premise. Only genuine catalyst anchor = finals PCE (25-Jun 12:30Z). -> RE-RUNNING advisor (Opus) to reconcile whether B0183 0.198 assumed direction/positive-drift vs pure bounded variance, and risk-officer (Opus) GATE#1 over the full change set incl the latch-reset-flat-check-reads-ledger-not-broker caveat. Both earlier review attempts died on the Fable-5 outage (0 tokens). Rung NOT yet frozen; pending updated advisor verdict + CEO ratification."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "advisor_verdict_v2",
+      "reason": "quant-phd-advisor RE-RUN (Opus) 2026-06-17 reconciled the noise-anchor finding vs the sim. VERDICT: sustained-cuts SURVIVES. Proof the 0.198 assumed bounded VARIANCE not direction: run_tournament_sim.py:144 bold_cut mu_15=survival_flat.mu_15 (~-0.025 bps/day, costs netted) 'NO return edge, only variance elevated'; sleeve calibration measured on GENERAL crypto (255 weekly windows, fires 47-51% on ordinary weeks) -> noise-triggered random-direction bounded variance IS the modeled input. RECOMMENDATION: rung 0.04/round sustained across R1-R3, FLAT finals, --portfolio-kill 0.045, do NOT stack a finals leg (step down from 0.05 to stay on rising/median-preserving frontier; 0.04~4.7%/day). Finals-only PCE fallback P(top25)~0.099 vs sustained ~0.12-0.16. No deployable middle (no tier-1 macro catalyst lands inside R1-R3; FOMC past, PCE is in finals). GATE BEFORE FREEZE: run a no-catalyst 21:00Z control backtest (lottery_sleeve_sanity.py on arbitrary non-event 21:00Z BTC/ETH M15 timestamps); confirm meanR within ~0.1R of all-days -0.04 and worst-case inside -4%, else drop to finals-only PCE. Flagged contingency (iii): IF freeze is non-strict, rank-conditional engine (tournament_sim/run.py:239) MAY dominate -- but B0191/top25_blind_final found rank-conditional UNDERPERFORMS for the top-25 tail (0.016 vs 0.198); do NOT override static on this without re-test."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "risk_officer_gate1",
+      "reason": "risk-officer (Opus) 2026-06-17 GATE#1 = PROCEED_WITH_CAVEAT (not BLOCK). sec14 verified structurally unreachable: margin level ~4500% even on a 50% crypto crash at the max rung; daily kill (5.5%) + envelope latch (2.5% of arm-equity) fire first. Per-window envelope sizing, coherence guard (rc=2 on over-kill window), restart-safety, idempotency all green; 2435+ tests incl re-arm gate + 3/3 parity. THREE MUST-FIX-BEFORE-ARMED: (1) CRITICAL-for-goal: volume_max=100 lots in symbol_specs SILENTLY clamps sleeve crypto exposure (SOL->~15%, ETH->~36% of intended R1 envelope) with NO warn; PaperBroker enforces no cap -> guts the Stage-2 variance + breaks paper/live parity on the sleeve's own assets. Fix: loud clamp warn + launch-day symbol_info parity assert (live vmax may be higher) + decide if sleeve needs >100-lot capacity across BTC/ETH/SOL or accept+restate the true tail. (2) per-round latch reset reads sleeve LEDGER not broker truth -> harden to broker-truth flatness check before clearing latch (or runbook operator step on partial-fill ALARM; weekend D1 self-heal can lag). (3) promote launch-day symbol_info parity from checklist line to ENFORCED gate (extend read-only smoke to assert parity). Deployed-book-at-8 + sleeve-crypto-at-3(BTC/ETH/SOL) posture confirmed correct (no unwarmed symbol sized; XRP/BAR never entered). -> dispatch execution-engineer for the 3 must-fixes after the 21:00Z control test lands."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "control_test_result",
+      "reason": "No-catalyst 21:00Z control backtest (Opus) 2026-06-17: VERDICT FAIL on the conjunctive gate, but ONLY on the worst-case bound. 893 non-event 21:00Z anchors, 1039 entries. meanR=+0.0015 (PASS - bleed premise HOLDS; 21:00Z flat/better than other hours, just quieter fire% 38.8%); right tail intact (maxR +19R). Worst single-round envelope DD = -4.39% (FAIL vs -4.0% nominal): one round 2025-06-29 all 3 crypto same-direction + ETH GAPPED its stop to -2.29R (designed gap-aware fill, NOT a bug; calibration's '-1R cap' over 255 weekly windows never surfaced it; 16/1039 gap-through losers, SOL=10/ETH=5/BTC=1 - thin-spread ordering). Breach modest (~10% overshoot) on ONE round, fully contained by a 0.045 kill (risk_frac+0.005), far from sec14 (margin ~4500%); M15 replay conservative vs live 60s mgmt. Dropping SOL does NOT fix (BTC+ETH worst -4.28%, fewer assets raises per-leg weight). A per-asset -1R clamp would only fix SIM accounting not the REAL live gap -> not a valid fix. -> rung decision is a CEO risk-appetite call: accept sustained-cuts 0.04/0.045 eyes-open (P~0.12-0.16) vs honor pre-registered gate -> finals-only PCE 0.04/0.045 (P~0.099) vs lower rung 0.035 (tighten worst-case ~-3.8%). Control script: scripts/lottery_2100z_control.py (committed 6c4854f, bundled by a concurrent worker's commit). 3 risk-officer must-fixes still required before arming regardless of rung."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "advisor_final_ruling",
+      "reason": "quant-phd-advisor FINAL BINDING ruling (Opus, CEO-delegated 'PhD advisor decides') 2026-06-17: OPTION A SUSTAINED-CUTS. Frozen rung = --lottery-risk-frac 0.04 --envelope-dd-frac 0.5 --portfolio-kill 0.045, sleeve armed each round R1-R3 on the 21:00Z anchor (2026-06-21/22/23 T21:00Z = 0.04 each) across BTC/ETH/SOL, FLAT finals (NO separate PCE leg - do not stack; dispersion accrues through R1-R3 and carries into the blinded final). Discipline rationale (non-motivated): the gate's LOAD-BEARING arm (mean-bleed) PASSED clean (+0.0015R) -> the test found no 21:00Z bleed hole; the -4.0% worst-case was a SECONDARY bound coupled to the 0.045 kill in the same breath, so -4.39% < 4.5% kill is inside the pre-committed envelope, off the only irreversible red-line (sec14 ~4500% margin). Would have dropped to B (finals-only) IF the mean arm tripped (it did not); would drop to C (0.035) only if live gap risk shown materially worse than the conservative M15 replay. P(top25)~0.12-0.16 vs 0.099 finals-only. REMAINING before freeze: 3 risk-officer must-fixes (in progress) + consolidated risk re-check + CEO final go."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "risk_officer_gate1_final",
+      "reason": "risk-officer (Opus) GATE#1 FINAL re-check of commit 4358e35 = PROCEED_WITH_CAVEAT, must_fix_before_deploy=[] (no pre-freeze blockers). All 3 objections verified CLOSED in code: loud vmax clamp + paper/live parity; broker-truth latch reset (fail-closed); enforced launch-day spec-parity smoke (exit 3). 57 targeted tests green, full suite exit 0, parity green. REMAINING = launch-day OPERATOR gates only: (a) run mt5_readonly_smoke.py at the trade_allowed flip, require GREEN spec-parity before arming; (b) if RED on vmax/step divergence, re-probe + refresh results/mt5_symbols.csv, re-run green, then arm; (c) EXPECT the SOL vmax-clamp [ALARM] on the 0.04/3-asset rung (SOL open ~111 lots > vmax 100 -> throttled to ~$74.9k; exposure only shrinks, never grows) as NORMAL. FINALS RESOLVED = FLAT (no PCE leg): sim shows sustained-cuts alone P(top25)=0.198 vs stacked cuts+PCE=0.117 -> do not stack; runbook 6.3 PCE-finals leg is superseded (belonged to the old rank-conditional plan). Frozen rung confirmed deployment-safe; pending CEO freeze sign-off + dress rehearsal."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "ceo_decision",
+      "reason": "CEO 2026-06-17: (1) FINAL-MARK = HOLD TO ORG LIQUIDATION (Jun 26 22:00 BST) -> DROP --flatten-at from the frozen command; no self-flatten, take the organizer's closing tick. Frozen command is now: --broker mt5 --no-dry-run --loop --risk-interval 60 --starting-equity 1000000 --lottery-arm --lottery-schedule 2026-06-21T21:00:00+00:00=0.04 --lottery-schedule 2026-06-22T21:00:00+00:00=0.04 --lottery-schedule 2026-06-23T21:00:00+00:00=0.04 --lottery-envelope-dd-frac 0.5 --portfolio-kill 0.045 --lottery-assets BTCUSD,ETHUSD,SOLUSD (book UNIVERSE=15 in code). (2) THIN-SYMBOL CAPS (0.00 structural lock vs keep auto-participate, incl BARUSD) = DELEGATED to quant-phd-advisor."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "advisor_caps_ruling",
+      "reason": "quant-phd-advisor (Opus, CEO-delegated) 2026-06-17, conf 0.9: SET ALL 7 THIN-SYMBOL CAPS TO 0.00 (AUD/CAD/CHF/EURCHF/EURGBP/XRP/BAR) -> '8 effectively traded' becomes a STRUCTURAL guarantee, not an empirical ~10x data margin. Rationale: in a frozen autonomous run you remove an uncontrollable tail rather than insure against it; admission is a data threshold (>=120 bars) with NO second gate, so a mid-contest broker backfill could silently fire a thin symbol on ~125 noisy bars (MLfAM sec2 / DeMiguel-Garlappi-Uppal: short-sample cov is ill-conditioned, inverse-vol amplifies the mis-estimate); auto-admission upside for a rank objective = nil, downside (illiquid name trading unsupervised -> sec13/sec14) = real+terminal. BARUSD ALSO gets PERMANENT cov-exclusion (never enters the matrix even with bars). Validation: unit test asserting weight==0 for a cap=0.0 symbol with >120 synthetic bars. -> final engineer pass dispatched (caps + BARUSD cov-exclude + 3 tests)."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "final_hardening_done",
+      "reason": "Final hardening pass committed 50ce7f7 (2026-06-17): all 7 thin-symbol caps -> 0.00 (structural zero-weight lock, not data-threshold); BARUSD PERMANENT covariance-exclusion via module-level COV_PERMANENT_EXCLUDE (barred from the cov 'present' set regardless of bar count; cannot be disabled by tuning). 3 new tests in test_survival_thin_symbol_hardening.py: (a) cap-clip lock (0.00 cap forces weight==0 even on a 400-bar admitted synthetic), (b) deployed-15 live-vs-backtest parity replay (closes risk-officer obj#2), (c) BARUSD-never-in-cov + ragged-tail (closes obj#4). Full suite 2696 passed; deployed-15 dry-run: deep-8 sized normally (gross 0.429x, crypto var-share 24.6%), all 7 thin at +0.0000, no BARUSD order. Runbook 6.3 updated by PM to the frozen static posture. -> final consolidated risk-officer sign-off dispatched; then dress rehearsal + CEO freeze."
+    },
+    {
+      "date": "2026-06-17",
+      "event": "final_risk_signoff",
+      "reason": "FINAL consolidated risk-officer sign-off (Opus) 2026-06-17 on the complete frozen change set (78cce0c, ff5f70d, 4358e35, e2fd501, 50ce7f7) = PROCEED_WITH_CAVEAT, NO BLOCK. 50ce7f7 delta confirmed SOUND (ran the proofs: 400-bar admissible AUDUSD -> weight 0; BARUSD barred from cov even with deep history; deep-8 unaffected; prior obj #2/#4 now test-covered alongside the existing 8-asset parity tests). Frozen command arms cleanly, trades the 8 incumbents (gross 0.429x, crypto var 24.6%), all 7 thin at +0.0000; sec14 envelope unreachable (2%/round sleeve bleed contained by the 0.045 kill). NO pre-freeze code blockers. 3 LAUNCH-DAY operator gates (now in runbook sec7): (1) COLD-START the armed state root -- do NOT inherit the stale $100k paper risk_state (sod 98458.28/Jun-12, envelope 0.08, hand-edited hwm); kill re-anchors safely but it's dirty -> re-init OR verify first-cycle sod/hwm~1M, dd_latched=false, sleeve disarmed-until-window; (2) spec-parity smoke GREEN at the trade_allowed flip (SOL vmax ALARM expected); (3) sec14 re-verify vs real margin/stop-out specs (B0195) when they land. LOW: _held_book_breach guard doesn't apply COV_PERMANENT_EXCLUDE (harmless, BARUSD held weight=0; optional post-freeze cleanup). Build COMPLETE + signed off; remaining = dress rehearsal + CEO freeze."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "rehearsal_critical_blocker",
+      "reason": "DRESS REHEARSAL 2026-06-18 = PASS-WITH-NOTES, but found a CRITICAL FREEZE BLOCKER: the live --broker mt5 survival book sizes from broker.get_history = MT5 terminal D1 bars; the contest server serves only ~4-5 D1 bars for ALL 15 symbols (incl incumbents EURUSD etc - fresh contest server, shallow history), vs MIN_WARMUP_BARS=130/cov_window=120 -> ALL weights zero -> survival book sits FLAT the entire contest (rehearsal dry-run: gross 0.000, all flat). Confirmed in code: mt5_broker.get_history uses copy_rates_range (terminal) only; run_survival_live injects ONLY an M15 lottery_feed for the sleeve, NOTHING seeds the book's D1 history; --data-dir feeds the PAPER broker only. IMPACT: Stage-1 survival book is non-functional live (only the sleeve would fire in the cuts) -> barbell foundation broken. FIX dispatched: archive-seed the book's D1 history (data/D1 deep history for the 8 incumbents + append live MT5 closed bars, causality-preserving), validate the 8 size on the mt5 path, then risk-review + re-rehearse. OTHER rehearsal notes (non-blocking): trade_allowed=True ALREADY (org flipped early; contest account trade_mode=2, virtual money - no real-money risk); spec-parity GREEN (vmax still 100, no CSV refresh needed); watchdog SERVICE_DOWN alert-to-human latency measured 93s (tighten with watchdog --interval 30); runbook sec7 'DEMO=True' should read 'contest account trade_mode=2'. FREEZE now gated on the archive-seed fix + re-rehearse."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "seed_fix_done",
+      "reason": "Archive-seed fix COMPLETE (uncommitted, awaiting risk review): new execution/seeded_history.py (SeededHistoryProvider + SeamGapError), opt-in --seed-d1-history / --seed-archive-dir data/D1 / --seed-max-gap-days (default 14), wired into LiveLoop via history_provider kwarg for the mt5 BOOK path only (sleeve M15 feed untouched; paper path unchanged). Live mt5 dry-run NOW SIZES the 8 incumbents: gross 0.431x (== paper 0.429x), eff bets 3.04, crypto var 24.6%, all 7 thin +0.0000. Full suite 2706 passed, parity green. Causality preserved (decision bar = latest CLOSED live bar 2026-06-17; archive strictly older; live wins on overlap; no look-ahead). Seam returns per incumbent: EUR +0.31/GBP +0.24/JPY -0.29/XAU +1.19/BTC +3.72/ETH +2.77/SOL +5.25(flag)/XAG +5.60(flag) - single-bar jumps over 120-bar window, minor (aggregate gross unchanged). CONSEQUENCE: the FROZEN LAUNCH COMMAND now ADDS '--seed-d1-history --seed-archive-dir data/D1'. -> risk-officer review of the live-data-path change dispatched; then update runbook 6.3/sec7 frozen command + freeze."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "seed_fix_risk_signoff",
+      "reason": "risk-officer (Opus) review of the seeded-history live-data-path fix = PROCEED_WITH_CAVEAT, no deploy blockers. Causality PASS (live tail closed-bars-only; archive strictly older; live wins overlap; realized_vol shift(1) means the seam return is never the decision-bar outcome; no leak). Parity green. Seam distortion quantified <6% vol, DE-RISKING direction (XAG +5.6% seam -> -6% weight); aggregate gross 0.431x==paper 0.429x. 2-day crypto gap benign. Watchdog persists --seed flags across restart (launch_cmd.json). TWO medium items: (1) FIX-BEFORE-FREEZE: _build_returns has no per-asset guard -> a SeamGapError on one asset is cycle-fatal (watchdog crash-loops same flags); add try/except -> zero-weight the offending asset (kill-switch unaffected). DISPATCHED. (2) LAUNCH-DAY: deep archives frozen Jun-10; seam gap grows ~5-6d (launch) -> ~11d (Jun 26), under the 14d default but thin -> SET --seed-max-gap-days 21 in the frozen command (can't refresh the deep archive; contest server too shallow) + dry-run-confirm gap_days at launch + eyeball SOL/XAG seam vs external close + watch daily seam banner. FROZEN COMMAND now: + --seed-d1-history --seed-archive-dir data/D1 --seed-max-gap-days 21."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "build_complete",
+      "reason": "BUILD COMPLETE 2026-06-18. Seeded-history fix + per-asset seam guard committed a5962df (full suite 2707 passed, parity green; one-asset seam error proven bit-identical to an absent symbol -> degrades to one-asset-flat, never crashes the book). Runbook 6.3 frozen command + 7 launch checklist updated with the seed flags. FINAL FROZEN COMMAND: run_survival_live.py --broker mt5 --no-dry-run --loop --risk-interval 60 --starting-equity 1000000 --seed-d1-history --seed-archive-dir data/D1 --seed-max-gap-days 21 --lottery-arm --lottery-schedule 2026-06-21T21:00:00+00:00=0.04 --lottery-schedule 2026-06-22T21:00:00+00:00=0.04 --lottery-schedule 2026-06-23T21:00:00+00:00=0.04 --lottery-envelope-dd-frac 0.5 --portfolio-kill 0.045 --lottery-assets BTCUSD,ETHUSD,SOLUSD. Five risk-officer PROCEED verdicts total (sleeve, book-15, must-fixes, final consolidated, seeded-history). REMAINING = CEO freeze sign-off (write cmd into survival_run.bat) + the 7 launch-day checklist (cold-start state root; spec-parity smoke green; seeded gap_days<21 + 8-incumbents-size dry-run; SOL/XAG seam eyeball; sec14 re-verify B0195; watchdog --interval 30; re-confirm trade_allowed)."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "ceo_decision",
+      "reason": "CEO RATIFIED 2026-06-18 (Stage-2 instrument change): adopt the sec14-safe STATIC LONG-CRYPTO-BY-SIZING barbell under the ADAPTIVE cut-depth-conditional lambda-policy (advisor final verdict, B0196). SUPERSEDES the 2026-06-17 frozen capped-momentum-sleeve sub-decisions (the --lottery-schedule TS=0.04 sleeve): that sleeve is near-inert (P(top25)~0); the static-long-crypto-by-sizing instrument is the one that reaches the tail (sim P(top25)~0.10, P(sec14)=0 vs the worst real 2023-2026 crypto move). Mid-round modification is ALLOWED (own API, no frozen version) so lambda adapts live: R1 launch lambda=1.5; R2/R3 map on (cut-depth d, our rank vs cut line, field dispersion); pre-commit lambda_final before the BLIND final wall, NEVER flat; ceiling lambda=2.4. The frozen SURVIVAL BOOK stays as the Stage-1 base (seeded-history + thin caps + kill-switch unchanged). REMAINING before live (now on the critical path): (1) the sec14-safe ISOLATED long-crypto instrument + own hard envelope in the execution layer, re-verified to the B0150 74-test standard; (2) pre-register the R1 d-thresholds in the runbook; (3) launch-day re-derive the sec14 envelope vs the real margin/stop-out spec (B0195); (4) a FRESH risk-officer gate on the new instrument (it replaces the flat book with a ~2x long-crypto bet in cut rounds) + re-rehearsal. Deployment mechanism (automated controller vs operator-driven via own API) to be confirmed before the build is scoped."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "status_change",
+      "reason": "CEO ratified the adaptive static-long-crypto instrument; build of the instrument + pre-deploy gates now in flight.",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link spawned->B0197",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-19",
+      "event": "build_and_risk_gate",
+      "reason": "Stage-2 instrument BUILT + risk-gated 2026-06-19 (B0197). execution-engineer TDD: pipeline/stage2_lambda.py + stage2 wiring in live_loop/state/paper_broker/run_survival_live, 60 new tests, full suite 2773 green, live/backtest parity green, sec14 math exact-parity to the sim. risk-officer (Opus) = PROCEED_WITH_CAVEAT, NO pre-arm code blockers; one HIGH-SEV closed by a launch-day operator setting (deploy lambda<=2.0 OR --stage2-worst-case-move -0.45; the -40%/2.4 corner cushion is ~1bp vs a simultaneous book loss). REMAINING before the frozen launch command is amended: banner/regression hardening pass (in flight); launch-day gates [lambda<=2.0-or-worst-case-0.45; B0195 real-margin re-derive; re-rehearsal]; then swap --lottery-schedule TS=0.04 -> --stage2-lambda 1.5 for R1. Code committed separately; co-mingled doc edits (runbook 6.4) left uncommitted."
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link blocked_by->B0202",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0204",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-22",
+      "event": "ceo_decision",
+      "reason": "FLAT-CRYPTO posture adopted 2026-06-22 (quant-phd-advisor ruling, CEO-approved). SUPERSEDES the Jun-21 launch lambda=1.5 for R1. Rationale: by ~01:48 BST the live board flipped to reward Return+Sharpe on the crypto rally and we reached an IN-THE-MONEY rank (#2/#10, ~190 above the R1 cut; equity ~+2%, margin level ~8633%, no S14 path). From an in-the-money rank P(top-25) is FLAT-to-DECREASING in crypto lambda (Browne digital-option / Chen-Hughson-Stoughton 'leaders lock in by cutting risk'): added crypto variance is symmetric and lowers P(stay above the cut), so the lambda bet is NOT placed during the transparent R1 while comfortably ahead. OPERATIVE CHANGE: live service switched from survival_run.bat (--stage2-lambda 1.5 --lottery-arm BTC/ETH/SOL) to survival_run_flat.bat (--crypto-var-cap 0.0, NO stage2/lottery flags); persisted launch_cmd.json confirms crypto exposure = ZERO and the watchdog auto-restart now comes up flat-crypto too. The barbell is NOT cancelled, only DEFERRED: the lambda ramp is to be pre-committed BEFORE the blinded-final wall (Jun 24, since variance cannot be injected once blinded), NOT during R1. This reconciles the Jun-22 flat ruling with the barbell thesis. NOTE: this decision was made live in code/ops on Jun-22 but was NOT recorded in B0182 until now (the gap that motivated the CLAUDE.md decision-logging reminder)."
+    },
+    {
+      "date": "2026-06-22",
+      "event": "field_update",
+      "reason": "add_link related->B0214",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204",
+          "B0214"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-22",
+      "event": "ceo_decision",
+      "reason": "CEO set a NEW OBJECTIVE on 2026-06-22 (~live R1, we are #11 +$19.7k): TARGET = TOP-5 in the FINAL money standings (blind final Jun 24-26). This REVERSES the Jun-22 flat-crypto posture (live launch_cmd has crypto-var-cap 0.0 -> variance engine OFF). Top-5 under the 0.70-return composite is a tail outcome; survival book alone lands ~median (B0183 sim). Pursuing it re-activates and SCALES UP the B0182 §14-safe long-crypto-by-sizing barbell to target top-5 (not top-25), with the §14 red-line (forced-liquidation=instant elimination) as the hard bound. Build dispersion through the transparent cuts + pre-commit/sustain into the blind final. NEXT: quant-phd-advisor sizes λ/envelope for max P(top-5) with §14 guarantee; risk-officer verifies no forced-liquidation path; then CEO confirms before arming capital.",
+      "objective": "top5_final_standings",
+      "reverses": "jun22_flat_crypto",
+      "live_rank": 11,
+      "live_pnl_usd": 19725
+    },
+    {
+      "date": "2026-06-22",
+      "event": "analysis",
+      "reason": "LIVE FIELD CORRECTION 2026-06-22 (CEO): the B0183 sim P(top25)~=0.10 and the quant-phd-advisor P(top-5)~=3-8% were both calibrated to a ~400-520 participant field. OBSERVED LIVE: only ~109 ACTIVE players and only ~46 with positive (green) P&L. This collapses the tail: top-5 = pass ~6 players (several FLAT/stationary at +54k..+70k); top-100 cut is now near-trivial (we are #11 of ~109). Back-of-envelope: at the §14-safe ceiling lambda=2.0 (gross crypto ~=$2.04M, risk-officer verified survives -48.3% vs -40.69% worst), a mere +1-2% crypto move ~= +20-41k => crosses the current top-5 bar (~+45k). Required move drops from ~+2-3 sigma (520-field, +100k needed) to ~<0.5 sigma. P(top-5) materially HIGHER than sim, AND the risk-officer #1 objection (snapshot cut-elimination) is WEAKENED by the thin field. CAVEATS: (a) confirm what \"active\" counts toward the cut/final ranked set; (b) leaders can re-arm + new green entrants; (c) the FINAL Jun-26 bar is what pays, not now; (d) lambda<=2.0 + §14 discipline + rehearsed stop/relaunch still bind (B0195 margin_div=30 unconfirmed). NEXT: re-run B0183 with n=109/46-green/flat-leaders + crypto 48h dist for a real P(top-5).",
+      "field_active": 109,
+      "field_green": 46,
+      "live_rank": 11,
+      "sim_field_assumed": "400-520",
+      "recalc": "top5_more_reachable"
+    },
+    {
+      "date": "2026-06-22",
+      "event": "analysis",
+      "reason": "RE-RAN the sim with the LIVE field (focused Monte-Carlo, real BTC/ETH/SOL D1 returns + observed board P&L, frozen flat leaders, 100k trials). Crypto last-365d drift = -0.15%/day (subfair); 4d basket p10/p50/p90 = -7.7%/-0.1%/+6.7%, P(up)=50%. Top-5 frozen bar = +$36,318; we are at +$19,725. RESULTS P(top-5) | P(top-25) | E[final P&L]: lambda=0 (flat) 0%% | 100%% | +$19.7k (locked ~#7, guaranteed top-25, NEVER top-5). lambda=1.0 35%% | 62%% | +$12.8k. lambda=1.5 39%% | 56%% | +$9.7k. lambda=2.0 43%% | 55%% | +$6.2k (p10 -$143k, p90 +$150k). P(elim)=0%% at all lambda (§14 boundary -48.3% never reached in 4d). DECISIVE VARIABLE = phi (do leaders re-arm crypto): leaders-flat phi=0 -> 43%%; phi=0.5 -> 16%%; phi=1.0 -> 0%%. Our top-5 edge EXISTS ONLY because leaders are flat/frozen; if they ride the same crypto beta we cannot pass them. GAME-THEORY MITIGANT: the leaders AHEAD of us (+54k..+70k) are WINNING in a BLIND final -> incentivized to stay flat and lock their rank -> phi for the top is plausibly LOW -> ~43%% is defensible for the top-5 bar. TRADE: arming sacrifices a near-certain top-25 (100%%->55%% at lambda=2.0) and ~$13k of E[P&L] (negative crypto drift) for a ~35-43%% shot at top-5. Convex, return-rank dominant; composite haircut (our DD/Sharpe worse than flat leaders) shaves a few points. CEO RUNG DECISION: lambda=1.0-1.5 protects top-25 (~35-39%% top-5); lambda=2.0 maxes top-5 (43%%) but risks top-25; final-window-only (2d) lambda=2.0 = 38%%/59%% (less carry, supports back-load). Sim: scratchpad/sim_top5_livefield.py.",
+      "P_top5_lambda2_flat": 0.43,
+      "P_top25_lambda2": 0.55,
+      "P_top5_flat_book": 0.0,
+      "decisive_var": "phi_leaders_rearm",
+      "crypto_drift_365d_daily": -0.0015
+    },
+    {
+      "date": "2026-06-22",
+      "event": "ceo_decision",
+      "reason": "CEO 2026-06-22 (~17:30 BST, we are #11 +$19.7k): HOLD the crypto lambda-bet (do NOT arm before the R1 cut). Keep the survival book running as-is (low-vol FX/metals longs, 0.49x; do NOT flatten — flattening buys no cut-safety and degrades Sharpe/DD composite components). OBSERVE tonight R1 cut (22:00 BST), THEN decide the rung (lambda 1.0/1.5/2.0 and arm-now-vs-final). Rationale: the sim two softest inputs are exactly what the cut reveals -> (1) actual qualifier count / cut line (TBC) = true field size; (2) whether leaders stay flat or re-arm = phi, the DECISIVE variable (phi=0 -> P(top5)=43%; phi=1 -> 0%); (3) our post-cut cushion for R2/R3; (4) post-cut active/green counts = recalibrate the top-5 bar. NEXT: reconvene post-cut to size the rung with these observations. No capital action tonight.",
+      "action": "hold_arming_observe_R1_cut",
+      "keep_survival_book": true,
+      "cut_ts": "2026-06-22T22:00 BST",
+      "decisive_var_to_observe": "phi_leaders_rearm"
+    },
+    {
+      "date": "2026-06-22",
+      "event": "advisor_recommendation",
+      "reason": "quant-phd-advisor (Jun-22 R2, rank #22, +\\.7k banked, flat-crypto): WAIT, do NOT arm crypto variance now (conf 0.8). Three independent results align on timing=late: (1) crypto drift -0.15%/day subfair -> Dubins-Savage bet late/once/large; (2) Browne digital-option, variance rises toward the deadline and the tail deadline is the final close (Jun26), not R2-end (we are above the CUT bar, only below the PRIZE bar); (3) phi/game-theory -- our ~43%% top-5 shot exists ONLY because leaders are frozen flat (phi~0); arming in the transparent R1-R3 reveals the bet ~2 days, leaders mirror, phi->1 collapses top-5 to 0%%; the blind final shields the bet. Sims reconcile: Jun-22 live-field re-run governs (conditions on in-the-money state); flat GUARANTEES top-25(~#7) but GUARANTEES NOT top-5(0%%); reaching the top-5 tail still needs variance, hence wait-to-arm not never-arm. WALL DECISION Jun-24 22:00: gate on phi -- phi~0 -> arm lambda=2.0 (P(top5)~43%%); phi mixed -> 1.0-1.5; phi~1 -> stay flat lock top-25; hard ceiling lambda=2.099. Early-arm ONLY if crypto breaks out in R2/R3 AND active peers arm AND the top-5 bar runs away (observable). whether-to-arm-at-all remains CEO values call (flat=~certain top-25 + clean Sharpe/Arch narrative vs arm=43%% top-5 but 55%% top-25 + ugly Sharpe + -\\ E[PnL]). Advisor agentId ad73fcc528723356e kept alive for the wall re-run."
+    },
+    {
+      "date": "2026-06-22",
+      "event": "advisor_recommendation",
+      "reason": "quant-phd-advisor follow-up (Jun-22) re: organizer clarification that Sharpe+MaxDD reset per round and PnL/positions are cumulative -- advice to trade actively each day. RULING (conf 0.85): (1) crypto-arm timing UNCHANGED=WAIT, reinforced -- high-variance crypto DEPRESSES per-round Sharpe; clarification is Sharpe/DD-axis news, orthogonal to the 70pct-Return-tail crypto bet; gate still phi at the Jun-24 wall. (2) DO NOT increase survival-book activity/target-vol: Sharpe is SCALE-INVARIANT (mean/std), so sizing up buys ZERO SharpeRank, worsens the 15pct DD rank, adds cost drag lowering BOTH Sharpe and the 70pct cumulative Return, and risks the banked +19.7k floor + S14. Only real edge (none) or clearing the 8-obs floor (already done) moves Sharpe. (3) Winning the 10pct Sharpe is CONSOLATION not overtake: flat leaders lead ~10 composite pts on 85pct of the score (70 Return + 15 DD); the ~5pt free Sharpe we capture by holding the book cannot close that -- only the convex crypto tail bet in the blind final can. (4) Organizer advice is a MILD TRAP for an edgeless book: heed only the narrow kernel (hold positions, never go fully flat); discard trade-more (turnover-cost bleed). (5) CONCRETE: keep survival book EXACTLY AS-IS, no vol/turnover change, no new risk gate. SINGLE actionable item: verify the book never silently goes fully flat for a whole round (warmup/seam-zeroing failure mode) -- add a daily assertion gross>0 and >8 fifteen-min obs per round. Verified live now: positions.json gross>0 (EURUSD/GBPUSD/XAU/XAG), launcher uses --seed-d1-history. Advisor agentId a8ebbeb295a14598d."
+    },
+    {
+      "date": "2026-06-22",
+      "event": "ceo_decision",
+      "reason": "CEO (Jun-22 R2): override advisor WAIT -- prepare ON-COMMAND scripts to (a) ARM Stage-2 long-crypto at lambda=1.5 and (b) SELL all crypto, to be executed ONLY on explicit CEO command (not now, not autonomously). Immediate auto-deploy DEFERRED. Risk-officer gate (agentId a3ea34abcb5af7380) verdict on the lambda=1.5 arm: PROCEED_WITH_CAVEAT -- S14 overwhelmingly safe at 1.5 (forced-liq breach -65.5pct round move vs worst real -27.6pct; post-arm margin util ~6.16pct / level ~1624pct; sleeve isolated, book-only kill, fresh arm does NOT flatten FX/metals; restart idempotent no re-buy/double-launch; 57 stage2/S14 tests pass). The ONE must-fix (raw python relaunch never clears watchdog service_stopped.flag -> unsupervised) is BAKED INTO the new scripts. DELIVERED: scripts/arm_stage2.bat (stop+verify-down -> clear flag -> relaunch armed lambda=1.5 BTC/ETH/SOL, event-time pinned to NOW, --stage2-refuse-if-unsafe fail-closed, --portfolio-kill 0.015; --stage2-confirm-roll omitted for fresh arm) and scripts/flatten_crypto.bat (wraps production re-buy-proof flatten_crypto_safe.py -> resume survival_run_flat.bat flat-crypto; exact inverse of the arm). NOT EXECUTED. Nemotron monitor remains operator-disabled. Awaiting explicit CEO go to run either."
+    },
+    {
+      "date": "2026-06-22",
+      "event": "analysis",
+      "reason": "Live ops reconcile (Jun-22 R2, ~23:40Z): after an aborted arm attempt left the service down with FX/metals open+unmanaged, RESTORED the survival book in FLAT-CRYPTO posture WITH --enable-control-plane. Live now: PID 43600/14452, equity 1019747 (floor intact), margin level 8632pct, crypto ALL ZERO, DD-breaker/kill-switch running. launch_cmd.json persisted = base + --crypto-var-cap 0.0 + --enable-control-plane (NO stage2) -> a watchdog restart comes up FLAT (no re-buy). WATCHDOG INTENTIONALLY OFF (operator at the wheel; re-enable before unattended/bed). Nemotron OFF. ARCHITECTURE DECISION: future Stage-2 arming will be a live control.json drop (poll_control_plane / _apply_stage2_reconfig: arms from-zero, no restart, no position close, touches only Stage-2+lottery cfg) -- NOT stop-relaunch. WARNING: the existing scripts/arm_stage2.bat still uses the destructive stop->relaunch path and must be REBUILT on the control plane before use (pending). No crypto armed; CEO arm decision still open (gate phi at the Jun-24 wall per the advisor rulings)."
+    },
+    {
+      "date": "2026-06-22",
+      "event": "analysis",
+      "reason": "BUILT the non-destructive control-plane arm (Jun-22). scripts/arm_stage2_control.py writes ONE control.json {command_id(unique), authorize:true, stage2_lambda, stage2_assets} that the running --enable-control-plane service applies next ~60s tick: NO restart, NO flatten, NO position close (sleeve added from-zero by sizing; FX/metals/DD/equity-lock untouched, barbell isolation). Producer is fail-closed: refuses to write unless a run_survival_live service is ALIVE and launch_cmd.json carries --enable-control-plane; band-checks lambda locally; the loop re-validates + re-derives S14 server-side and REJECTS an unsafe lambda; the tool then WAITS for control.applied.json ack and confirms crypto legs land in positions.json. Confirmed via code-read that crypto_var_cap=0.0 gates ONLY the book rebalance, NOT the sleeve (sleeve sized by lambda, held legs pinned line 3204) -> arming the flat+ctrlplane service works. scripts/arm_stage2.bat REPLACED: now a thin wrapper calling the control-plane producer (accepts optional lambda arg, default 1.5) -- the old destructive stop->relaunch arm is GONE. Validated with --dry-run (valid JSON, clean import). NOT executed -- arm decision still the CEOs (gate phi at the Jun-24 wall). flatten_crypto.bat unchanged (a full crypto SELL legitimately closes positions, so its safe-stop+resume-flat is appropriate). Watchdog still OFF (operator at wheel)."
+    },
+    {
+      "date": "2026-06-23",
+      "event": "advisor_recommendation",
+      "reason": "quant-phd-advisor (agent a51068d97f9bdf8bf, 2026-06-23) on HOLD/FLATTEN/SHORT given #35/249 (SAFE for top-100 cut), bearish regime, field winning via crowded SHORTS, no directional edge, 70%-return composite. VERDICT: (1) HOLD the survival book now -- #35 is ~65 inside the cut, the relative bleed is RANK NOISE not an elimination threat (rank high-beta to crypto MtM; B0215 USDJPY fix is correctly risk-reducing). Browne/CHS: don't spend variance to defend a held position. (2) REJECT the directional SHORT: late entry into a CROWDED short = NEGATIVELY-skewed payoff (wrong sign for a convex contest tail), convex squeeze risk (Yan; Daniel-Moskowitz momentum-crash), and the most likely path from 'bounded' to a section14 gap-through wipeout. A 'right' short grinds capped gains; a 'wrong' short squeezes violently/uncapped. No built section14-safe SHORT envelope exists (B0197 is long-by-sizing) -> short = net-new construction mid-comp. (3) REJECT flatten-as-strategy: mu_field>0 (field climbing on shorts) so frozen return-rank DECAYS; flat forfeits the tail (top25_blind_final P=0.016). Flat dominates only if mu_field<0. (4) PRE-COMMIT the tail bet as a bounded POSITIVELY-skewed LONG-convex bet (B0182/B0197 long-crypto-by-sizing, NOT short) placed JUST BEFORE the blind final (~Jun-24 22:00), lambda 1.3-1.5 (P(top25)~0.10, P(section14)=0; Fang-Noe: bounded NOT risk-maximizing), held-to-mark no-gappable-stop, so its DD/Sharpe drag lands in the final round's reset and its CUMULATIVE-return dispersion carries into the 70% Return rank. KEY REFRAME: what changed is NOT the regime (no edge to forecast it) but the CALENDAR -- the blind wall approaches -> the PRE-COMMITMENT clause of B0182 is now the live time-sensitive item; the flat-crypto/ITM logic (B0214) still holds for the cut phase. GATES before arming: re-check mu_field sign on section8 feed (if it flips NEGATIVE -> do NOT arm, flat then dominates); re-run B0195 margin re-derive at the live spec; cheap re-sim simulate_barbell.py with current equity(+1.75%)/rank/vol to confirm P(section14)=0 and P(top25)>>flat. Confidence 0.75 on posture, 0.55 on exact lambda/timing. Decision = CEO."
+    },
+    {
+      "date": "2026-06-23",
+      "event": "analysis",
+      "reason": "Focused BLIND-FINAL re-sim from ACTUAL state (+1.75%, finalist #35, field mostly-short per S8 scout), 4000 trials, real Binance 15-min blocks, exact S11 composite, per-round DD/Sharpe reset + cumulative return. RESULTS: HOLD (lam=0) -> P(top25) ~= 0.000-0.012 (holding FORFEITS the prize tail, confirms advisor + top25_blind_final). LONG lam=1.3-1.5 -> P(top25) 0.04-0.23, RISING strongly with field short-bias (40%->0.04-0.07; 55%->0.10-0.13; 70%->0.20-0.23) = the LEAPFROG (a crypto bounce lifts us long AND drags short-leaders down). P(S14)=0.000 at ALL lam<=2.0 (margin-call needs crypto -65.5% at 1.5 / -76% at 1.3 over 48h -- impossible). SHARP INSIGHT: SHORTING CANNOT leapfrog the crowded-short leaders (we'd all gain together, they stay ahead from +29% vs our +1.75%); the ONLY rank-overtake path is a LONG on a bounce (we gain, they lose) -> long-convex is rank-OPTIMAL precisely BECAUSE the leaders are crowded short, despite the bearish trend. Confirms advisor reject-short. CONVEXITY ~FREE: since HOLD already gives P(top25)~=0, the long bet's prize-downside is ~nil (if crypto falls we forfeit top25 -- same as holding -- and still ADVANCE, we're safe); upside is the only path to top25. CAVEAT: crypto blocks sampled UNCONDITIONALLY (incl rallies); current regime is BEARISH (neg drift) so the LONG bet's true P(top25) is BELOW these numbers -- it is fundamentally a bet that crypto BOUNCES in the 48h final, no edge on that. DECISION FRAME: advance-only -> HOLD (safe). Chase-prize -> arm long lam=1.3-1.5 just before the blind wall (Jun-24), gated on re-check mu_field sign on S8 + B0195 live-margin re-derive. Script scratchpad/final_round_sim.py."
+    },
+    {
+      "date": "2026-06-23",
+      "event": "ceo_decision",
+      "reason": "CEO DECISION 2026-06-23: ARM the long-convex Stage-2 bet at lambda=1.5, to be executed JUST BEFORE the blind wall (Jun-24), NOT now. Rationale (advisor + focused re-sim): HOLD gives P(top25)~=0; long lam=1.5 gives P(top25)~0.13-0.23 (field crowded-short -> leapfrog), P(S14)=0, downside ~free in prize-terms. Long (not short) because shorting joins the crowd and cannot overtake the short-leaders; only a long-on-bounce leapfrogs them. Timing JUST-BEFORE-wall so DD/Sharpe drag lands in the final round's per-round reset and we can re-check mu_field at the last moment. TWO MANDATORY GATES AT ARM TIME: (1) re-check mu_field sign on the S8 feed -- if the field stopped winning (mu flips negative), DO NOT ARM (flat dominates then); (2) re-derive S14 envelope vs the LIVE margin spec (B0195). Prefer arming via the live CONTROL PLANE (service runs --enable-control-plane) = no restart, no B0214 re-buy risk. Instrument = B0197 long-crypto-by-sizing. Pending: confirm exact wall time to schedule the arm ~30-60min before."
+    },
+    {
+      "date": "2026-06-23",
+      "event": "field_update",
+      "reason": "add_link related->B0216",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204",
+          "B0214"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204",
+          "B0214",
+          "B0216"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-23",
+      "event": "analysis",
+      "reason": "Rules clarification B0216 (Jun-23): <=30 valid orders/scored-stage zeros DrawdownRank+SharpeRank (25% of composite). Reinforces the active barbell posture and makes the Stage-2 BTC scalper order flow potentially score-load-bearing (not just return). Flatten-to-flat for a full scored stage is now strictly dominated."
+    },
+    {
+      "date": "2026-06-24",
+      "event": "ceo_decision",
+      "reason": "FINAL PHASE deployment 2026-06-24 ~22:05-22:46 BST (blinded 48h final, entered at rank #80, flat ~breakeven $999,648). Reconciled live state: survival service was DOWN since Jun-22 intentional stop; only a passive pair monitor ran. Validations PASSED pre-arm: (a) sect14 envelope worst real crypto 48h move 2023-2026 = -27.6% (SOL) vs lambda=2.0 margin-call -48.3% (~20pp buffer); (b) finals sim bold_finals 1500 trials lambda=1.5/2.0/2.2 -> P(top25)=0.085/0.109/0.115, P(forced_liq)=0.000 all. ACTIONS: (1) fixed scripts/survival_run_flat.bat which was MISSING --enable-control-plane (would have broken the control-plane arm, fail-closed); (2) relaunched survival book flat + control-plane; (3) armed Stage-2 long-crypto lambda=2.0 via control plane (APPLIED, section14_scaled=false). NOTE: the book daily-loss portfolio-kill false-fired because sod_equity was anchored to 00:00 UTC Jun-24 (1,019,744, pre pair-trade); the round-boundary re-anchor (rebaseline_book_anchor) fires on the stage-2 roll -> arming re-anchors sod to current equity (correct for a fresh scored stage). REWEIGHT (quant-phd-advisor opus 2026-06-24): P(top25)(lambda) concave+flat past ~2.0; SOL is thinnest-fill + fattest-left-tail (-27.6%) + ~0 independent upside (corr ~0.7-0.9) -> spends slippage and ERODES the sect14 buffer. Re-armed --assets BTCUSD,ETHUSD --lambda 2.0 (drops SOL to 0 per the no-orphan trim); realized basket converges BTC-heavy (BTC fills clean, ETH opportunistic). SOL wind-down in progress at log time."
+    },
+    {
+      "date": "2026-06-24",
+      "event": "field_update",
+      "reason": "add_link related->B0218",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204",
+          "B0214",
+          "B0216"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204",
+          "B0214",
+          "B0216",
+          "B0218"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-24",
+      "event": "field_update",
+      "reason": "add_link related->B0219",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204",
+          "B0214",
+          "B0216",
+          "B0218"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [
+          "B0202"
+        ],
+        "related": [
+          "B0150",
+          "B0151",
+          "B0158",
+          "B0192",
+          "B0204",
+          "B0214",
+          "B0216",
+          "B0218",
+          "B0219"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [
+          "B0183",
+          "B0197"
+        ],
+        "spawned_by": [
+          "B0158"
+        ],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-25",
+      "event": "ceo_decision",
+      "reason": "Blinded final (2026-06-25): CEO directed max crypto variance. Bumped Stage-2 lambda 2.0 -> 2.099 (ratified ceiling LAMBDA_MAX) via control plane (command arm-l2.099, APPLIED, no restart). Basket BTCUSD,ETHUSD,SOLUSD (SOL added). Total crypto notional ~2.099*E ~= 2.16M, ~2x equity. REFUSED to double lambda to 4.0: ~4M notional => a -25pct crypto move = margin wipeout = §14 IMMEDIATE ELIMINATION; ceiling is the §14-safe max. Also closed metals legs (XAUUSD/XAGUSD, tiny) per CEO; survival book may re-open them on rebalance (control plane governs crypto sleeve only) — permanent exclusion needs a restart, deferred pending CEO OK."
+    },
+    {
+      "date": "2026-06-25",
+      "event": "ceo_decision",
+      "reason": "Stage-2 blind-final XAU tilt ARMED 2026-06-25 18:30 BST: CEO chose lambda=1.0 long XAUUSD (2.53 lots, ~$1.02M notional, margin ~$34k) as the directional variance leg, aligned with live gold momentum (+0.51%/4h). order_check-gated fill, retcode 10009. Isolated from survival book. Crypto sleeve band [0.4,2.099] deliberately reserved intact for later activation (combined gross lev ~3.1x if both on, far under S13 thresholds). FX longs left running. Equity $1.02M, ML 2178%."
+    },
+    {
+      "date": "2026-06-26",
+      "event": "ceo_decision",
+      "reason": "Stage-2 crypto sleeve ARMED (live final, 2026-06-26 ~00:30 BST). CEO signal confirmed. Stopped pair_monitor_ethbtc.py (PIDs 24436/51332) first — it had auto-flattened the prior ETH sleeve at 22:47. Then opened long BTC/ETH at lambda~2.07: BTC 17.82 lots ($1.069M) + ETH 658.95 lots ($1.037M) = ~$2.11M crypto notional. Broker throttles large crypto chunks (10006) and zeroes BTC on big orders; SOLUTION = patient small-chunk ($100k) IOC top-up, which accumulates via partial fills. order_check-gated. Equity $1.018M, margin $83k, ML 1225%, free $935k — §14-safe, no forced-liq risk. FX longs left running. NOTE: no auto-guard now running — sleeve rides to the 22:00 BST forced close unless manually managed."
+    },
+    {
+      "date": "2026-06-26",
+      "event": "live_incident",
+      "reason": "Stage-2 crypto sleeve CLOSED on CEO order (2026-06-26). Held long BTC/ETH (~2.1M, lambda 2.07) from ~00:30; crypto fell ~3% during the hold (BTC 60040->58490 -2.6%, ETH 1574->1524 -3.2%). Flatten realized -60,618 (BTC -27,607 + ETH -33,011). Equity 1,018,264 -> 958,841 (-4.12% from 1M start; was +1.8%). Confirmed FLAT via positions_get (terminal UI lagged, showed stale ETH). Only FX longs remain. The barbell downside materialized: long-crypto variance bet went against us, close locked the loss. ~21h to 22:00 BST forced close. No crypto/variance exposure now."
+    },
+    {
+      "date": "2026-06-26",
+      "event": "analysis",
+      "reason": "Built crypto_guard.py + .bat protective circuit-breaker after the -60.6k crypto round-trip (2026-06-26). Monitors ONLY crypto sleeve (BTC/ETH): patient order_check-gated IOC flatten when equity falls >=25k below persisted peak (trailing, ~1.3pct crypto move = 3-4x the M5 noise band 0.40pct/5min) OR crypto floating PnL <= -30k (hard floor). Calibrated from recent BTC drops (worst 15min -3.1pct, 30min -5.0pct; our crash -2.9pct/6h). Never touches FX. Launched armed in background poll=10s; HWM persisted signals/crypto_guard_state.json, log signals/crypto_guard.log."
+    },
+    {
+      "date": "2026-06-26",
+      "event": "advisor_recommendation",
+      "reason": "quant-phd-advisor (2026-06-26, ~19h to forced close, equity -5.1pct): REJECT short, go LONG. No drift forecast => OTR/LdP says direction cannot be chosen on price pattern; 48h downtrend is falsified-TSMOM noise, not predictive. With zero drift, tail geometry decides: long loss bounded, SHORT loss tail (squeeze) UNBOUNDED = the §14 elimination tail => long strictly dominates. Below start + little time = Browne/Dubins-Savage bold regime, flat strictly dominated; guard truncates left tail => convex/digital payoff. POSTURE: LONG, single entry, HOLD to 22:00 forced close, do NOT cycle (each round-trip ~4.5k certain friction tax, no expectational benefit). lambda 2.0-2.099 top of §14 band. BIGGEST RISK: guard slippage under throttled liquidity (the -60k incident proves -25k cap not a hard guarantee); if guard cannot contain exit within ~-30k, DROP lambda to 1.3-1.5 so even an unguarded adverse move stays clear of margin. §14 outranks rank always. Confidence 0.85 on bold/long/hold, 0.6 on max lambda."
+    },
+    {
+      "date": "2026-06-26",
+      "event": "ceo_decision",
+      "reason": "2026-06-26 ~06:30 BST (final close day, force-liq 22:00 BST). CEO approved Stage-2 bounded variance bet to lift ReturnRank (currently -0.66%, equity 993,485). Direction SHORT BTC (advisor low-conviction down-skew: price pinned at 59k cascade tripwire, negative funding, ~10B Deribit options expiry ~09:00 BST, vol doubled). EXECUTED: BTCUSD SELL 5.0 lots (~300k notional, 0.30x equity), entry 59,953.66, broker-side SL 65,000 (bounded loss ~25.4k). order_check retcode 0 before send; order_send 10009. Margin level post-trade 4349%, forced-liq §14 impossible. ALSO: defused launch_cmd.json (removed --lottery-arm, --stage2-confirm-roll, --lottery-event-time) to kill re-arm-on-restart of a LONG crypto sleeve. 30-order floor already cleared (1,778 final-phase fills) so DD+Sharpe already scorable; no churn needed. crypto_guard.py left running as redundant backstop (can only flatten early=more protective; broker SL is primary stop). Ticket 774843."
+    },
+    {
+      "date": "2026-06-26",
+      "event": "ceo_decision",
+      "reason": "2026-06-26 ~06:45 BST: CEO raised Stage-2 short from 5 to 10 BTC. Added +5 BTC (order 782268, order_check 0 -> send 10009). Total BTCUSD SELL 10.0 lots, avg entry 59,895.62, SL 65,000 (bounded loss ~50.5k / -5.1%). Notional ~600k (0.60x equity), margin level 3029%, §14 forced-liq impossible, §13 dings not tripped (gross lev ~1.6x). Ticket 774843. Upside ~+5% if BTC cascades to ~55k. Low directional conviction (no edge, down-skew bet into ~09:00 BST Deribit expiry + 59k tripwire)."
+    },
+    {
+      "date": "2026-06-26",
+      "event": "ceo_decision",
+      "reason": "2026-06-26 ~06:50 BST: CEO raised Stage-2 short 10->20 BTC (final day, below-target, bold-play tournament logic; advised ceiling=aggressive-but-survivable). Added +10 BTC (order 785125, check 0 -> send 10009). Total BTCUSD SELL 20.0 lots, avg entry 59,821.11, SL 65,000 (bounded loss ~102k / -10.3%). Notional ~1.2M (1.2x equity), margin level 1887%, §14 forced-liq impossible. CEO also set take-half-profit rule: if BTC breaks below 59,000, close half (10 BTC), leave 10 running with SL 65k toward 55-56k cascade. Implemented scripts/btc_half_profit.py (one-shot, order_check-gated BUY-to-close, dry-run validated retcode 0), launched in background trigger=59000 poll=8s. ADVISORY noted: shorting into extreme-fear + negative-funding + 09:00 BST Deribit expiry = squeeze fat-tail is the main risk; no directional edge (variance buy, not edge). Tickets: short 774843, monitor log signals/btc_half_profit.log."
+    },
+    {
+      "date": "2026-06-26",
+      "event": "analysis",
+      "reason": "2026-06-26 12:43 UTC (13:43 BST): take-half-profit rule FIRED as designed. BTC broke 59,000 (bid 58,936); btc_half_profit.py order_check 0 -> order_send 10009 closed 10 of 20 BTC. Realized ~+8,850 on the half (avg entry 59,821 -> ~58,936). Remaining 10 BTC short still open, SL 65,000, floating +7,332. Equity ~1,011,400 = Return +1.1% (recovered from -0.66%). FX book GBPUSD/EURUSD/USDJPY small net positive. Watcher relaunched for remaining half (alert at 57k cascade / 62.5k SL-risk / flat / 21:00 BST flatten)."
+    }
+  ]
+}

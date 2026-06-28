@@ -1,0 +1,92 @@
+{
+  "id": "B0169",
+  "title": "LL confirmatory runner (thin follow-up of run_osr_confirmatory) + section-7 label decision (pooled vs per-instrument)",
+  "status": "done",
+  "effort": "S",
+  "value": "H",
+  "tags": [],
+  "created_at": "2026-06-12",
+  "updated_at": "2026-06-12",
+  "source": "pm-day 2026-06-12 (execution-engineer report on the Jun-18 confirmatory runner)",
+  "why": "Jun-18 GO/NO-GO needs BOTH sleeves runnable without hand-written day-of code, and the prereg section-3 single-label vs per-instrument OSR reality is an unresolved amendment that could disqualify the gate if improvised on the day.",
+  "value_rationale": "",
+  "scope": "(1) scripts/run_ll_confirmatory.py reusing run_osr_confirmatory module-level helpers (weekend_stratum, clean_sr_trials, resolve_label, refusal pattern) + LL data plumbing (two books, HY precondition, ll_events/ll_signal, 20-min timeout, minute bars); gate per prereg section-4 LL row (N>=50, PSR>=0.90, >=0 at 2x, DSR>0 at K=8). (2) DECISION before Jun-18: section-3 registers ONE label per sleeve but OSR runs per instrument - resolve pooled vs per-instrument (runner accepts prefix-enforced instrument-suffixed labels) and record in prereg section-7 amendment log. Methodology-load-bearing: surface to CEO with quant-phd-advisor input if contested.",
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [
+      "B0162"
+    ],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-12",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "chore(state): confirmatory-runner iteration recorded; B0169 spawned (LL runner + section-7 label decision)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "status_change",
+      "reason": "pm-day 2026-06-12: LL runner dispatched to execution-engineer; label decision researched by quant-phd-advisor in parallel",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "docs(B0169): prereg section-7 amendment - pooled selection/confirmatory/gate (CEO-ratified)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "decision",
+      "reason": "2026-06-12 CEO RATIFIED Option C pooled (quant-phd-advisor recommendation, literature-grounded vs LdP FWER/DSR corpus): pooled selection + pooled confirmatory + pooled gate, K=8 preserved, per-instrument stratification diagnostic-only with asymmetric veto. Prereg section-7 amendment landed pre-data (aeb135d). OPERATIONAL FOLLOW-UP now in scope: run_osr_validation needs a pooled-selection step (currently selects per instrument), run_osr_confirmatory needs multi-CSV pooled mode + un-suffixed label as the gate path, LL runner pooled across followers."
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "feat(B0169): LL sleeve confirmatory holdout runner (TDD, 42 tests)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "field_update",
+      "reason": "LL confirmatory runner DONE pre-amendment shape (3a8703d, 42 tests, suite 2050 green; HY-precondition refusal, no positive-days bar invented, no LL bundle by design - LL is non-gating). Pooled-amendment adaptation slice dispatched to execution-engineer: pooled selection step (POOLED.json), run_osr_confirmatory multi-instrument pooled gate path (un-suffixed label only), run_ll_confirmatory pooled followers, asymmetric veto + concurrency/day-clustered-SE diagnostics, K-bust contingency pin."
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "feat(B0169): pooled selection/confirmatory/gate per section-7 amendment (TDD, +60 tests)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "status_change",
+      "reason": "Both scope items delivered: LL confirmatory runner (3a8703d) + section-7 label decision CEO-ratified Option C pooled (aeb135d) + full pooled adaptation slice (d865755, suite 2110 green excl. CEO B0170 red spike). Bundle wiring spun out as B0171.",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-06-12",
+      "event": "git_commit",
+      "reason": "chore(state): B0169 done, B0171 spawned (pooled bundle wiring); iteration recorded",
+      "sha": "HEAD"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "id": "B0196",
+  "title": "L2-driven competition sim: frozen barbell eliminated at R1 on a benign window — sleeve effectively inert",
+  "status": "done",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "simulation",
+    "barbell",
+    "lottery-sleeve",
+    "tournament",
+    "risk"
+  ],
+  "created_at": "2026-06-18",
+  "updated_at": "2026-06-18",
+  "source": "scripts/simulate_competition.py run 2026-06-18 (real L2 FX/metals + M15 crypto, exact §11 scoring, calibrated fair field)",
+  "why": "End-to-end sim of the FROZEN launch strategy over the real 4-round structure (May31 21:00Z->Jun05 21:00Z proxy) scored with the exact composite Final Score vs the calibrated B0183 fair field. RESULT: rank 248/520 (52nd pct) -> ELIMINATED at R1; P(advance)=0 over 300 field draws; total +0.145%/5d, maxDD<0.25%. The lottery sleeve is effectively inert on a no-catalyst window: (1) it often does not ENTER (21:00Z arm is noise, 30-min move < 0.5xATR floor -> R1 no entry on any crypto), and (2) when it enters the notional cap (min(0.5,10*risk_frac)=0.4) ALWAYS binds at M15 crypto ATR so realized risk ~0.05-0.1%/asset (~25x below the 4% risk_frac intent). BOTH are documented in run_survival_live's own banner. So the frozen barbell behaves like the bare survival book and a ~0% return lands at the median under the 70%-return composite -> the cut eliminates it. This is the exact rank-tournament failure mode the barbell was built to escape, and shows the Stage-2 realized variance (~0.3%/round) is far below the ~8%/day the B0183 decision-sim credited the bold leg.",
+  "value_rationale": "Bears directly on the CEO-reserved B0182 Stage-2 rung decision and the freeze: if the frozen sleeve cannot deliver the barbell's required variance, P(top25) is near 0 in benign/no-catalyst windows. High value = informs whether the frozen rung executes the thesis.",
+  "scope": [
+    "Robustness: re-run across the 3 available Sun->Fri windows (May 17/24/31) — is R1 elimination robust or a one-window benign fluke?",
+    "Sleeve sensitivity: quantify P(top25) vs max_gross_frac and vs a catalyst-anchored arm (the sleeve was designed around PCE, not a noise boundary).",
+    "Decide (CEO/advisor): does the frozen Stage-2 sizing need revisiting before launch, or is the single-window benign result acceptable given the unknown live window?"
+  ],
+  "recommendation": "Surface to CEO/PhD-advisor as input to B0182; do NOT re-litigate the freeze autonomously. The book is doing its job (capital preservation); the open question is whether the frozen sleeve delivers enough variance to clear a return-ranked cut.",
+  "out_of_scope": "Re-deciding the freeze or the rung autonomously (CEO-reserved). Changing the production sleeve config.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "results/competition_sim/README.md",
+      "note": "full methodology + graphs + caveats"
+    },
+    {
+      "path": "scripts/simulate_competition.py",
+      "note": "the simulator"
+    },
+    {
+      "path": "results/competition_sim/summary.json",
+      "note": "machine-readable result"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-18",
+      "event": "created",
+      "reason": "L2-driven competition sim built + run; finding recorded"
+    },
+    {
+      "date": "2026-06-18",
+      "event": "evidence_deepened",
+      "reason": "Deepened (2026-06-18): (1) crypto upgraded to REAL Binance 1-min klines (free public dump, exact 2026 dates, coherent w/ project crypto ~0.7%); sleeve now faithful dual-resolution (M15 entry = production lottery timeframe, 1-min stop/trail mgmt = live 60s tick). (2) ROBUST across 3 independent Sun->Fri windows (May 17/24/31): ALL eliminated at R1 (pct 48.4/45.7/53.8), P(advance)=0 and P(top25)=0 in all 900 field draws. (3) NEW mechanistic finding: the frozen sleeve is not free variance — it's a small net DRAG (-0.16% to -0.25%/window), death-by-stops on noise-armed entries (the code itself notes the 21:00Z arm is noise not catalyst). (4) SENSITIVITY: scaling max_gross 0.4->10xE monotonically WORSENS return (-0.19%->-3.90%) and rank (53.8->32.6 pct), never clears the cut, P(top25)=0 throughout — the binding constraint is NOT the cap but the mechanism's NEGATIVE realized drift on no-catalyst windows; scaling buys downside drift + §14 ruin risk, not the upside tail. (5) Reconciles B0183: it modeled the bold leg as symmetric high-variance; the real mechanism is negative-skew bleed -> B0183 over-credited the sleeve. CAVEAT: market path fixed per window (only field MC'd) -> does NOT test the sleeve's upside-tail over market outcomes; a sustained post-catalyst trend (PCE, the sleeve's design case) is the one untested regime that could pay off. Updated results/competition_sim/README.md."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "catalyst_test",
+      "reason": "Catalyst test (scripts/sleeve_catalyst_scan.py, real Binance 1-min): the sleeve's DESIGN case. (1) DISTRIBUTION over 476 arm times (no lookahead): mean -0.006%, median -0.016%, skew +4.79, 16% positive, max +1.23% -> the mechanism IS a genuine POSITIVE-SKEW lottery (design intent validated) but negative-EV and notional-cap-throttled to ~+1.2%/round at best. Corrects the earlier 'negative-drift bleed' wording: right SHAPE (pos skew), wrong MAGNITUDE (capped) + slightly neg EV. (2) ORACLE upper bound (perfect foresight, arm each cut round at the 3 best trends): R1 +1.23%->85pct ADV, R2->79.9pct ADV, R3->73.8pct ADV, but Finals->47.5pct ELIMINATED, P(top25)=0. CONCLUSION: Stage-1 survival via the sleeve IS viable when a catalyst lands in a cut round (low-prob at the fixed schedule), but the TOP-25 TAIL is out of reach for the frozen config EVEN with perfect catalyst timing — flat finals + notional cap throttle the payoff below the prize tail. Reaching top-25 needs an armed/larger finals leg (adds neg-EV + §14 ruin risk) or a structurally larger positive-skew instrument (defined-risk long-vol) = a strategy change, not a tuning knob. Robust across 3 windows + the oracle bound."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "solution_found",
+      "reason": "SOLUTION to the top-25 problem (scripts/simulate_barbell.py, PhD-advised). Implemented the advisor's Rank-1 instrument: an ISOLATED static long-crypto bet, defined-risk BY SIZING (not a gappable stop) — convexity from crypto's right skew + the convex prize ladder. Effective bet leverage lambda=L_s*F. MARKET path now Monte-Carlo'd over full 2023-2026 multi-regime crypto (fixes the prior single-fixed-path limitation). RESULT (lambda=2.0 uniform, 6000 market×field trials): P(top25)=0.103+-0.008 with P(forced-liq §14)=0.000 (margin-call only at a -48% single-round crypto move, beyond the 40% worst-case) and median top25 finish +21.5% — vs the frozen sleeve's P(top25)=0. Funnel: P(survive R1)=0.42 -> reach finals 0.245 -> top25 0.103. P(top25) rises with lambda_cut (survival through the cuts is the lever, NOT finals size); §14-safe ceiling lambda~=2.4 (survive 40% move). MATCHES rank-tournament theory + B0183 'static bold' (0.085-0.217), at the lower end, now mechanistic with real crypto + exact §14 sizing. CAVEAT/posture: this is a LOTTERY + a FUNDAMENTAL posture change — ~90% don't reach top25, ~58% eliminated R1; it REPLACES the flat survival book in the cut rounds with a 2x long-crypto bet (deploying re-opens the freeze); long-directional no-edge (10% is the multi-regime avg); forfeits Best-Sharpe + strains Best-Arch. INPUT to the reserved B0182 decision; NOT a deploy recommendation."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "advisor_verdict_and_subfair_validation",
+      "reason": "quant-phd-advisor deploy/no-deploy verdict = HYBRID/conditional-deploy: open R1 at moderate lambda~1.0-1.25 (off the median, deep §14-safe), read mu_field+rank after R1, scale down toward flat if subfair / up to the §14-safe ceiling ~2.0-2.4 if fair, pre-commit the upper rung before the BLIND final, never flatten on clearing top-100. Reframing (advisor): lateral prizes (Best-Sharpe needs finals+top50; Best-Arch eligibility post-R3) are advance-gated, so in a FAIR field flat -> eliminated R1 -> ZERO on all 3 prizes; thus 'lottery vs guaranteed-zero', and going flat to protect the Best-Arch deck is self-defeating if flat doesn't advance. NO-DEPLOY only if the §14 envelope can't be proven to the 74-test standard OR (confirmed strict freeze + CEO prior mu_field<0). Caveat: P(top25)=0.10 is SCENARIO analysis vs a fixed field model (MinBTL: 5 days << any backtest length), NOT a measured edge. SUBFAIR VALIDATION (the advisor's requested experiment, 3000 trials): flat is ELIMINATED at R1 even in a SUBFAIR field (P(adv R1)=0.076 vs 0.011 fair; P(top25)=0 both) -> the advisor's 'mu_field<0 saves flat' escape hatch FAILS in-sim, because the per-round cut is dominated by the field's high-VARIANCE gamblers, not its drift (subfair shifts drift negative but leaves variance intact). Barbell holds up under subfair (lambda=2.0 -> P(top25)=0.122 >= fair's 0.103). REFINED HINGE: the decisive unknown is the field's VARIANCE COMPOSITION (# high-vol gamblers -> where the cut line sits), observable live from R1 leaderboard DISPERSION, more than the sign of mu_field. This STRENGTHENS 'some cut-round variance is near-mandatory' and weakens the 'scale to flat if subfair' branch. Still advisory to the CEO-reserved B0182; not a deploy order."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "pre_deploy_validations",
+      "reason": "Two advisor-named validations (scripts/validate_barbell.py). (2) §14 vs HISTORY: worst real single-round crypto drop 2023-2026 = -24.9% (24h, ETH), -27.6% (48h, SOL); margin-call moves: lambda=2.0 -> -48.3%, 2.4 -> -39.7%, 3.0 -> -31.0% (all SURVIVE the worst real move), 5.0 -> -17.2% (does NOT) -> defined-risk-by-sizing CONFIRMED §14-safe against history up to lambda~3.0; recommended 2.0-2.4 has large headroom. (1) CUT-COUNT SENSITIVITY (field 520, R3->100 + finals->25 rules-fixed, R1/R2 TBC): FLAT NEVER reaches top-25 under ANY schedule (lenient->strict, top25=0.000 everywhere) because R3->100 + finals->25 are unbeatable by a 0%-return book; BARBELL P(top25) ROBUST to cut depth (0.108-0.117). BUT flat's R1 survival swings entirely on cut leniency: P(R1)=1.00 at lenient [400,250,100,25], 0.012 at overview [200,150,100,25], 0.000 at strict [150,120,100,25]. So under LENIENT cuts flat survives R1/R2 -> can reach R3/finals -> KEEPS the Best-Arch (post-R3) + Best-Sharpe (finals+top50) lateral path (forfeits only top-25); under STRICT cuts flat -> eliminated R1 -> zero prizes. REFINES the advisor reframing: the deploy trigger is cut-depth x field-variance, BOTH observable at R1. KEY UNBLOCK: mid-round modification CONFIRMED allowed (own API/infra, no frozen version, adapt live) -> the adaptive HYBRID is fully feasible and 'deploy re-opens the freeze' is no longer a blocker. Final advisor reconciliation dispatched to formalize the adaptive rule."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "advisor_final_verdict_deploy_adaptive",
+      "reason": "quant-phd-advisor FINAL reconciliation = DEPLOY, as an ADAPTIVE cut-depth-conditional lambda-policy (all 4 prior NO-DEPLOY conditions cleared: freeze non-issue [own API, mid-round mod allowed], §14 history-validated to lambda~3.0, flat's top25 EV provably 0). Backed by Seel-Strack + the cut-off-score paper (arXiv 2602.11914: optimal variance rises as the cut shallows, falls once safely above). EXECUTABLE POLICY: R1 launch lambda=1.5 (pre-observable; flat dies at R1 under overview/strict cuts). Post-R1 map on (cut-depth d, our rank, field dispersion): lenient cut (d>=0.40)+safe -> dial DOWN to 0.3-0.5 (harvest the $20k controllable laterals Best-Arch[post-R3]+Best-Sharpe[finals+top50] + keep a cheap top25 option); lenient+borderline -> hold 1.5; strict/overview (d<=0.30) -> 2.0; strict+below-line -> 2.4 (ceiling); subfair field -> bias down ~0.3. PRE-FINAL (before the blind wall, NON-adaptive after): pre-commit lambda_final=2.0 (1.0-1.5 if strong lead), NEVER flat (else forfeit top25 = the 0.016-vs-0.198 mistake). CEILING lambda=2.4 not 3.0 (48h-final tail + §13). Reconciles the 3 prior results as 3 decision points: transparent cuts = adaptable/rank-conditioned; blind final = pre-committed; flat-keeps-laterals only under lenient cuts. SUPERSEDES the 2026-06-17 capped-momentum-sleeve ruling (near-inert, P(top25)~0) -> the static-long-crypto-BY-SIZING instrument is the one that reaches the tail; CEO must RATIFY this instrument change (B0182). VALUES-CALL reserved for CEO: under lenient cuts, $20k controllable laterals vs ~10% convex top25 tail. CAVEAT: P(top25)=0.103 is a multi-regime LOTTERY avg (no edge, single live crypto draw), ~58% eliminated R1, ~90% miss top25 -- state as a lottery not an expectation. Advisor's named FALSIFIER (cheap, pre-launch): wire the adaptive lambda-map into simulate_barbell + confirm it weakly dominates static-flat AND static-2.0 across lenient+strict cuts; if not, simplify to static-2.0. Also: pre-register R1 thresholds in runbook §6; re-derive the §14 envelope vs the launch margin specs (B0195)."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "ceo_ratification",
+      "reason": "CEO RATIFIED 2026-06-18 the advisor's final verdict: DEPLOY the sec14-safe static-long-crypto-by-sizing barbell under the adaptive lambda-policy (supersedes the frozen capped-momentum sleeve). The falsifier (committed 7b22dd0) showed adaptive DECISIVELY dominates static-flat and is a Pareto trade vs static-lambda2.0 (concedes ~0.01-0.04 P(top25) for higher P(reach-finals) + lower avg lambda ~1.1-1.5, preserving the Best-Sharpe/Best-Arch laterals) -> CEO ratified the adaptive policy. Analysis + decision complete; the live build is tracked under B0182 (in_progress)."
+    },
+    {
+      "date": "2026-06-18",
+      "event": "status_change",
+      "reason": "Sim finding + top-25 solution + advisor final verdict surfaced and CEO-ratified (B0182). Decision gate closed; live build tracked under B0182.",
+      "from": "proposed",
+      "to": "done"
+    }
+  ]
+}

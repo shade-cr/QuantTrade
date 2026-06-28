@@ -1,0 +1,70 @@
+{
+  "id": "B0061",
+  "title": "Positive control: trend-edge reproducibility on XAU D1",
+  "status": "done",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "validation",
+    "xau-d1",
+    "diagnostic"
+  ],
+  "created_at": "2026-05-27",
+  "updated_at": "2026-05-28",
+  "source": "Conversation 2026-05-27: user asked for empirical proof the model works on gold using a historically-documented edge.",
+  "why": "Demonstrate the pipeline measures a known edge (time-series momentum, Moskowitz-Ooi-Pedersen 2012) correctly before trusting it to discover new ones. Phase 1 = positive control (primary trend edge concentrates in trend regimes, evaporates in chop); Phase 2 = meta adds value over baseline OOS.",
+  "value_rationale": "Empirical credibility of the whole pipeline; cheap to run; gates trust in every downstream verdict.",
+  "scope": [
+    "scripts/positive_control_trend.py: rolling baseline Sharpe vs trend-strength (approach C), per primary, full 2004-2026 history",
+    "Spearman corr + tercile verdict (PASS iff corr>0 and high-trend median > low-trend median)",
+    "tests/test_positive_control.py on rolling-Sharpe helper with synth fixture",
+    "Phase 2: run full pipeline, report meta_sharpe vs baseline_sharpe delta"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/superpowers/specs/2026-05-27-positive-control-trend-edge-design.md",
+      "relation": "spec",
+      "label": "design"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-27",
+      "event": "created",
+      "reason": "positive control for trend edge, approved in brainstorming"
+    },
+    {
+      "date": "2026-05-27",
+      "event": "git_commit",
+      "reason": "feat(validation): positive control for trend-edge reproducibility (B0061)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "status_change",
+      "reason": "positive control built, ran, verdicts produced (ema_cross PASS / momentum_zscore INCONCLUSIVE), Phase 2 meta-vs-baseline documented, tests green, committed 03b857a",
+      "from": "proposed",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "git_commit",
+      "reason": "chore(backlog): sync registry â€” positive-control + meta diagnosis (B0061-B0064)",
+      "sha": "HEAD"
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "id": "B0080",
+  "title": "Intraday-momentum primary (first-interval -> last-interval), H1, all 8 assets",
+  "status": "discarded",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "edge-search",
+    "intraday",
+    "primary"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "quant-phd-advisor literature survey 2026-05-29 (intraday edges on FX/metals/crypto at H1). See project-no-edge-h4-primary-direct memory + hackathon plan.",
+  "why": "Sign of first-block session return predicts last-block return (infrequent rebalancing + late-informed flow). The ONLY short-horizon edge replicated across equities (Gao 2018 JFE), FX (Elaut/Erdos JBF), gold/silver (PMC 2020), and crypto (Wen 2022). Best-evidenced candidate; structural mechanism, not arbitrageable mispricing.",
+  "value_rationale": "Edge-search for the hackathon competition book (H1, conservative vol-target). B0080 is the front-runner (best OOS evidence across all asset classes) and is spiked first.",
+  "scope": [
+    "Rule-based primary returning {-1,0,+1}: long if first-block H1 return >0 going into last block (per-asset session anchor; FX/metals fixed UTC open, crypto UTC day or 22:00 window).",
+    "Test (in-sample, before WF): regress sign(last-block ret) on first-block ret, Newey-West t; scan interval pairs per asset; confirm |t|>2 AND hit-rate>53% AND strengthens on high-vol days. Lock interval on train slice, confirm OOS (PurgedTimeSeriesSplit).",
+    "Caveat: interval-mining overfit (12x12 scan finds spurious winner) -> must lock + OOS. Expected gross Sharpe 0.6-1.2."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0081",
+      "B0082",
+      "B0083"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "registered by hackathon-pm from quant-phd-advisor shortlist"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0081",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0081"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0082",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0081"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0081",
+          "B0082"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "field_update",
+      "reason": "add_link related->B0083",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0081",
+          "B0082"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0081",
+          "B0082",
+          "B0083"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(backlog): register intraday-edge shortlist B0080-B0083 from quant-phd-advisor survey",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "status_change",
+      "reason": "Intraday-momentum primary fails OOS on H1: train-strong assets (EUR/XAU/XAG) die on holdout (mining artifact); BTC/SOL holdout positives lack train support. See results/feasibility/b0080_intraday_momentum.json + spike commit.",
+      "from": "proposed",
+      "to": "discarded"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(spike): B0080 intraday-momentum H1 -- fails out-of-sample",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "chore(coordination): B0080 discarded (fails OOS); record edge-search pattern",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(spike): crypto/lead-lag/pairs edges all fail OOS; edge search exhausted",
+      "sha": "HEAD"
+    }
+  ]
+}

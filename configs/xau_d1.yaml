@@ -1,0 +1,124 @@
+asset: XAUUSD
+timeframe: D1
+data_path: data/XAUUSD_D1.csv
+
+date_range:
+  start: "2006-01-01"
+  end: "2026-04-30"
+
+triple_barrier:
+  # Expert-directed change 2026-05-25: prior config tp=2.0/sl=1.0/h=20 produced
+  # baseline_sharpe negative across all folds, consistent with ~30% win rate
+  # × 1.5-2R payoff = -0.10 to -0.25R expectancy per trade. Asymmetric 3R fixes
+  # the geometry; horizon doubled (calendar-equivalent to H4 doubling 24→48).
+  # horizon=48 was too aggressive on D1 — momentum_zscore had only 642 events,
+  # insufficient for 4-fold walk-forward.
+  horizon: 40
+  tp_atr_mult: 3.0
+  sl_atr_mult: 1.0
+  atr_period: 14
+
+primary:
+  candidates: [ema_cross, momentum_zscore]
+  ema_cross:
+    fast: 20
+    slow: 50
+    dead_zone_atr: 0.25
+  momentum_zscore:
+    lookback: 20
+    threshold: 0.3
+
+features:
+  tier: 2
+  # B0147: GLD real-volume features (exogenous, PIT-shifted); gold only.
+  gld_volume: true
+
+walk_forward:
+  # Reduced from 4 to 3 folds 2026-05-25 to accommodate the lower event count
+  # produced by horizon=40 (vs horizon=20 originally). make_folds requires
+  # n_folds × 100 events in the test pool; momentum_zscore now produces ~640
+  # events on XAU D1, so 4 folds wouldn't clear the floor. Diagnostic config —
+  # revisit once we know whether the barrier change yields positive baselines.
+  n_folds: 3
+  train_min_bars: 1500
+  purge_bars: 20
+  embargo_pct: 0.01
+
+models:
+  # B0053: swapped catboost -> lgbm (leaf-wise growth for XGB diversity) and
+  # added lr as linear base (captures linear signals trees approximate noisily;
+  # typically least-correlated with tree ensembles -> helps stacking gate).
+  # catboost factory kept in pipeline/train.py for backward compat but removed here.
+  - xgb
+  - lgbm
+  - rf
+  - lr
+
+hyperparam_search:
+  method: random
+  n_iter: 20
+  cv_splits: 3
+  cv_type: purged_time_series
+  cv_purge_bars: 20
+
+calibration:
+  # sigmoid (Platt) chosen over isotonic after Phase 1 re-validation:
+  # isotonic produced step-function probabilities → 3 of 4 thresholds in the
+  # grid selected the same trade set → pct_signals_kept collapsed to <5%.
+  method: sigmoid
+  cv: prefit
+  calib_holdout_pct: 0.15
+  min_minority_for_isotonic: 50
+
+stacking:
+  baseline: trade_all_primary
+  min_models_beating_baseline: 2
+  min_folds_beating_baseline: 3
+  max_oof_corr: 0.7
+  # A fold-Sharpe only counts toward "beats baseline" if the underlying fold
+  # had at least this many trades. Without this gate, 3-trade Sharpes of 30+
+  # were getting counted as competence (Phase 1 first pass).
+  min_trades_per_fold: 30
+  meta_learner: logistic_regression
+  meta_C: 1.0
+  meta_penalty: l2
+  meta_n_folds: 4
+
+metrics:
+  cost_per_trade_bps: 10
+  # Sharpe annualisation factor. D1 ≈ 252 trading days/year. H4 will use
+  # ~1560 (FX/metal) or ~2190 (crypto) — set per-asset in multi_h4.yaml.
+  # Used by `select_threshold_inner_cv` when scoring inner sub-blocks.
+  bars_per_year: 252
+  # Grid expanded to a finer mesh now that the selection mechanism (inner-CV)
+  # actually differentiates thresholds. sigmoid-calibrated probabilities are
+  # continuous, so 0.02 spacing is informative.
+  threshold_grid: [0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62]
+  threshold_selection: inner_cv          # was grid_report (v1 reported only)
+
+threshold_selection:
+  method: inner_cv
+  inner_splits: 3
+  # Inner-val slices are smaller than outer test folds, so we accept fewer
+  # trades as the floor for a finite Sharpe inside the inner CV. Used only
+  # for inner-CV scoring — the outer fold still uses min_trades_for_sharpe=30.
+  min_trades_per_inner_fold: 20
+
+output_dir: results/clf_xau_d1
+random_seed: 42
+
+# B0002 — decommissioning rule (maxdama §4.10). Reported in summary.json as a
+# boolean only; NO automatic action. A primary whose rolling median fold Sharpe
+# (best model) decays below `threshold` over the last `rolling_window` folds is
+# flagged RETIRE for human review. threshold=0.0 = retire only when the rolling
+# median turns non-positive (conservative); raise it to retire on weak-but-
+# positive decay.
+shutoff:
+  rolling_window: 6
+  threshold: 0.0
+
+dry_run:
+  enabled_via_cli_flag: true
+  n_iter: 5
+  max_minutes_per_model_warn: 8
+  max_minutes_per_model_abort: 15

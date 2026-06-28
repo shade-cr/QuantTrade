@@ -1,0 +1,150 @@
+{
+  "id": "B0195",
+  "title": "At launch: capture margin/stop-out + final swap specs; verify forced-liquidation (§14) envelope clearance",
+  "status": "proposed",
+  "effort": "XS",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "risk",
+    "launch"
+  ],
+  "created_at": "2026-06-17",
+  "updated_at": "2026-06-21",
+  "source": "Organizer clarification 2026-06-17: margin/stop-out details + final swap/financing specs published \"when trading access opens\" (~launch Jun 21 22:00 BST).",
+  "why": "The §14 forced-liquidation red-line = IMMEDIATE ELIMINATION. Our sleeve hard-latch (0.045 portfolio-kill) and survival caps are sized against ASSUMED margin/stop-out (margin=notional/30). Once the org publishes real margin + stop-out at launch, re-verify the lottery sleeve envelope AND survival-book caps cannot trigger a margin call under worst-case path. Also confirmed: no commissions; equity carries over between rounds ($1M initial) — both already match the B0183 sim.",
+  "value_rationale": "",
+  "scope": [
+    "execution/mt5_broker.py",
+    "execution/symbol_specs.py",
+    "docs/submission/operations-runbook.md"
+  ],
+  "recommendation": "At launch pull live margin/stop-out from MT5 symbol specs + org docs; re-run the sleeve worst-case envelope check against real stop-out; tighten portfolio-kill only if real margin is tighter than notional/30.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0197",
+      "B0201",
+      "B0202"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-06-17",
+      "event": "created",
+      "reason": "initial entry"
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link related->B0197",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0197"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-19",
+      "event": "launch_memo_prepared",
+      "reason": "PM 2026-06-19 pre-computed the launch-day section14 reference (docs/submission/b0195_section14_launch_memo_2026-06-19.md) by calling the REAL instrument functions (pipeline/stage2_lambda: margin_call_move/lam_max_safe/section14_safe_lambda, exact-parity to simulate_barbell). Key result: R1 lambda=1.5 breaches only at -65.5% (M=30) / -64.9% (M=20) -> ~+37pt cushion vs the worst-real single-round crypto move -27.6%, and stays SAFE (deploy unchanged) even if the real maintenance divisor is much tighter than 30:1; lambda<=2.0 safe at every M tested; only lambda=2.4 scales down (to 2.341 at M=30/w=-0.40/g=0.5, or 2.100 at w=-0.45). This turns B0195 at the flip into a CONFIRM-the-banner step (pull real maintenance/stop-out M -> --stage2-margin-div M -> match Table 3) rather than a derive-under-pressure step; the instrument is fail-closed (scales down/refuses) against any tighter-than-expected M. B0195 stays proposed (launch-day execution needs the real spec at the flip); memo left UNCOMMITTED-adjacent (new doc, committable) but deferred to the deliberate launch-doc commit. Decision rule unchanged: lambda<=2.0 at w=-0.40, or lambda>2.0 only with --stage2-worst-case-move -0.45."
+    },
+    {
+      "date": "2026-06-19",
+      "event": "field_update",
+      "reason": "add_link related->B0201",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0197"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0197",
+          "B0201"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "field_update",
+      "reason": "add_link related->B0202",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0197",
+          "B0201"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0197",
+          "B0201",
+          "B0202"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "event": "section14_reverify_done",
+      "reason": "LAUNCH-DAY §14 re-verify 2026-06-21 with TODAY'S live data (CEO-requested). Read-only MT5 margin probe (acct 10251 / FTWorldwide / $1M / 1:30, trade_mode=2): mt5.order_calc_margin implied maintenance divisor M = 30.000 BTC / 29.998 ETH / 30.004 SOL -> real M~=30 matches the assumed 30:1 EXACTLY; account margin_so_call=50%, margin_so_so(stop-out)=0.0% -> real forced-liq fires near 0% margin level, MORE lenient than the model's 100% trigger (model conservative). Worst single-round crypto move 2023-2026 (validate_barbell, today's data): 24h -24.9% / 48h -27.6% (unchanged benchmark). At λ=1.5, M=30: §14 breach boundary c*(λ)=-65.5% -> +37.9pt cushion vs -27.6% worst-real; M-insensitive. Arm-time banner (rehearsed) confirms 'λ=1.500 within the combined-safe ceiling -> deploying unscaled (no §14 haircut)'; combined ceiling (book gross 0.50 folded)=2.341. CONCLUSION: the frozen command's DEFAULT --stage2-margin-div 30 is now VERIFIED correct; no override needed; NO forced-liquidation path at λ=1.5 (combined crypto -27.6% + book -10% -> margin level 11.4). The anti-liquidation limit is SAFE. NOTE: arming is separately BLOCKED by B0202 (a kill-switch accounting bug, not a §14 risk). B0195 stays proposed: re-confirm the banner against live M at the actual 21:00Z flip."
+    }
+  ]
+}

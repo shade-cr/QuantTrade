@@ -1,0 +1,50 @@
+{
+  "id": "B0086",
+  "title": "Phase5 custom-primary gate: sha256 not enforced at runtime + generic phase5_custom module-name collision",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "phase5",
+    "loop-a",
+    "custom-primary",
+    "contract"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "hackathon-pm B0040 materialization demo 2026-05-29 (XAGUSD BULL_QUIET phase5_custom).",
+  "why": "Two doc/code drifts found while demonstrating the materialization->audit path: (1) custom_primary_sha256 is documented as enforced by the dispatcher (phase5-regime-methodology SKILL.md ~line 211), but scripts/run_xau_d1.py and phase5/run_proposal.py never read/verify it (grep sha256 -> 0 matches) -- the materialization gate is existence-only. So custom code can drift from its attested hash undetected. (2) _select_primary imports pipeline.primaries_phase5.<p.primary>; a proposal whose primary is the literal string phase5_custom materializes to phase5_custom.py -- so multiple distinct phase5_custom proposals collide on one module path. (Materialized survivors that set primary=phase5_<id> avoid this.)",
+  "value_rationale": "Medium: trust/reproducibility gap (sha256) + a real collision footgun if >1 phase5_custom proposal is materialized. Not blocking the established edge-null conclusion.",
+  "scope": [
+    "Either wire a sha256 check into the dispatcher (reject if module hash != custom_primary_sha256) OR correct SKILL.md to state the hash is a commit-time attestation only.",
+    "Require materialized customs to set primary=phase5_<unique_id> (and have the orchestrator rewrite phase5_custom -> phase5_<id> at materialization) so module paths never collide."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "logged from B0040 materialization demo"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(loop-a): B0040 custom-primary materialization->audit path demonstrated; B0085 normalizer; B0086 logged",
+      "sha": "HEAD"
+    }
+  ]
+}

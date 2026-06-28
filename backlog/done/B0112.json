@@ -1,0 +1,413 @@
+{
+  "id": "B0112",
+  "title": "Robust validation suite: block-bootstrap + synthetic stress + DSR/PBO sweep",
+  "status": "done",
+  "effort": "L",
+  "value": "H",
+  "tags": [
+    "survival-book",
+    "validation",
+    "backtest"
+  ],
+  "created_at": "2026-05-30",
+  "updated_at": "2026-05-31",
+  "source": "quant-phd-advisor re-review (2026-05-30) under the long-horizon + future-equity frame, verified against a reproduced full-history backtest (scripts/backtest_survival_book.py, 2000-01-03 -> 2026-05-29, 26.4y).",
+  "why": "The current backtest is ONE historical trajectory (one benign sample): no error bar on maxDD/vol, no synthetic crisis, SOL only ~1.4y so the full-crypto regime is under-sampled, and the kill-switch stress uses artificial thresholds not realistic price shocks. For a long-horizon product the honest output is a DISTRIBUTION and an insensitivity frontier, not a single number. Canonical methods per the quant advisor: stationary block bootstrap (Politis-Romano 1994) with automatic block length (Politis-White 2004) for maxDD/vol distributions; parametric synthetic stress (reuse stress_covariance machinery to GENERATE corr->1, crypto weekend mass-gap on gap_assets, FX shock) to verify caps/kills hold; parameter sweep GATED by CPCV (purged+embargo) + Deflated Sharpe Ratio (Bailey-LdP 2014, corrects for #trials) + PBO via CSCV (Bailey et al. 2015) -- pick by robust plateau, not peak.",
+  "value_rationale": "H: turns 'the backtest runs' into 'the risk machinery survives the distribution of futures' -- the core evidence a real product needs, and the harness that lets B0108-B0111 be evaluated without overfitting.",
+  "scope": [
+    "Stationary block bootstrap (Politis-Romano 1994, Politis-White 2004 auto block length) of the multi-asset path -> p5/p50/p95 of maxDD and realized vol. MUST resample ALIGNED-MULTIVARIATE blocks on a COMMON calendar and PRESERVE gap days, else the maxDD distribution understates the weekend-crypto gap tail apply_risk_controls (survival_book.py:489) was built for.",
+    "Synthetic stress: corr->1, crypto weekend mass-gap, FX shock; assert crypto var-cap, per-asset caps, gap-aware kill, DD latch hold. ADD a NON-self-referential historical overlay (2020-03 / 2022 crypto cascade) -- not only parametric corr->1 from the book's own stress_covariance (circular: confirms the book survives its own assumption).",
+    "Parameter sweep over vol_window, max_leverage, crypto_var_cap reported as a robustness PLATEAU; gate with CPCV + Deflated Sharpe + PBO/CSCV; never report the in-sample best."
+  ],
+  "recommendation": "DO FIRST. This hard-gates (blocks) B0108 and B0109 -- changes to realized risk must be evaluated on distributions, not the single FX-dominated 26y path. B0110/B0111 are safe to proceed in parallel.",
+  "out_of_scope": "Walk-forward purge/embargo of the continuously-held book (no overlapping triple-barrier windows; causality is the bar-close shift).",
+  "links": {
+    "blocks": [
+      "B0108",
+      "B0109"
+    ],
+    "blocked_by": [],
+    "related": [
+      "B0110",
+      "B0111",
+      "B0116"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [
+    {
+      "path": "signals/risk_reviews/survival_book_B0108-B0113_review.txt",
+      "verdict": "PROCEED_WITH_CAVEAT",
+      "severity_counts": {},
+      "date": "2026-05-30"
+    }
+  ],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-30",
+      "event": "created",
+      "reason": "from quant re-review"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "add_link related->B0108",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0108"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "add_link related->B0109",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0108"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0108",
+          "B0109"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "add_link related->B0110",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0108",
+          "B0109"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0108",
+          "B0109",
+          "B0110"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "add_link related->B0111",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0108",
+          "B0109",
+          "B0110"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0108",
+          "B0109",
+          "B0110",
+          "B0111"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "risk-officer: B0112 must hard-gate the risk-altering items",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0108",
+          "B0109",
+          "B0110",
+          "B0111"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0108",
+          "B0109"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0110",
+          "B0111"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "risk-officer: gap-preserving bootstrap + non-circular historical stress",
+      "field": "scope",
+      "from": [
+        "Stationary block bootstrap (PW2004 auto block length) of the multi-asset return path -> p5/p50/p95 of maxDD and realized vol.",
+        "Synthetic stress scenarios: crypto-crypto corr->1, weekend crypto mass-gap, FX shock; assert crypto var-cap, per-asset caps, gap-aware kill, DD latch hold.",
+        "Parameter sweep over vol_window, max_leverage, crypto_var_cap reported as a robustness plateau; gate with CPCV + DSR + PBO; never report the in-sample best.",
+        "Mixed FX(weekday)/crypto(7-day) calendar handled by the bootstrap."
+      ],
+      "to": [
+        "Stationary block bootstrap (Politis-Romano 1994, Politis-White 2004 auto block length) of the multi-asset path -> p5/p50/p95 of maxDD and realized vol. MUST resample ALIGNED-MULTIVARIATE blocks on a COMMON calendar and PRESERVE gap days, else the maxDD distribution understates the weekend-crypto gap tail apply_risk_controls (survival_book.py:489) was built for.",
+        "Synthetic stress: corr->1, crypto weekend mass-gap, FX shock; assert crypto var-cap, per-asset caps, gap-aware kill, DD latch hold. ADD a NON-self-referential historical overlay (2020-03 / 2022 crypto cascade) -- not only parametric corr->1 from the book's own stress_covariance (circular: confirms the book survives its own assumption).",
+        "Parameter sweep over vol_window, max_leverage, crypto_var_cap reported as a robustness PLATEAU; gate with CPCV + Deflated Sharpe + PBO/CSCV; never report the in-sample best."
+      ]
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "highest-leverage; hard-gates the risk-altering items",
+      "field": "value",
+      "from": "H",
+      "to": "H"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "risk-officer: promote ahead of risk-altering items",
+      "field": "recommendation",
+      "from": "Build alongside B0108/B0109 so their effect is measured on distributions, not the single benign path.",
+      "to": "DO FIRST. This hard-gates (blocks) B0108 and B0109 -- changes to realized risk must be evaluated on distributions, not the single FX-dominated 26y path. B0110/B0111 are safe to proceed in parallel."
+    },
+    {
+      "date": "2026-05-30",
+      "event": "field_update",
+      "reason": "DA review PROCEED_WITH_CAVEAT",
+      "field": "da_reviews",
+      "from": [],
+      "to": [
+        {
+          "path": "signals/risk_reviews/survival_book_B0108-B0113_review.txt",
+          "verdict": "PROCEED_WITH_CAVEAT",
+          "severity_counts": {},
+          "date": "2026-05-30"
+        }
+      ]
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(survival): quant-reviewed improvement backlog + vol-estimate floor (B0114)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "git_commit",
+      "reason": "feat(survival): quant-reviewed improvement backlog + vol-estimate floor (B0114)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "status_change",
+      "reason": "starting validation suite: gap-preserving aligned-multivariate stationary block bootstrap (TDD increment 1)",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0112 validation suite â€” gap-preserving stationary block bootstrap",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0112 validation suite â€” gap-preserving stationary block bootstrap",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0112 PW2004 automatic block-length selection",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0112 synthetic-stress primitives (inject_shock, scale_vol_window)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0112 synthetic-stress mode â€” verify caps/kills engage",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0112 final â€” CSCV/PBO + DSR overfitting-gated parameter sweep",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "status_change",
+      "reason": "validation suite complete (TDD): gap-aware stationary bootstrap + p5/p50/p95 distribution + PW2004 auto block + synthetic stress (caps/kills verified) + CSCV/PBO + DSR sweep. Quant-advisor-reviewed methodology; 16 tests green. Evidence: maxDD p5 -10.1% (robust to block len, latch-censored), vol structurally ~2.9%, PBO 0.236 (low overfit), DSR 0.155 (no significant edge).",
+      "from": "in_progress",
+      "to": "done"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "chore(backlog): B0112 done, B0114 done, B0108/B0109 blocked + links",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0108 mandate â€” relabel vol target 6% -> 3% (honest policy)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "chore(survival): B0112 bootstrap also reports total_return / CAGR distribution",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "field_update",
+      "reason": "add_link related->B0116",
+      "field": "links",
+      "from": {
+        "blocks": [
+          "B0108",
+          "B0109"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0110",
+          "B0111"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [
+          "B0108",
+          "B0109"
+        ],
+        "blocked_by": [],
+        "related": [
+          "B0110",
+          "B0111",
+          "B0116"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0116 â€” trend-tilt sleeve OFF-vs-ON paired bootstrap",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0116 variant sweep â€” no sleeve config rescues the book",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "feat(survival): B0119 lower crypto var cap 0.30 -> 0.25 (re-center realized concentration)",
+      "sha": "HEAD"
+    },
+    {
+      "date": "2026-05-31",
+      "event": "git_commit",
+      "reason": "chore: sync backlog provenance, survival-book live state, regime dossiers",
+      "sha": "HEAD"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": "B0096",
+  "title": "EPIC: Web monitoring dashboard -> control plane (FastAPI)",
+  "status": "proposed",
+  "effort": "L",
+  "value": "H",
+  "tags": [
+    "hackathon",
+    "dashboard",
+    "webapp",
+    "execution"
+  ],
+  "created_at": "2026-05-29",
+  "updated_at": "2026-05-29",
+  "source": "CEO request 2026-05-29: live web dashboard to monitor the service + active strategy; explicitly think ahead to a control plane (expose actions/functions, portfolio mgmt, corporate actions, multi-strategy). Stack approved: FastAPI+uvicorn+Jinja/htmx.",
+  "why": "Single seam to observe (and later act on) the live armed survival book from a browser. FastAPI keeps it same-language as execution/ so it reuses the exact state contracts and can grow typed action endpoints + OpenAPI + websockets without a rewrite. Safety invariant: the web NEVER touches the broker; it reads state files and (phase 2+) emits command intents the service consumes idempotently, so the execution loop stays the single broker-actor.",
+  "value_rationale": "",
+  "scope": [
+    "Phase 1 (B0097): read-only dashboard, localhost-bound, no actions.",
+    "Phase 2 (B0098): action endpoints via command-intent files + auth; CEO+risk-officer gated.",
+    "Phase 3 (B0099): multi-book/portfolio, multi-account (demo+Syphonix), corporate actions, historical analytics."
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-05-29",
+      "event": "created",
+      "reason": "Dashboard/control-plane epic approved by CEO"
+    },
+    {
+      "date": "2026-05-29",
+      "event": "git_commit",
+      "reason": "feat(dashboard): phase-1 read-only live monitor (FastAPI) for the survival book",
+      "sha": "HEAD"
+    }
+  ]
+}
