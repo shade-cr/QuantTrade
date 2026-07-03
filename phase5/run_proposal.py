@@ -39,6 +39,7 @@ from phase5.proposal import (
 )
 from pipeline.primary_contracts import normalize_primary_params
 from pipeline.thresholds import ev_breakeven_grid
+from pipeline.walk_forward import wf_event_floor
 
 # Import the v3 classifier helpers via path injection
 _REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -847,6 +848,323 @@ def _persist_record(p: Proposal, status: str, errors: list[str] | None = None,
     return record
 
 
+# --------------------------------------------------------------------------- #
+# B0010 — pooled-universe audit mode (Task 4). The single-name path above
+# regime-masks and audits ONE asset. This path audits a proposal against the
+# M3 many-ticker cross-sectional pool (configs/equity_m3_d1.yaml +
+# scripts/run_pooled_equity_d1.py -> scripts/run_multi_h4.py::_run_one_pool)
+# instead. grading_version "pooled_v1" NEVER auto-promotes: the status is
+# always "event_floor" or "completed_pending_human_read" — a human (or the
+# skeptic agent) reads the artifacts before any promotion decision.
+# --------------------------------------------------------------------------- #
+
+POOLED_TEMPLATE_CONFIG = Path("configs/equity_m3_d1.yaml")
+POOLED_RESULTS_DIR = Path("results/phase5_pooled")
+
+
+def build_transient_pooled_config(p: Proposal) -> Path:
+    """Overlay a Proposal onto the M3 pooled-universe template.
+
+    Mirrors build_transient_config's overlay pattern but targets
+    scripts/run_pooled_equity_d1.py's config contract (top-level
+    `regime_scope` / `feature_overrides_add` / `feature_overrides_drop`,
+    `features.cross_sectional`, `primary.candidates` + per-primary param
+    block) rather than the single-name regime-mask-parquet path. `horizon`
+    is left at the template's value (40) — only the tp/sl multipliers come
+    from the proposal's barrier_geometry_attestation.
+    """
+    if not POOLED_TEMPLATE_CONFIG.exists():
+        raise FileNotFoundError(f"Pooled template config not found at {POOLED_TEMPLATE_CONFIG}")
+    with POOLED_TEMPLATE_CONFIG.open("r", encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+
+    cfg["primary"]["candidates"] = [p.primary]
+    # B0085 parity with the single-name path: normalize aliases / fail fast on
+    # a missing canonical key at build time rather than an opaque KeyError
+    # inside the pooled subprocess.
+    normalized_params = normalize_primary_params(p.primary, p.primary_params)
+    cfg["primary"][p.primary] = dict(normalized_params)
+
+    cfg["triple_barrier"]["tp_atr_mult"] = p.barrier_geometry_attestation.tp_atr_mult
+    cfg["triple_barrier"]["sl_atr_mult"] = p.barrier_geometry_attestation.sl_atr_mult
+
+    cfg["regime_scope"] = list(p.regime_scope)
+    cfg["feature_overrides_add"] = list(p.feature_overrides.add)
+    cfg["feature_overrides_drop"] = list(p.feature_overrides.drop)
+
+    cfg.setdefault("features", {})
+    cfg["features"]["cross_sectional"] = True
+    cfg["features"]["gld_volume"] = False
+
+    # Evaluate every (asset, fold, model) cell at the SAME pre-registered
+    # audit threshold (fixed_0.50 -> 0.50, ev_breakeven_v1 -> p*) instead of
+    # per-fold inner-CV selection, so metrics_per_fold.json rows are directly
+    # comparable across the pool for the pooled_v1 grading below. Reuses the
+    # same effective_threshold() helper the single-name path uses.
+    cfg.setdefault("threshold_selection", {})["method"] = "fixed_ev"
+    cfg.setdefault("metrics", {})
+    cfg["metrics"]["audit_effective_threshold"] = float(p.effective_threshold())
+
+    out_dir = POOLED_RESULTS_DIR / p.id
+    cfg["output_dir"] = str(out_dir)
+
+    runtime_dir = RUNTIME_DIR / "configs"
+    runtime_dir.mkdir(parents=True, exist_ok=True)
+    cfg_path = runtime_dir / f"{p.id}_pooled.yaml"
+    with cfg_path.open("w", encoding="utf-8") as f:
+        yaml.safe_dump(cfg, f, sort_keys=False)
+    print(f"Wrote transient pooled config {cfg_path}")
+    return cfg_path
+
+
+def count_pooled_events_subprocess(cfg_path: Path) -> list[dict]:
+    """Run scripts/run_pooled_equity_d1.py --count-events-only and parse the
+    member_event_counts.json it writes at <output_dir>/member_event_counts.json.
+
+    Raises RuntimeError if the subprocess fails or the file is absent — the
+    caller (run_pooled_audit) turns that into a `subprocess_failed` record.
+    """
+    cfg = yaml.safe_load(Path(cfg_path).read_text(encoding="utf-8"))
+    out_dir = Path(cfg["output_dir"])
+    cmd = [sys.executable, "scripts/run_pooled_equity_d1.py", "--config", str(cfg_path),
+           "--count-events-only"]
+    print(f"+ {' '.join(cmd)}")
+    proc = subprocess.run(cmd, check=False, capture_output=True, text=True)
+    counts_path = out_dir / "member_event_counts.json"
+    if proc.returncode != 0 or not counts_path.exists():
+        raise RuntimeError(
+            f"pooled count-events-only subprocess did not produce {counts_path} "
+            f"(returncode {proc.returncode}): {(proc.stderr or '')[-1000:]}"
+        )
+    return json.loads(counts_path.read_text(encoding="utf-8"))
+
+
+def run_pooled_pipeline_subprocess(cfg_path: Path, dry_run: bool = False) -> subprocess.CompletedProcess:
+    """Invoke scripts/run_pooled_equity_d1.py for the full pooled run."""
+    cmd = [sys.executable, "scripts/run_pooled_equity_d1.py", "--config", str(cfg_path)]
+    if dry_run:
+        cmd.append("--dry-run")
+    print(f"+ {' '.join(cmd)}")
+    return subprocess.run(cmd, check=False, capture_output=True, text=True)
+
+
+def run_long_short_split_subprocess(out_dir: Path, cost_bps: float) -> subprocess.CompletedProcess:
+    """Invoke scripts/report_long_short_split.py against the pooled output dir."""
+    cmd = [sys.executable, "scripts/report_long_short_split.py",
+           "--results", str(out_dir), "--cost-bps", str(cost_bps)]
+    print(f"+ {' '.join(cmd)}")
+    return subprocess.run(cmd, check=False, capture_output=True, text=True)
+
+
+def _read_asset_best_model(asset_dir: Path) -> str | None:
+    summary_path = asset_dir / "summary.json"
+    if not summary_path.exists():
+        return None
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    return summary.get("best_model")
+
+
+def grade_pooled_v1(assets: list[str], primary: str, output_dir: Path) -> dict:
+    """v1 pooled grading (B0010).
+
+    For each asset, reads `<output_dir>/<asset>/<primary>/summary.json` for
+    the per-asset `best_model` (the existing T13 selector, already computed by
+    _run_one_pool) and that same directory's `metrics_per_fold.json` for the
+    best model's per-fold `sharpe_net` / `n_trades` — evaluated at the audit's
+    fixed effective threshold because build_transient_pooled_config sets
+    `threshold_selection.method="fixed_ev"`.
+
+    - `n_trades_total`: sum of `n_trades` across every (asset, fold)
+      best-model cell.
+    - `median_active_fold_sharpe`: `np.nanmedian` over per-(asset, fold)
+      `sharpe_net` where `n_trades >= 30` — the project's NaN-not-zero Sharpe
+      floor. Cells below 30 trades are EXCLUDED from the input list, never
+      coerced to 0 and never NaN-filled into the median.
+    - `breadth`: count of assets whose best-model total `n_trades >= 30` AND
+      whose own aggregate sharpe (`nanmedian` over that asset's active folds)
+      is finite and positive.
+
+    An asset missing `summary.json` / `metrics_per_fold.json` is recorded with
+    `n_trades_total=0`, `breadth_pass=False` rather than raising — a partial
+    pooled run still grades on what is present, and the per-asset breakdown
+    surfaces the missing member for the reviewer.
+    """
+    per_asset: dict[str, dict] = {}
+    all_active_sharpes: list[float] = []
+    n_trades_total = 0
+    breadth = 0
+
+    for asset in assets:
+        asset_dir = Path(output_dir) / asset / primary
+        best_model = _read_asset_best_model(asset_dir)
+        mpf_path = asset_dir / "metrics_per_fold.json"
+        if best_model is None or not mpf_path.exists():
+            per_asset[asset] = {
+                "best_model": best_model, "n_trades_total": 0,
+                "aggregate_sharpe": None, "breadth_pass": False,
+                "note": "missing summary.json or metrics_per_fold.json",
+            }
+            continue
+
+        rows = json.loads(mpf_path.read_text(encoding="utf-8"))
+        model_rows = [r for r in rows if r.get("model") == best_model]
+        fold_n = [int(r.get("n_trades", 0) or 0) for r in model_rows]
+        fold_sharpe = [r.get("sharpe_net") for r in model_rows]
+
+        asset_n_total = sum(fold_n)
+        n_trades_total += asset_n_total
+
+        asset_active = [
+            float(s) for s, n in zip(fold_sharpe, fold_n)
+            if n >= 30 and s is not None and np.isfinite(s)
+        ]
+        all_active_sharpes.extend(asset_active)
+        asset_agg_sharpe = float(np.nanmedian(asset_active)) if asset_active else float("nan")
+        breadth_pass = bool(
+            asset_n_total >= 30 and np.isfinite(asset_agg_sharpe) and asset_agg_sharpe > 0
+        )
+        if breadth_pass:
+            breadth += 1
+        per_asset[asset] = {
+            "best_model": best_model,
+            "n_trades_total": int(asset_n_total),
+            "aggregate_sharpe": asset_agg_sharpe if np.isfinite(asset_agg_sharpe) else None,
+            "breadth_pass": breadth_pass,
+        }
+
+    median_active_fold_sharpe = (
+        float(np.nanmedian(all_active_sharpes)) if all_active_sharpes else float("nan")
+    )
+    return {
+        "n_assets": len(assets),
+        "n_trades_total": int(n_trades_total),
+        "median_active_fold_sharpe": (
+            median_active_fold_sharpe if np.isfinite(median_active_fold_sharpe) else None
+        ),
+        "breadth": breadth,
+        "per_asset": per_asset,
+    }
+
+
+def _criterion_eval_pooled_v1(p: Proposal, grading: dict) -> dict:
+    """Evaluate falsification_criterion keys against pooled_v1 grading output.
+
+    `audit_class_in` / `per_episode_survival_fraction` / `dsr_min` have no
+    pooled-universe analog (they are per-single-name classifier / episode /
+    DSR concepts) and are recorded as the string "not_applicable_pooled_v1"
+    rather than silently skipped or forced to pass — a reviewer must read
+    them explicitly. This function only annotates the record; it never
+    changes run_pooled_audit's status (always event_floor or
+    completed_pending_human_read — no auto-promotion).
+    """
+    fc = p.falsification_criterion
+    med = grading["median_active_fold_sharpe"]
+    out: dict[str, Any] = {}
+    if med is None:
+        out["median_active_fold_sharpe_min"] = {
+            "computed": None, "threshold": fc.median_active_fold_sharpe_min,
+            "passed": False,
+            "note": "no active (n_trades>=30) fold anywhere in the pool",
+        }
+    else:
+        out["median_active_fold_sharpe_min"] = {
+            "computed": med, "threshold": fc.median_active_fold_sharpe_min,
+            "passed": bool(med >= fc.median_active_fold_sharpe_min),
+        }
+    out["n_trades_total_min"] = {
+        "computed": grading["n_trades_total"], "threshold": fc.n_trades_total_min,
+        "passed": bool(grading["n_trades_total"] >= fc.n_trades_total_min),
+    }
+    for key in ("audit_class_in", "per_episode_survival_fraction", "dsr_min"):
+        out[key] = "not_applicable_pooled_v1"
+    return out
+
+
+def run_pooled_audit(p: Proposal, dry_run: bool = False) -> dict:
+    """Full pooled-universe audit chain (B0010).
+
+    (1) count-events-only subprocess -> member_event_counts.json -> pooled
+        event-floor check (sum of in-scope events across the pool vs
+        wf_event_floor(n_folds, train_min_bars)); starved -> status
+        "event_floor" (same record shape as the single-name path, plus
+        "mode": "pooled_universe" and per-member counts), no full run
+        attempted.
+    (2) Otherwise: full pooled run, then report_long_short_split, then the
+        pooled_v1 grading. Status is always "completed_pending_human_read" —
+        this NEVER auto-promotes.
+    """
+    cfg_path = build_transient_pooled_config(p)
+    cfg = yaml.safe_load(Path(cfg_path).read_text(encoding="utf-8"))
+    out_dir = Path(cfg["output_dir"])
+
+    try:
+        counts = count_pooled_events_subprocess(cfg_path)
+    except RuntimeError as e:
+        return _persist_record(
+            p, status="subprocess_failed", errors=[str(e)],
+            extras={"mode": "pooled_universe", "config_path": str(cfg_path)},
+        )
+
+    primary_counts = [c for c in counts if c.get("primary") == p.primary]
+    total_events = sum(int(c.get("n_events", 0)) for c in primary_counts)
+    floor = wf_event_floor(cfg["walk_forward"]["n_folds"], cfg["walk_forward"]["train_min_bars"])
+    if total_events < floor:
+        return _persist_record(
+            p, status="event_floor",
+            errors=[
+                f"pooled event_floor: {total_events} pooled in-scope events < "
+                f"wf_event_floor {floor} (n_folds={cfg['walk_forward']['n_folds']}, "
+                f"train_min_bars={cfg['walk_forward']['train_min_bars']})"
+            ],
+            extras={
+                "mode": "pooled_universe",
+                "config_path": str(cfg_path),
+                "member_event_counts": primary_counts,
+                "pooled_event_floor": {"total_events": total_events, "wf_event_floor": floor},
+            },
+        )
+
+    proc = run_pooled_pipeline_subprocess(cfg_path, dry_run=dry_run)
+    if proc.returncode != 0:
+        err_txt = proc.stderr or ""
+        if len(err_txt) > 10000:
+            err_txt = err_txt[:2000] + "\n...[stderr truncated]...\n" + err_txt[-8000:]
+        return _persist_record(
+            p, status="subprocess_failed",
+            errors=[f"pooled run return code {proc.returncode}", err_txt],
+            extras={"mode": "pooled_universe", "config_path": str(cfg_path),
+                    "member_event_counts": primary_counts},
+        )
+
+    ls_proc = run_long_short_split_subprocess(out_dir, float(cfg["metrics"]["cost_per_trade_bps"]))
+    ls_path = out_dir / "long_short_split.json"
+    if ls_proc.returncode == 0 and ls_path.exists():
+        long_short = json.loads(ls_path.read_text(encoding="utf-8"))
+    else:
+        long_short = {
+            "error": f"report_long_short_split.py failed (returncode {ls_proc.returncode})",
+            "stderr": (ls_proc.stderr or "")[-2000:],
+        }
+
+    assets = sorted({c["asset"] for c in primary_counts})
+    grading = grade_pooled_v1(assets, p.primary, out_dir)
+    criterion_eval = _criterion_eval_pooled_v1(p, grading)
+
+    return _persist_record(
+        p, status="completed_pending_human_read",
+        extras={
+            "mode": "pooled_universe",
+            "grading_version": "pooled_v1",
+            "config_path": str(cfg_path),
+            "results_dir": str(out_dir),
+            "member_event_counts": primary_counts,
+            "grading": grading,
+            "long_short": long_short,
+            "criterion_eval": criterion_eval,
+        },
+    )
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--proposal", required=True)
@@ -859,7 +1177,32 @@ def main() -> int:
                     help="asset symbol to inject when the proposal JSON omits 'asset' "
                          "(e.g. XAUUSD for early T-series asset-blind proposals). "
                          "Inferred from the filename automatically when not provided.")
+    ap.add_argument("--pooled-universe", action="store_true",
+                    help="B0010: audit against the M3 pooled cross-sectional universe "
+                         "(scripts/run_pooled_equity_d1.py) instead of the single-name "
+                         "regime-mask path. Never auto-promotes (grading_version "
+                         "pooled_v1) — status stops at event_floor or "
+                         "completed_pending_human_read for human/skeptic review.")
     args = ap.parse_args()
+
+    if args.pooled_universe:
+        proposal_path = Path(args.proposal)
+        _asset = args.asset or _infer_asset_from_path(proposal_path)
+        p = load_proposal(proposal_path, asset_override=_asset)
+        try:
+            p.validate()
+        except ProposalValidationError as e:
+            record = _persist_record(p, status="failed_validation", errors=[str(e)],
+                                     extras={"mode": "pooled_universe"})
+            return 1
+        lint_ok, lint_summary = p.run_lookahead_lint()
+        if not lint_ok:
+            record = _persist_record(p, status="failed_lookahead_lint", errors=[lint_summary],
+                                     extras={"mode": "pooled_universe"})
+            return 1
+        record = run_pooled_audit(p, dry_run=args.dry_run)
+        return 0 if record["status"] in ("completed_pending_human_read", "event_floor") else 1
+
     record = run(Path(args.proposal), dry_run=args.dry_run,
                  preflight_only=args.preflight_only,
                  skip_subprocess=args.skip_subprocess,
