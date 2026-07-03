@@ -1,0 +1,72 @@
+{
+  "id": "B0008",
+  "title": "M3 operational guards: artifact config-stamp pairing + strict --assets filter",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "m3",
+    "reproducibility"
+  ],
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-03",
+  "source": "2026-07-03 M3 final whole-branch review (SDD execution of the M3 plan)",
+  "why": "Two cross-task findings from the final review that protect research discipline rather than fix defects. (1) The long/short reporter pairs oof_predictions.parquet with events_side_fwd.parquet by index only; a barrier-param change re-run into the same output_dir (or a Phase-D error leaving a stale oof) would silently pair artifacts from different configurations — a config-hash stamp written into both artifacts and checked by the reporter closes it. (2) run_pooled_equity_d1 --assets silently drops unknown tickers; under B0003 caveat 2 a silently shrunken pool is an unrecorded trial — raise on subset - set(universe) instead.",
+  "value_rationale": "Guards the frozen-universe/trial-count discipline that the M3 methodology depends on.",
+  "scope": [
+    "Stamp a config hash (universe path + triple_barrier + date_range + primary params) into events_side_fwd.parquet metadata and the per-asset summary.json; reporter refuses mismatched pairs",
+    "run_pooled_equity_d1: raise ValueError when --assets contains tickers not in the universe segment"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0003"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "event": "created",
+      "reason": "logged from M3 final branch review"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0003",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

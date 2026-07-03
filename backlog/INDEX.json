@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-03T10:16:26Z",
+  "updated_at": "2026-07-03T16:49:47Z",
   "entries": [
     {
       "id": "B0001",
@@ -79,6 +79,34 @@
         "features",
         "equity",
         "cross-section"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0007",
+      "status": "proposed",
+      "title": "M3 polish: deferred Minor findings from per-task + final reviews",
+      "updated_at": "2026-07-03",
+      "effort": "S",
+      "value": "L",
+      "tags": [
+        "m3",
+        "polish"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0008",
+      "status": "proposed",
+      "title": "M3 operational guards: artifact config-stamp pairing + strict --assets filter",
+      "updated_at": "2026-07-03",
+      "effort": "S",
+      "value": "M",
+      "tags": [
+        "m3",
+        "reproducibility"
       ],
       "blocks_count": 0,
       "blocked_by_count": 0

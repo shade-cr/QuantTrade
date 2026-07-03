@@ -1,0 +1,77 @@
+{
+  "id": "B0007",
+  "title": "M3 polish: deferred Minor findings from per-task + final reviews",
+  "status": "proposed",
+  "effort": "S",
+  "value": "L",
+  "tags": [
+    "m3",
+    "polish"
+  ],
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-03",
+  "source": "2026-07-03 M3 final whole-branch review (SDD execution of the M3 plan)",
+  "why": "Ten Minors deferred during the M3 SDD execution, all triaged non-blocking by the final whole-branch review. Fix opportunistically when next touching each file.",
+  "value_rationale": "",
+  "scope": [
+    "asset_registry._load_m3_universe_specs: use load_universe() instead of raw yaml.safe_load (malformed edit should raise clear ValueError, not import-time TypeError)",
+    "asset_registry._M3_UNIVERSE_PATH: anchor to repo root via Path(__file__) — silent-empty fallback on wrong cwd drops 44 registry entries (highest-value item)",
+    "fetch_equity_daily._fetch_one: keep ticker in the short-history error message (single-ticker mode diagnostic)",
+    "tests/test_fetch_equity_universe.py: remove unused import pytest; add single-ticker mode + --ticker/--universe XOR tests",
+    "report_long_short_split: extract shared _is_aligned helper (CLI + library duplicate the predicate); sd <= 1e-12 instead of == 0.0 (codebase convention); threshold test should assert short side unaffected",
+    "run_pooled_equity_d1: route costs through resolve_cost_bps — fix AS PART OF B0005, behavior identical until a friction: section exists",
+    "run_multi_h4._compose_pooled_X: dead is_fx/is_metal/is_crypto constant-zero columns for equity pools (touching H4 core; bundle with next sanctioned H4 change)"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0005"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "event": "created",
+      "reason": "logged from M3 final branch review"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0005",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0005"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}
