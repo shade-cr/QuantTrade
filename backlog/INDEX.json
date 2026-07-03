@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-03T18:18:08Z",
+  "updated_at": "2026-07-03T20:35:39Z",
   "entries": [
     {
       "id": "B0001",
@@ -70,7 +70,7 @@
     },
     {
       "id": "B0006",
-      "status": "proposed",
+      "status": "in_progress",
       "title": "Cross-sectional feature pack: relative-to-peers ranks, dispersion, sector-relative signals",
       "updated_at": "2026-07-03",
       "effort": "M",
@@ -128,7 +128,7 @@
     },
     {
       "id": "B0010",
-      "status": "proposed",
+      "status": "in_progress",
       "title": "Loop A equity: single-name regime-gated audits starve at the WF event floor — fix baseline windowing + route audits to the pooled universe",
       "updated_at": "2026-07-03",
       "effort": "M",

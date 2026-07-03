@@ -1,7 +1,7 @@
 {
   "id": "B0006",
   "title": "Cross-sectional feature pack: relative-to-peers ranks, dispersion, sector-relative signals",
-  "status": "proposed",
+  "status": "in_progress",
   "effort": "M",
   "value": "H",
   "tags": [
@@ -125,6 +125,18 @@
       "date": "2026-07-03",
       "event": "field_update",
       "reason": "Implementation plan written: docs/superpowers/plans/2026-07-03-pooled-audit-cross-section.md (pack Task 1, wiring Task 2, validation protocol + falsification evaluation Task 6)"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "status_change",
+      "reason": "plan execution: validation runs starting",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "cs_pack_validation_verdict",
+      "reason": "B0006 CS-pack v1 validation READ (2026-07-03): pack FAILS pre-registered falsification (spec section 6). Runs: (a) clf_equity_m3_d1_cs state primaries, (b) clf_equity_m3_cusum_cs sparse cusum, vs no-CS baseline clf_equity_m3_d1. CRIT1 (no cluster signal) FIRES: pure-CS clustered-MDA mean +1.66e-4 (a)/+6.0e-5 (b), median ~1e-5 - same ~1e-4 band as the non-CS noise floor (7.4e-5/8.9e-5) and 2-3 orders below the technical/primary cluster (0.007-0.032); ONC re-clusters per fold so per-cluster bootstrap-CI-over-folds not cleanly derivable, spirit applied. CRIT2 (no skill uplift) FIRES: nanmedian ROC-AUC 0.5445 (a) vs 0.5452 baseline (delta -0.0007, ~1SE 0.0027); PR-AUC 0.2802 vs 0.2818; OOF-AUC 0.5312 vs 0.5297; stack passes 0/70 both = CS changed no decision. CRIT3 (survivorship) NOT COMPUTABLE this round (no sector-neutral re-run; features already rank-only by construction). CRIT4 (DSR collapse) NOT CLEANLY COMPUTABLE, consistent with collapse: PSR/DSR non-NaN only 10/280 (a), 0/280 baseline, 0/140 (b); where computable DSR ~0 after 112-trial deflation. Passing requires opposite of ALL four -> FAILS. Section-5 protocol: CS signal NOT larger under sparse cusum (pure-CS MDA lower, OOF-AUC 0.5219 lower, zero-trade 98.8% worse) -> directional hypothesis falsified. Cross-cutting: effective-N converges ~650-690 across dense-state (688.6/647.4), pooled-audit (~11.9k raw) and ungated-cusum (19,659 raw -> 654 eff, ~30x concurrency) vs 799 floor -> cross-asset wall-clock uniqueness methodology is the binding constraint (open question for quant-phd-advisor: is full cross-asset redundancy the right AFML section-4 generalization?). Readout: docs/superpowers/reports/2026-07-03-pooled-audit-b0006-readout.md. Status unchanged (human decision)."
     }
   ]
 }

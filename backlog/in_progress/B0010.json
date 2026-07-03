@@ -1,7 +1,7 @@
 {
   "id": "B0010",
   "title": "Loop A equity: single-name regime-gated audits starve at the WF event floor — fix baseline windowing + route audits to the pooled universe",
-  "status": "proposed",
+  "status": "in_progress",
   "effort": "M",
   "value": "H",
   "tags": [
@@ -152,6 +152,18 @@
       "date": "2026-07-03",
       "event": "field_update",
       "reason": "Task 5 landed: phase5/regime_stats.py gained module constant AUDIT_WINDOW_START=2006-01-01 and an additive per-primary-baseline field n_events_audit_window (in-regime event count restricted to bars >= that date), threaded through _primary_raw_metrics/_encode_primary_across_regimes -> build_primary_baselines -> dossier primary_baseline_summary. Additive-only; old dossiers without the key remain loadable (no reader validates dossier keys strictly). .claude/agents/phase5-hypothesizer.md gained an I/O-contract guidance block: input arrives inline in the dispatch prompt (no tool calls), hypothesis/causal_story are 30-800 chars target <=700, and event-count design floors must use n_events_audit_window not the full-history n_events. Tests: tests/phase5/test_baseline_audit_window.py (3 cases) + 2 existing test_build_all_regimes.py assertions updated for the additive key. Full suite: 1332 tests, 0 failed, 19 skipped. Dossier rebuild (44 equities) deliberately deferred to Task 6 per plan."
+    },
+    {
+      "date": "2026-07-03",
+      "event": "status_change",
+      "reason": "plan execution: pooled audit path built, T002D1 re-audit starting",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "t002d1_verdict",
+      "reason": "T002D1 pooled re-audit READ (2026-07-03): NOT CONFIRMED - breadth-collapse single-name/single-fold artifact. Grading pooled_v1 nominally passes (median_active_fold_sharpe 0.663 >= 0.5; n_trades_total 515 >= 50) at the audit effective threshold 0.3643 (ev_breakeven tp2.5/sl1.0), but breadth=1/35: only GE clears the 30-trade+positive gate, so the 0.663 median IS GE's number - specifically GE lr fold-2 (31 trades) alone; GE's other 3 models are anti-discriminative (OOF AUC xgb 0.403/lgbm 0.358/rf 0.433 <0.5) and GE DSR ~0 (1e-147..0). At the fixed 0.55 headline the strategy nearly empties: rf 5 long + 13 short ALL losers (hit 0.0), lgbm/lr/xgb 0 trades. DA caveats applied: full B0003 long-side inflation, no surviving long/short population at headline, cs_spread_21/vix_chg_5 MDA in noise band (see B0006), 68% gate moot. Also STARVED: pre-flight pooled effective-N ~650-690 < 799 floor (raw 11,901 events). Hypothesis under-tested, NOT falsified as mechanism; do not promote. Readout: docs/superpowers/reports/2026-07-03-pooled-audit-b0006-readout.md. Status unchanged (human decision)."
     }
   ]
 }
