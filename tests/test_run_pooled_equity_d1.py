@@ -1,9 +1,14 @@
 """Phase-A member builder mirrors run_backtest._run_one_primary alignment
 invariants; runner CLI plumbing (count-events mode)."""
+import json
+import sys
+
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 
+import scripts.run_pooled_equity_d1 as runner
 from scripts.run_pooled_equity_d1 import build_member_inputs
 
 
@@ -58,3 +63,117 @@ def test_member_returns_none_when_no_signals(synth_ohlcv, cfg):
     ohlcv = synth_ohlcv.loc[features.index]
     cfg["primary"]["momentum_zscore"]["threshold"] = 99.0  # unreachable
     assert build_member_inputs("TEST", "momentum_zscore", ohlcv, features, cfg) is None
+
+
+def test_keep_mask_realignment_with_mid_series_nan(synth_ohlcv, cfg):
+    """A NaN injected into a non-ATR feature column, at timestamps that
+    coincide with real triple-barrier events, must drop exactly those events
+    via the pre_drop_index.isin(X.index) keep_mask — and the surviving
+    sample weights must equal the full (no-NaN) run's weights at those same
+    timestamps, since avg_uniqueness (w_all) is computed BEFORE the dropna
+    mask is applied. A mutant that replaces keep_mask with np.ones(...)
+    (i.e. never actually filters w) would still pass length checks by luck
+    in the no-collision case, but corrupts the w<->event alignment here."""
+    features = _features_for(synth_ohlcv)
+    ohlcv = synth_ohlcv.loc[features.index]
+
+    baseline = build_member_inputs("TEST", "ema_cross", ohlcv, features, cfg)
+    assert baseline is not None
+    event_index = baseline["X"].index  # event timestamps (this suite's synth
+    # fixture keeps the default integer index end-to-end, so these are the
+    # positional "timestamps" — real datetime-indexed ohlcv behaves identically)
+    assert len(event_index) >= 10, "need enough events to pick a mid-series window"
+
+    mid = len(event_index) // 2
+    nan_hit = event_index[mid: mid + 3]
+    assert len(nan_hit) == 3
+    assert nan_hit.isin(event_index).all()
+
+    features_nan = features.copy()
+    features_nan["extra_feat"] = 0.0
+    features_nan.loc[nan_hit, "extra_feat"] = np.nan
+
+    m = build_member_inputs("TEST", "ema_cross", ohlcv, features_nan, cfg)
+    assert m is not None
+
+    expected_index = event_index.difference(nan_hit)
+    surviving_index = m["X"].index
+    assert surviving_index.equals(expected_index)
+    assert not surviving_index.isin(nan_hit).any()
+
+    n = len(m["X"])
+    assert n == len(m["y"]) == len(m["w"]) == len(m["fwd_ret"]) == len(expected_index)
+
+    baseline_w = pd.Series(np.asarray(baseline["w"]), index=event_index)
+    np.testing.assert_allclose(np.asarray(m["w"]), baseline_w.loc[surviving_index].values)
+
+
+def test_count_events_only_writes_artifacts_and_skips_training(tmp_path, monkeypatch, synth_ohlcv, cfg):
+    """--count-events-only must build members, write member_event_counts.json
+    and per-(asset, primary) events_side_fwd.parquet artifacts, and return
+    before ever invoking the (expensive, untested-here) pooled trainer."""
+    ohlcv_full = (
+        synth_ohlcv.set_index("time")[["open", "high", "low", "close", "volume"]]
+        .astype("float64")
+    )
+
+    universe_path = tmp_path / "universe.yaml"
+    universe_path.write_text(
+        yaml.safe_dump(
+            {
+                "selection_rule": "test fixture",
+                "selected_at": "2026-07-03",
+                "stocks": ["AAA"],
+                "etfs": [],
+                "alternates": [],
+                "excluded_delistees": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    out_dir = tmp_path / "out"
+    full_cfg = dict(cfg)
+    full_cfg.update(
+        {
+            "universe_path": str(universe_path),
+            "universe_segment": "stocks",
+            "date_range": {"start": "2010-01-01", "end": "2013-01-01"},
+            "meta_pooling": {
+                "schema": "core",
+                "weight_balance": "per_class",
+                "pooled_uniqueness": True,
+                "train_min_frac": 0.5,
+            },
+            "output_dir": str(out_dir),
+        }
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(yaml.safe_dump(full_cfg), encoding="utf-8")
+
+    monkeypatch.setattr(runner, "load_dataset", lambda path: ohlcv_full)
+    monkeypatch.setattr(runner, "build_macro_frame", lambda s, e, cache_dir: pd.DataFrame())
+    monkeypatch.setattr(runner, "build_tier2_features", lambda ohlcv, macro: _features_for(ohlcv))
+
+    def _must_not_train(*args, **kwargs):
+        raise AssertionError("must not train")
+
+    monkeypatch.setattr(runner, "_run_one_pool", _must_not_train)
+    monkeypatch.setattr(
+        sys, "argv",
+        ["run_pooled_equity_d1.py", "--config", str(config_path), "--count-events-only"],
+    )
+
+    rc = runner.main()
+    assert rc == 0
+
+    counts_path = out_dir / "member_event_counts.json"
+    assert counts_path.exists()
+    counts = json.loads(counts_path.read_text(encoding="utf-8"))
+    assert len(counts) > 0
+    for c in counts:
+        assert c["n_events"] > 0
+        parquet_path = out_dir / c["asset"] / c["primary"] / "events_side_fwd.parquet"
+        assert parquet_path.exists()
+        df = pd.read_parquet(parquet_path)
+        assert set(df.columns) == {"side", "fwd_ret"}
