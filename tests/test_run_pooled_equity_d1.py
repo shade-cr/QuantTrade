@@ -177,3 +177,93 @@ def test_count_events_only_writes_artifacts_and_skips_training(tmp_path, monkeyp
         assert parquet_path.exists()
         df = pd.read_parquet(parquet_path)
         assert set(df.columns) == {"side", "fwd_ret"}
+
+
+@pytest.mark.parametrize("cs_enabled", [True, False])
+def test_cross_sectional_join_is_config_gated(tmp_path, monkeypatch, synth_ohlcv, cfg, cs_enabled):
+    """With features.cross_sectional true, every member's features frame gains
+    the 8 cs_* columns before build_member_inputs is called; with it false (or
+    absent), no cs_ columns appear. Uses the count-events mocked-main pattern
+    with a 2-ticker universe so the CS panel is non-degenerate (a 1-ticker
+    panel would make cs ranks/breadth trivially constant)."""
+    ohlcv_full = (
+        synth_ohlcv.set_index("time")[["open", "high", "low", "close", "volume"]]
+        .astype("float64")
+    )
+
+    universe_path = tmp_path / "universe.yaml"
+    universe_path.write_text(
+        yaml.safe_dump(
+            {
+                "selection_rule": "test fixture",
+                "selected_at": "2026-07-03",
+                "stocks": ["AAA", "BBB"],
+                "etfs": [],
+                "alternates": [],
+                "excluded_delistees": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    out_dir = tmp_path / "out"
+    full_cfg = dict(cfg)
+    full_cfg.update(
+        {
+            "universe_path": str(universe_path),
+            "universe_segment": "stocks",
+            "date_range": {"start": "2010-01-01", "end": "2013-01-01"},
+            "meta_pooling": {
+                "schema": "core",
+                "weight_balance": "per_class",
+                "pooled_uniqueness": True,
+                "train_min_frac": 0.5,
+            },
+            "output_dir": str(out_dir),
+            "features": {"cross_sectional": cs_enabled},
+        }
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(yaml.safe_dump(full_cfg), encoding="utf-8")
+
+    monkeypatch.setattr(runner, "load_dataset", lambda path: ohlcv_full)
+    monkeypatch.setattr(runner, "build_macro_frame", lambda s, e, cache_dir: pd.DataFrame())
+    monkeypatch.setattr(runner, "build_tier2_features", lambda ohlcv, macro: _features_for(ohlcv))
+
+    def _must_not_train(*args, **kwargs):
+        raise AssertionError("must not train")
+
+    monkeypatch.setattr(runner, "_run_one_pool", _must_not_train)
+    monkeypatch.setattr(
+        sys, "argv",
+        ["run_pooled_equity_d1.py", "--config", str(config_path), "--count-events-only"],
+    )
+
+    seen_cols: dict[str, list[str]] = {}
+    orig = runner.build_member_inputs
+
+    def spy(asset, primary_name, ohlcv, features, cfg_):
+        seen_cols[asset] = list(features.columns)
+        return orig(asset, primary_name, ohlcv, features, cfg_)
+
+    monkeypatch.setattr(runner, "build_member_inputs", spy)
+
+    rc = runner.main()
+    assert rc == 0
+
+    counts_path = out_dir / "member_event_counts.json"
+    assert counts_path.exists()
+    counts = json.loads(counts_path.read_text(encoding="utf-8"))
+    assert len(counts) > 0
+    for c in counts:
+        parquet_path = out_dir / c["asset"] / c["primary"] / "events_side_fwd.parquet"
+        assert parquet_path.exists()
+
+    assert len(seen_cols) > 0, "spy never observed a build_member_inputs call"
+    for asset, cols in seen_cols.items():
+        if cs_enabled:
+            assert "cs_mom_12_1_rank" in cols and "cs_breadth_200" in cols, \
+                f"{asset}: expected cs_ columns when cross_sectional=True, got {cols}"
+        else:
+            assert not any(c.startswith("cs_") for c in cols), \
+                f"{asset}: unexpected cs_ columns when cross_sectional=False: {cols}"

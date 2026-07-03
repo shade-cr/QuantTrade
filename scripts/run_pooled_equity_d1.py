@@ -146,11 +146,26 @@ def main() -> int:
     out_root = Path(cfg["output_dir"])
     out_root.mkdir(parents=True, exist_ok=True)
 
+    # Pass 1: load the whole OHLCV panel (needed in full for cross-sectional
+    # features, which reduce across tickers at each date).
+    panel: dict[str, pd.DataFrame] = {}
+    for t in tickers:
+        panel[t] = load_dataset(Path(f"data/D1/{t}_D1.csv")).loc[s:e]
+
+    cs_frames: dict[str, pd.DataFrame] = {}
+    if (cfg.get("features") or {}).get("cross_sectional"):
+        from pipeline.cross_section import build_cross_sectional_features
+        cs_frames = build_cross_sectional_features(panel, tickers)
+
     members_by_primary: dict[str, list[dict]] = defaultdict(list)
     counts: list[dict] = []
+    # Pass 2: per-ticker tier-2 features (+ cs_ join before dropna) + members.
     for t in tickers:
-        ohlcv = load_dataset(Path(f"data/D1/{t}_D1.csv")).loc[s:e]
-        features = build_tier2_features(ohlcv, macro).dropna()
+        ohlcv = panel[t]
+        features = build_tier2_features(ohlcv, macro)
+        if cs_frames:
+            features = features.join(cs_frames[t])
+        features = features.dropna()
         ohlcv = ohlcv.loc[features.index]
         for primary in cfg["primary"]["candidates"]:
             m = build_member_inputs(t, primary, ohlcv, features, cfg)
