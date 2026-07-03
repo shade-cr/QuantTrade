@@ -1,0 +1,108 @@
+# M3 survivorship-clean CONTROL — 9 SPDR sector ETFs (B0003 caveat 3).
+# Ex-ante interpretation rule (FROZEN, do not reinterpret after results):
+#   uplift on stocks AND ETFs        -> credibility rises materially
+#   uplift on stocks, NOT on ETFs    -> flag: possibly universe-contaminated
+#                                       OR genuine idiosyncratic dispersion — ambiguous
+#   ETF run fails min-trades gates   -> report "control underpowered"; count neither way
+asset_class: equity_index
+universe_path: configs/universe_equity_m3.yaml
+universe_segment: etfs
+
+date_range:
+  start: "2006-01-01"
+  # End pinned inside the FRED cache span (cache/fred updated 2026-05-25);
+  # same end as equity_d1.yaml so NVDA-smoke and M3 windows match.
+  end: "2026-04-30"
+
+triple_barrier:
+  # Same asymmetric-3R geometry as equity_d1.yaml (see rationale there).
+  horizon: 40
+  tp_atr_mult: 3.0
+  sl_atr_mult: 1.0
+  atr_period: 14
+
+primary:
+  candidates: [ema_cross, momentum_zscore]
+  ema_cross:
+    fast: 20
+    slow: 50
+    dead_zone_atr: 0.25
+  momentum_zscore:
+    lookback: 20
+    threshold: 0.3
+
+features:
+  tier: 2
+  gld_volume: false
+
+walk_forward:
+  # Pooled folds come from make_pooled_time_folds (train_min_frac below);
+  # n_folds=4 is affordable because the pool has ~35x NVDA's event count.
+  # train_min_bars is used only for the wf_event_floor pre-flight print.
+  n_folds: 4
+  train_min_bars: 1500
+  purge_bars: 20
+  embargo_pct: 0.01
+
+models:
+  - xgb
+  - lgbm
+  - rf
+  - lr
+
+hyperparam_search:
+  method: random
+  n_iter: 20
+  cv_splits: 3
+  cv_type: purged_time_series
+  cv_purge_bars: 20
+
+calibration:
+  method: sigmoid
+  cv: prefit
+  calib_holdout_pct: 0.15
+  min_minority_for_isotonic: 50
+
+stacking:
+  baseline: trade_all_primary
+  min_models_beating_baseline: 2
+  min_folds_beating_baseline: 3
+  max_oof_corr: 0.7
+  min_trades_per_fold: 30
+  meta_learner: logistic_regression
+  meta_C: 1.0
+  meta_penalty: l2
+  meta_n_folds: 4
+
+best_model:
+  min_trades_per_fold: 30
+  min_folds_with_trades: 2
+
+metrics:
+  # ETFs trade at ~1-2 bps spreads; 3 bps keeps slippage margin without the
+  # 10 bps stock cost punishing the lower-vol barrier geometry (B0005).
+  cost_per_trade_bps: 3
+  bars_per_year: 252
+  threshold_grid: [0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62]
+  threshold_selection: inner_cv
+
+threshold_selection:
+  method: inner_cv
+  inner_splits: 3
+  min_trades_per_inner_fold: 20
+
+meta_pooling:
+  scope: within_class
+  schema: core
+  weight_balance: per_class
+  pooled_uniqueness: true
+  train_min_frac: 0.5
+
+output_dir: results/clf_equity_m3_etf_d1
+random_seed: 42
+
+dry_run:
+  enabled_via_cli_flag: true
+  n_iter: 5
+  max_minutes_per_model_warn: 8
+  max_minutes_per_model_abort: 15
