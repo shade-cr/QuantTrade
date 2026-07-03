@@ -9,7 +9,7 @@
     "equity"
   ],
   "created_at": "2026-07-03",
-  "updated_at": "2026-07-03",
+  "updated_at": "2026-07-04",
   "source": "2026-07-03 deep project review (alpha-readiness audit); gaps previously lived only in spec prose",
   "why": "yfinance has no point-in-time index membership — only currently-listed names. Spec section 7 explicitly required this backlog item; it was never created. Long-side results on a survivor universe are inflated (~1-2pp/yr large-cap anchor) and the short side is deflated (best shorts — failures — are absent). The meta-labeler can also learn survivor-only regularities ('large drawdowns always recovered'). The point-in-time re-run is the definitive acceptance gate for anything Loop B-bound; until then all M3 claims are within-universe relative claims only.",
   "value_rationale": "Acceptance gate for promotion toward paper trading; converts caveated M3 results into trustworthy ones.",
@@ -24,7 +24,8 @@
     "blocks": [],
     "blocked_by": [],
     "related": [
-      "B0003"
+      "B0003",
+      "B0013"
     ],
     "supersedes": [],
     "superseded_by": [],
@@ -67,6 +68,37 @@
         "blocked_by": [],
         "related": [
           "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0013",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0013"
         ],
         "supersedes": [],
         "superseded_by": [],

@@ -10,7 +10,7 @@
     "loop-a"
   ],
   "created_at": "2026-07-03",
-  "updated_at": "2026-07-03",
+  "updated_at": "2026-07-04",
   "source": "2026-07-03 pooled-audit B0006 readout verification pass",
   "why": "Today's runtime-only stdout print means skeptical reviewers cannot reproduce effective-N without rerunning (verified 2026-07-03: re-derivation matched to ~4.5% only). The pooled effective-N vs the 799 floor is the decisive number in every pooled verdict this round (T002D1, dense-state baselines, ungated sparse cusum) and currently exists nowhere on disk.",
   "value_rationale": "Cheap (S) fix that protects reproducibility of the load-bearing pooled effective-N number used across every pooled audit and readout.",
@@ -24,7 +24,8 @@
     "blocks": [],
     "blocked_by": [],
     "related": [
-      "B0010"
+      "B0010",
+      "B0013"
     ],
     "supersedes": [],
     "superseded_by": [],
@@ -40,6 +41,37 @@
       "date": "2026-07-03",
       "event": "created",
       "reason": "logged from 2026-07-03 pooled-audit B0006 readout verification pass"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0013",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0010"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0010",
+          "B0013"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
     }
   ]
 }

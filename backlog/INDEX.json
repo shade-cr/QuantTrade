@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-03T22:50:24Z",
+  "updated_at": "2026-07-03T23:05:30Z",
   "entries": [
     {
       "id": "B0001",
@@ -44,7 +44,7 @@
       "id": "B0004",
       "status": "proposed",
       "title": "Survivorship-safe equity data: point-in-time vendor swap (Norgate/Sharadar) via EquityDataSource seam",
-      "updated_at": "2026-07-03",
+      "updated_at": "2026-07-04",
       "effort": "M",
       "value": "H",
       "tags": [
@@ -146,7 +146,7 @@
       "id": "B0011",
       "status": "proposed",
       "title": "Persist pooled_effective_N to pooled-run artifacts",
-      "updated_at": "2026-07-03",
+      "updated_at": "2026-07-04",
       "effort": "S",
       "value": "M",
       "tags": [
@@ -161,13 +161,28 @@
       "id": "B0012",
       "status": "proposed",
       "title": "Methodology consult: cross-asset wall-clock uniqueness redundancy assumption",
-      "updated_at": "2026-07-03",
+      "updated_at": "2026-07-04",
       "effort": "M",
       "value": "H",
       "tags": [
         "methodology",
         "phase5",
         "m3"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0013",
+      "status": "proposed",
+      "title": "Pooled-path polish: final-review minors + gate/config guards from the 2026-07-03 plan-2 branch",
+      "updated_at": "2026-07-04",
+      "effort": "S",
+      "value": "M",
+      "tags": [
+        "m3",
+        "loop-a",
+        "polish"
       ],
       "blocks_count": 0,
       "blocked_by_count": 0

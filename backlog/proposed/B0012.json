@@ -10,7 +10,7 @@
     "m3"
   ],
   "created_at": "2026-07-03",
-  "updated_at": "2026-07-03",
+  "updated_at": "2026-07-04",
   "source": "2026-07-03 pooled-audit B0006 readout verification pass",
   "why": "ALL 2026-07-03 configurations (dense state 688.6/647.4, regime-gated pooled audit, ungated sparse cusum 19,659 raw -> 654 effective, 30x concurrency) converge to effective-N ~650-690 < floor 799 because pooled_avg_uniqueness treats simultaneous events on DIFFERENT names as fully redundant. AFML §4 uniqueness concerns overlapping outcomes on the SAME price path -- two correlated-but-distinct names are partially independent bets (Grinold breadth), so full cross-asset redundancy may massively over-shrink and structurally caps every pooled equity result. This is an empirical falsification of the 'sparse asynchronous events scale effective-N' premise (CUSUM bursts synchronize across names on market-wide information arrival), making this THE binding constraint.",
   "value_rationale": "Every downstream pooled-equity result is bounded by this decision; getting the cross-asset uniqueness methodology wrong either over-shrinks all pooled results (false negatives) or under-shrinks them (false positives) depending on direction.",
@@ -25,7 +25,8 @@
     "blocked_by": [],
     "related": [
       "B0010",
-      "B0006"
+      "B0006",
+      "B0013"
     ],
     "supersedes": [],
     "superseded_by": [],
@@ -41,6 +42,39 @@
       "date": "2026-07-03",
       "event": "created",
       "reason": "logged from 2026-07-03 pooled-audit B0006 readout verification pass"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0013",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0010",
+          "B0006"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0010",
+          "B0006",
+          "B0013"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
     }
   ]
 }

@@ -1,0 +1,144 @@
+{
+  "id": "B0013",
+  "title": "Pooled-path polish: final-review minors + gate/config guards from the 2026-07-03 plan-2 branch",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "m3",
+    "loop-a",
+    "polish"
+  ],
+  "created_at": "2026-07-04",
+  "updated_at": "2026-07-04",
+  "source": "2026-07-03 plan-2 final whole-branch review (pooled audit + CS pack); all triaged non-blocking",
+  "why": "Deferred minors plus two operational observations from the final review of the pooled-audit/cross-section branch. None block the shipped branch; two items change what future pooled audits DO by default and deserve prompt attention: (1) the pooled event-floor gate tests raw pooled events (11.9k passes) while the binding quantity is effective-N (~650 fails) — every pooled audit burns the full run even when starved; fix the gate once B0012 settles what effective-N should be. (2) build_transient_pooled_config hardcodes features.cross_sectional true, but B0006 FAILED its pre-registered falsification — future pooled audits carry 8 validated-as-noise features plus a ~273-bar warmup haircut by default; the default needs a human re-decision now that the readout is in.",
+  "value_rationale": "",
+  "scope": [
+    "Pooled audit gate: compare effective-N (not raw N) against the floor once B0012 resolves; until then persist both (B0011) and print the starvation warning into the audit record",
+    "build_transient_pooled_config: make features.cross_sectional a parameter/config default informed by the B0006 verdict (human decision), not hardcoded true",
+    "run_pooled_equity_d1: broaden regime-parquet fail-loud check (regime_id column exists + nonzero index intersection with events; tz/dtype mismatch currently starves silently with only a print)",
+    "Delete dead metrics.threshold_selection key from configs and validate threshold_selection.method as an enum (a typo of inner_cv silently degrades to fixed-threshold)",
+    "run_proposal --pooled-universe: warn/refuse when combined with flags it ignores (e.g. --preflight-only)",
+    "cs_breadth_200: NaN (not 0.0) during the 200-bar warmup; exclude pre-listing names from the denominator — masked today by cs_mom warmup dropna, becomes real under B0004 late listings",
+    "Tests: differentiate the two tickers in the CS-join gated test and assert per-asset values differ (cross-wiring detection); hoist fo_add/fo_drop out of the per-ticker loop"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0011",
+      "B0012",
+      "B0004"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-04",
+      "event": "created",
+      "reason": "logged from plan-2 final whole-branch review"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0011",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0011"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0012",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0011"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0011",
+          "B0012"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0004",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0011",
+          "B0012"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0011",
+          "B0012",
+          "B0004"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}
