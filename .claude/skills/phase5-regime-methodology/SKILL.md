@@ -372,7 +372,7 @@ The floor is computed from `pipeline.walk_forward.wf_event_floor` and depends on
 |---|---|---|
 | **metal, D1, built-in** (ema_cross, momentum_zscore, ...) | **599** | 22y geometry, n_folds=3; the ~300 heuristic does NOT apply |
 | fx, D1, built-in | **399** | 22y geometry, n_folds=3 |
-| **equity, D1, built-in** | **399** | Starting at FX-D1 parity; tighten from each asset's measured dossier `n_events` baseline once data is in hand |
+| **equity, D1, built-in** | **399** | Starting at FX-D1 parity; tighten from each asset's measured dossier `n_events_audit_window` baseline once data is in hand |
 | D1, phase5_custom (any asset_class) | **300** | Custom primary may fire more/less selectively — adjust from dossier |
 | crypto, H4 (any primary) | **250** | Shorter history on most crypto assets |
 

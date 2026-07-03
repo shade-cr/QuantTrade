@@ -22,7 +22,7 @@ import pytest
 import yaml
 
 from phase5 import run_proposal
-from phase5.proposal import FalsificationCriterion, load_proposal
+from phase5.proposal import load_proposal
 
 
 def _proposal_dict() -> dict:
@@ -282,6 +282,40 @@ def test_run_pooled_audit_count_subprocess_failure_persists_subprocess_failed(tm
     assert record["status"] == "subprocess_failed"
     assert record["mode"] == "pooled_universe"
     assert any("boom" in e for e in record["errors"])
+
+
+def test_run_pooled_audit_refuses_phase5_primary_before_any_subprocess(tmp_path, monkeypatch):
+    """B0010 review follow-up: pooled_universe v1 has no B0015b input-disjointness
+    check and never calls apply_primary_feature_blacklist, so a phase5_* custom
+    primary must be refused fail-loud before any subprocess runs — not silently
+    audited with weaker guarantees than the single-name path."""
+    monkeypatch.setattr(run_proposal, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(run_proposal, "POOLED_RESULTS_DIR", tmp_path / "results")
+    monkeypatch.setattr(run_proposal, "AUDIT_RESULTS_DIR", tmp_path / "audit_results")
+    payload = _proposal_dict()
+    payload["primary"] = "phase5_whatever"
+    path = tmp_path / "phase5_proposal.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    p = load_proposal(path)
+
+    def _fail_if_called(*args, **kwargs):
+        raise AssertionError("no subprocess wrapper may be invoked for a refused phase5_* primary")
+
+    monkeypatch.setattr(run_proposal, "count_pooled_events_subprocess", _fail_if_called)
+    monkeypatch.setattr(run_proposal, "run_pooled_pipeline_subprocess", _fail_if_called)
+    monkeypatch.setattr(run_proposal, "run_long_short_split_subprocess", _fail_if_called)
+
+    record = run_proposal.run_pooled_audit(p)
+
+    assert record["status"] == "failed_validation"
+    assert record["mode"] == "pooled_universe"
+    assert any("phase5_" in e and "B0013" in e for e in record["errors"])
+
+    out_path = tmp_path / "audit_results" / f"{p.id}.json"
+    assert out_path.exists()
+    persisted = json.loads(out_path.read_text(encoding="utf-8"))
+    assert persisted["status"] == "failed_validation"
+    assert persisted["mode"] == "pooled_universe"
 
 
 # --------------------------------------------------------------------------- #

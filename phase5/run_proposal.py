@@ -1083,6 +1083,15 @@ def _criterion_eval_pooled_v1(p: Proposal, grading: dict) -> dict:
 def run_pooled_audit(p: Proposal, dry_run: bool = False) -> dict:
     """Full pooled-universe audit chain (B0010).
 
+    (0) Scope guard — pooled_universe mode v1 supports built-in primaries
+        with an empty primary_feature_blacklist only. The pooled runner
+        (scripts/run_pooled_equity_d1.py -> _run_one_pool) does not call
+        apply_primary_feature_blacklist and has no B0015b input-disjointness
+        check, so a phase5_* custom primary or a non-empty blacklist would
+        silently skip enforcement the single-name path guarantees. Refused
+        fail-loud, before any subprocess, as a persisted "failed_validation"
+        record — consistent with how p.validate() failures are reported
+        elsewhere in this module.
     (1) count-events-only subprocess -> member_event_counts.json -> pooled
         event-floor check (sum of in-scope events across the pool vs
         wf_event_floor(n_folds, train_min_bars)); starved -> status
@@ -1093,6 +1102,19 @@ def run_pooled_audit(p: Proposal, dry_run: bool = False) -> dict:
         pooled_v1 grading. Status is always "completed_pending_human_read" —
         this NEVER auto-promotes.
     """
+    if p.primary.startswith("phase5_") or getattr(p, "primary_feature_blacklist", []):
+        return _persist_record(
+            p, status="failed_validation",
+            errors=[
+                "pooled_universe mode v1 supports built-in primaries with "
+                "empty blacklists only — the pooled runner does not apply "
+                "primary_feature_blacklist or the B0015b input-disjointness "
+                "check; route phase5_* proposals through the single-name "
+                "path or extend the pooled runner first (B0013)."
+            ],
+            extras={"mode": "pooled_universe"},
+        )
+
     cfg_path = build_transient_pooled_config(p)
     cfg = yaml.safe_load(Path(cfg_path).read_text(encoding="utf-8"))
     out_dir = Path(cfg["output_dir"])
