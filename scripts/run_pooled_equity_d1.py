@@ -35,12 +35,18 @@ import yaml
 
 from pipeline.data import load_dataset
 from pipeline.equity_universe import load_universe
-from pipeline.features import build_tier2_features
+from pipeline.features import build_tier2_features, feature_add_status
 from pipeline.labels import compute_primary_state, triple_barrier_labels
 from pipeline.macro_fetch import build_macro_frame
 from pipeline.sample_weights import avg_uniqueness
 from scripts.run_backtest import _select_primary
 from scripts.run_multi_h4 import _run_one_pool
+
+
+def _regimes_path(asset: str) -> Path:
+    """Monkeypatch seam for tests; production default matches the M3 Task 8
+    regime-parquet layout (data/regimes/<TICKER>_d1_regimes.parquet)."""
+    return Path(f"data/regimes/{asset}_d1_regimes.parquet")
 
 
 def build_member_inputs(
@@ -61,6 +67,20 @@ def build_member_inputs(
         print(f"  {asset}/{primary_name}: 0 primary signals — skipping.")
         return None
 
+    # Regime gating (additive, mirrors run_backtest.py's regime_mask_path
+    # block): filter events to bars whose OWN regime_id is in scope BEFORE
+    # triple-barrier labeling, so weights/labels/folds are computed only on
+    # in-scope events.
+    scope = cfg.get("regime_scope") or []
+    if scope:
+        regimes = pd.read_parquet(_regimes_path(asset))
+        in_scope_ts = regimes.index[regimes["regime_id"].isin(set(scope))]
+        n_before = len(events)
+        events = events[events.index.isin(in_scope_ts)]
+        print(f"  {asset}/{primary_name}: regime gate kept {len(events)}/{n_before} events")
+        if events.empty:
+            return None
+
     atr = features["_atr_14"]
     labels = triple_barrier_labels(
         ohlcv, events, atr,
@@ -79,7 +99,13 @@ def build_member_inputs(
     w_all = avg_uniqueness(t_starts_all, t_ends_all, n_bars=len(ohlcv))
 
     state = compute_primary_state(valid["side"], cap=60)  # D1 cap, as run_backtest
-    X = features.drop(columns=["_atr_14"]).loc[valid.index].copy()
+    # B0010: feature_overrides_drop subtracts from the meta's X (mirrors
+    # run_backtest.py's feature_overrides_drop / primary_feature_blacklist
+    # handling). The primary already received the full `features` above via
+    # _select_primary; this drop only affects the meta's view from here on.
+    fo_drop = cfg.get("feature_overrides_drop", []) or []
+    meta_features = features.drop(columns=["_atr_14"]).drop(columns=fo_drop, errors="ignore")
+    X = meta_features.loc[valid.index].copy()
     X["primary_side"] = state["primary_side"].values
     if primary_name == "ema_cross":
         spread = (ohlcv["close"].ewm(span=cfg["primary"]["ema_cross"]["fast"]).mean()
@@ -120,6 +146,7 @@ def build_member_inputs(
         "cost_bps": cost_bps,
         "X": X, "y": y, "w": w, "side": side, "fwd_ret": fwd_ret,
         "event_time": event_time, "label_end_time": label_end_time,
+        "meta_feature_columns": list(meta_features.columns),
         "pool_key": cfg["asset_class"],
     }
 
@@ -179,6 +206,24 @@ def main() -> int:
                 {"side": m["side"].values, "fwd_ret": m["fwd_ret"].values},
                 index=m["event_time"],
             ).to_parquet(d / "events_side_fwd.parquet")
+
+            # B0010: feature_overrides_add is validated (not applied — all
+            # tier2 columns already flow to the meta minus feature_overrides_drop)
+            # and the evidence is recorded per (asset, primary) so the audit
+            # artifact can prove which features the meta actually saw. Exact
+            # mirror of run_backtest.py:1158-1168.
+            fo_add = cfg.get("feature_overrides_add", []) or []
+            fo_drop = cfg.get("feature_overrides_drop", []) or []
+            fo_add_status = feature_add_status(fo_add, set(m["meta_feature_columns"]))
+            (d / "feature_overrides_status.json").write_text(
+                json.dumps({
+                    "add_requested": list(fo_add),
+                    "add_status": fo_add_status,
+                    "drop_applied": list(fo_drop),
+                    "meta_feature_count": len(m["meta_feature_columns"]),
+                }, indent=2),
+                encoding="utf-8",
+            )
 
     (out_root / "member_event_counts.json").write_text(
         json.dumps(counts, indent=2), encoding="utf-8")
