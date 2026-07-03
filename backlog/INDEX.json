@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-03T08:22:14Z",
+  "updated_at": "2026-07-03T10:16:26Z",
   "entries": [
     {
       "id": "B0001",
@@ -27,7 +27,7 @@
     },
     {
       "id": "B0003",
-      "status": "proposed",
+      "status": "in_progress",
       "title": "M3 cross-section: equity universe run (OQ1 decided: ~35 t0-selected large-caps + ETF control)",
       "updated_at": "2026-07-03",
       "effort": "M",
