@@ -128,6 +128,7 @@ Path: `signals/regime_stats/<asset>_<freq_lower>/<regime_id>.json`  (B0070: e.g.
       "hit_rate_vs_other_regimes": "higher|lower|similar",
       "return_vs_other_regimes": "higher|lower|similar",
       "n_events": 142,
+      "n_events_audit_window": 78,
       "rankable": true,
       "low_confidence": false
     }
@@ -138,6 +139,12 @@ Path: `signals/regime_stats/<asset>_<freq_lower>/<regime_id>.json`  (B0070: e.g.
 // regimes". null when rankable=false (fewer than 2 regimes fired it). low_confidence is
 // driven ONLY by n_events < 30; rankable=false with low_confidence=false means
 // measured-but-not-cross-rankable (use the figure as an absolute in-regime value).
+// n_events is measured over the ticker's FULL CSV history; n_events_audit_window (B0010)
+// restricts the same in-regime count to the window the M3 audit actually replays (2006+
+// config window). On long-history names n_events can overstate the audit-window count by
+// ~2x, so ALWAYS design/size event-density margins off n_events_audit_window, not n_events.
+// If a dossier predates this field, treat n_events as an upper bound only and assume
+// roughly half of n_events as a conservative estimate.
 ```
 
 All `_q`-suffixed and `_quantile` fields are quantile ranks (0.0–1.0) computed across ALL regimes for that asset. NO absolute values appear in the dossier.
@@ -370,9 +377,13 @@ The floor is computed from `pipeline.walk_forward.wf_event_floor` and depends on
 | crypto, H4 (any primary) | **250** | Shorter history on most crypto assets |
 
 **Equity D1 note**: the 399 floor is a conservative starting point adopted at parity with FX D1. For
-any specific equity (e.g. NVDA), the dossier's measured `primary_baseline_summary.<primary>.n_events`
-per regime provides the actual in-regime baseline. When that baseline is materially above 399 (as
-is likely for liquid mega-cap equities with multi-year histories), the hypothesizer should verify
-the regime-filtered event count against the 1.5× safety margin rule (B0155) before submitting.
+any specific equity (e.g. NVDA), the dossier's measured `primary_baseline_summary.<primary>.n_events_audit_window`
+(NOT the full-history `n_events` — see the dossier schema note above; the audit replays the 2006+
+config window, and full-history counts overstate that window's baseline by ~2x on long-history
+names, B0010) per regime provides the actual in-regime baseline. When that baseline is materially
+above 399 (as is likely for liquid mega-cap equities with multi-year histories), the hypothesizer
+should verify the regime-filtered event count against the 1.5× safety margin rule (B0155) before
+submitting. If a dossier predates the `n_events_audit_window` field, assume roughly half of
+`n_events` as a conservative stand-in.
 
 The binding requirement for any proposal remains `max(floor, your n_trades_total_min)`.
