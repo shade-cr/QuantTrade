@@ -171,6 +171,11 @@
       "date": "2026-07-03",
       "event": "decision",
       "reason": "event-density gate PASSED: 5-ticker probe (XOM,MSFT,JPM,KO,CAT) ema_cross=20365 pooled events (~200.6/yr/name), momentum_zscore=17267 pooled events (~170.1/yr/name), both well above 3/yr/name floor. Full universe (stocks, equity_m3_d1.yaml, 35 members): ema_cross=143012 pooled events, momentum_zscore=121050 pooled events. ETF control (equity_m3_etf_d1.yaml, 9 members): ema_cross=37218 pooled events, momentum_zscore=30960 pooled events. Proceeding to dry-run."
+    },
+    {
+      "date": "2026-07-03",
+      "event": "decision",
+      "reason": "M3 first readout: NO EDGE. Stocks: 0/8 (primary,model) pools pass should_stack (stack=false in 70/70 per-asset decisions, all competence); ETF control: underpowered (fails min-trades gates, 18/18 stack=false, effective_N<floor) -> counts neither way per frozen rule; long/short: only ema_cross/rf tradeable at 0.55, long Sharpe +1.58 (survivor-inflated) but short Sharpe -7.39 (197 trades, 0.5pct hit) -> no side-symmetric edge. Root cause: pooled_effective_N below the 799 refusal floor in all 4 pools (stocks 688.6/647.4, ETFs 718.4/685.3); state-based primaries overstate independent info ~187-208x. PSR/DSR NaN everywhere (familywise trial count 112). Full analysis in results/clf_equity_m3_d1/M3_READOUT.md + docs/superpowers/reports/2026-07-03-m3-readout.md"
     }
   ]
 }
