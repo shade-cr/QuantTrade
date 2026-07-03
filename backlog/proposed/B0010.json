@@ -1,0 +1,142 @@
+{
+  "id": "B0010",
+  "title": "Loop A equity: single-name regime-gated audits starve at the WF event floor — fix baseline windowing + route audits to the pooled universe",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "loop-a",
+    "phase5",
+    "equity",
+    "m3"
+  ],
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-03",
+  "source": "Loop A ticks 1-2 (2026-07-03): both DA-approved proposals died pre-subprocess at status=event_floor",
+  "why": "Two independent failures with one structure. Tick 1 (BEAR_QUIET, bollinger 15/2.0): 73 in-regime events vs floor 599. Tick 2 (BULL_QUIET, cusum default 2.0): 364 vs 599 — despite the dossier baseline citing 803. Root causes: (1) WINDOW MISMATCH — dossier baselines are measured over the ticker's FULL history (ABT: ~41y) while the audit config restricts to 2006-2026 (~20y), so the hypothesizer designs against event counts ~2x what the audit will see; the DA even enforced 'use the measured baseline' which is the wrong target. (2) STRUCTURAL — single-name x regime-gate (16-68% of bars) x sparse event primary on D1 arithmetically cannot clear wf_event_floor(3, 1500)=599 within a 20y window for most cells; the floor exists for good reason (WF geometry), so the fix is more events, not a lower bar. The M3 pooled cross-section is the natural resolution: 35 names x ~364 regime-gated sparse events ~= 12.7k pooled events, asynchronous across names (effective-N scales, unlike the falsified dense-primary pooling).",
+  "value_rationale": "Blocks Loop A on equities entirely: every regime-conditional sparse-primary proposal will starve at audit regardless of quality. Unblocking it combines the two validated directions (sparse event primaries + pooled cross-section).",
+  "scope": [
+    "Fix dossier baseline windowing: measure primary_baseline_summary n_events over the AUDIT config window (2006+), or report both full-history and audit-window counts; update hypothesizer payload guidance to design against the audit-window number",
+    "Design decision (spec-level): extend phase5.run_proposal to audit equity proposals against the POOLED M3 universe (regime gate per name, pooled WF via _run_one_pool) instead of single-name run_backtest — an equity-specific audit path",
+    "Interim cheap option: per-episode falsification criterion (already supported by the floor error message) for single-name audits",
+    "Re-run the T002D1 cusum/BULL_QUIET hypothesis under whichever path lands first — the hypothesis itself was DA-approved and remains untested (starved, not falsified)"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0003",
+      "B0006",
+      "B0009"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "event": "created",
+      "reason": "logged after ticks 1-2 both returned status=event_floor"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0003",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0006",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0006"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0009",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0006"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0006",
+          "B0009"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

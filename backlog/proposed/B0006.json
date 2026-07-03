@@ -25,7 +25,8 @@
     "blocks": [],
     "blocked_by": [],
     "related": [
-      "B0003"
+      "B0003",
+      "B0010"
     ],
     "supersedes": [],
     "superseded_by": [],
@@ -88,6 +89,37 @@
       "date": "2026-07-03",
       "event": "decision",
       "reason": "Promoted to spec after M3 NO EDGE confirmed the signal-starved trigger. Advisor consult recommends 6 CS percentile-rank features (sector/market-residual momentum, 52wk-high, residual reversal, idio-vol, turnover, basket-beta) + dispersion & breadth panel scalars; cap justified by ~690 effective bets and 35-name panel width (Marcenko-Pastur). Key guards: no sector one-hots (collider bias), percentile ranks not z-scores, clustered MDA with F1. Spec: docs/superpowers/specs/2026-07-03-b0006-cross-sectional-features.md"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0010",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0010"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
     }
   ]
 }

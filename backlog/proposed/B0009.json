@@ -26,7 +26,8 @@
     "blocks": [],
     "blocked_by": [],
     "related": [
-      "B0003"
+      "B0003",
+      "B0010"
     ],
     "supersedes": [],
     "superseded_by": [],
@@ -63,6 +64,37 @@
         "blocked_by": [],
         "related": [
           "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0010",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0010"
         ],
         "supersedes": [],
         "superseded_by": [],

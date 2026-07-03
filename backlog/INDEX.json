@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-03T17:24:29Z",
+  "updated_at": "2026-07-03T18:18:08Z",
   "entries": [
     {
       "id": "B0001",
@@ -122,6 +122,22 @@
         "loop-a",
         "phase5",
         "infra"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0010",
+      "status": "proposed",
+      "title": "Loop A equity: single-name regime-gated audits starve at the WF event floor — fix baseline windowing + route audits to the pooled universe",
+      "updated_at": "2026-07-03",
+      "effort": "M",
+      "value": "H",
+      "tags": [
+        "loop-a",
+        "phase5",
+        "equity",
+        "m3"
       ],
       "blocks_count": 0,
       "blocked_by_count": 0
