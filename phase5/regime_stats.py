@@ -99,6 +99,23 @@ BASELINE_SL_MULT = 1.0
 BASELINE_HORIZON_D1 = 20          # holding horizon in D1 bars; scaled by FREQ_BARS_PER_DAY
 MIN_BASELINE_EVENTS = 30          # project-wide competence floor (== min_trades_per_fold; B0036 effective_n<30)
 
+# B0010: Loop A ticks 1-2 both died at the audit event floor because
+# primary_baseline_summary.n_events is measured over the ticker's FULL history
+# (e.g. ABT ~41y) while M3 audits run on this 2006+ config window (~half the
+# events) — full-history counts overstate audit-window counts ~2x on
+# long-history names. AUDIT_WINDOW_START anchors the additive
+# n_events_audit_window field so the hypothesizer designs event-count floors
+# against the number the audit will actually see.
+AUDIT_WINDOW_START = "2006-01-01"
+
+
+def _audit_window_mask(index: pd.DatetimeIndex) -> np.ndarray:
+    """Boolean mask: True where `index` timestamp is >= AUDIT_WINDOW_START (B0010)."""
+    start = pd.Timestamp(AUDIT_WINDOW_START)
+    if index.tz is not None:
+        start = start.tz_localize(index.tz) if start.tz is None else start.tz_convert(index.tz)
+    return np.asarray(index >= start)
+
 BASELINE_PANEL = (
     ("ema_crossover", lambda ohlc, atr: ema_crossover_signal(ohlc["close"], atr)),
     ("momentum_zscore", lambda ohlc, atr: momentum_zscore_signal(ohlc["close"])),
@@ -121,14 +138,19 @@ def _primary_raw_metrics(
 
     Runs the signal's non-zero entries through the triple barrier, buckets each
     event to the regime of its ENTRY bar (PIT: the entry-bar label is known at
-    entry), and returns {regime_id: {n_events, trade_count_per_year, hit_rate,
-    median_per_trade_return}}. Metrics are None for a regime with zero events.
-    Events entered on an unlabeled (NaN-regime, burn-in) bar are dropped — not
-    attributed to any regime — so per-regime n_events sums to <= total signals.
+    entry), and returns {regime_id: {n_events, n_events_audit_window,
+    trade_count_per_year, hit_rate, median_per_trade_return}}. Metrics are None
+    for a regime with zero events. Events entered on an unlabeled (NaN-regime,
+    burn-in) bar are dropped — not attributed to any regime — so per-regime
+    n_events sums to <= total signals.
+
+    n_events_audit_window (B0010) is the SAME in-regime count restricted to
+    entries stamped >= AUDIT_WINDOW_START — the window M3 audits actually run
+    on, as opposed to the ticker's full CSV history.
     """
     bars_per_year = FREQ_BARS_PER_YEAR[frequency]
     out = {
-        r: {"n_events": 0, "trade_count_per_year": None,
+        r: {"n_events": 0, "n_events_audit_window": 0, "trade_count_per_year": None,
             "hit_rate": None, "median_per_trade_return": None}
         for r in REGIMES
     }
@@ -140,6 +162,7 @@ def _primary_raw_metrics(
     entry_close = ohlc["close"].reindex(labels.index)
     per_trade_ret = np.log(labels["exit_price"] / entry_close) * labels["side"]
     entry_regime = regimes_df["regime_id"].reindex(labels.index)
+    audit_mask = _audit_window_mask(labels.index)
     for r in REGIMES:
         mask = (entry_regime == r).to_numpy()
         n = int(mask.sum())
@@ -149,6 +172,7 @@ def _primary_raw_metrics(
         years = max(in_regime_bars / bars_per_year, 1e-9)
         out[r] = {
             "n_events": n,
+            "n_events_audit_window": int((mask & audit_mask).sum()),
             "trade_count_per_year": float(n / years),
             "hit_rate": float((labels["label"].to_numpy()[mask] == 1).mean()),
             "median_per_trade_return": float(np.median(per_trade_ret.to_numpy()[mask])),
@@ -202,6 +226,10 @@ def _encode_primary_across_regimes(raw_by_regime: dict[str, dict]) -> dict[str, 
         enc["hit_rate_vs_other_regimes"] = _tag("hit_rate", r)
         enc["return_vs_other_regimes"] = _tag("median_per_trade_return", r)
         enc["n_events"] = int(raw_by_regime[r]["n_events"])
+        # B0010: additive, audit-window-restricted twin of n_events. Old dossiers
+        # (built before this field existed) simply lack the key — readers must
+        # not assume its presence.
+        enc["n_events_audit_window"] = int(raw_by_regime[r]["n_events_audit_window"])
         # B1: rankability is reported separately and does NOT taint low_confidence.
         enc["rankable"] = not rankable_any_missing
         enc["low_confidence"] = bool(raw_by_regime[r]["n_events"] < MIN_BASELINE_EVENTS)

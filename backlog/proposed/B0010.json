@@ -147,6 +147,11 @@
       "date": "2026-07-03",
       "event": "field_update",
       "reason": "Task 4 landed: phase5/run_proposal.py gained build_transient_pooled_config / run_pooled_audit / grade_pooled_v1 + --pooled-universe CLI flag (commit 53bf528). Pooled event-floor check (sum of in-scope events vs wf_event_floor) gates the heavy subprocess; full run wires threshold_selection.method=fixed_ev + metrics.audit_effective_threshold so metrics_per_fold.json rows are directly comparable per (asset, fold, best_model) cell. Grading (pooled_v1) computes n_trades_total, nanmedian median_active_fold_sharpe over active (n_trades>=30) cells, and breadth (assets clearing 30 trades + positive aggregate sharpe); never auto-promotes -- status is event_floor or completed_pending_human_read only. Tests: tests/phase5/test_pooled_audit_path.py (7 cases). Full suite: 1327 tests, 0 failed, 19 skipped."
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "Task 5 landed: phase5/regime_stats.py gained module constant AUDIT_WINDOW_START=2006-01-01 and an additive per-primary-baseline field n_events_audit_window (in-regime event count restricted to bars >= that date), threaded through _primary_raw_metrics/_encode_primary_across_regimes -> build_primary_baselines -> dossier primary_baseline_summary. Additive-only; old dossiers without the key remain loadable (no reader validates dossier keys strictly). .claude/agents/phase5-hypothesizer.md gained an I/O-contract guidance block: input arrives inline in the dispatch prompt (no tool calls), hypothesis/causal_story are 30-800 chars target <=700, and event-count design floors must use n_events_audit_window not the full-history n_events. Tests: tests/phase5/test_baseline_audit_window.py (3 cases) + 2 existing test_build_all_regimes.py assertions updated for the additive key. Full suite: 1332 tests, 0 failed, 19 skipped. Dossier rebuild (44 equities) deliberately deferred to Task 6 per plan."
     }
   ]
 }

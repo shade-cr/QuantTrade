@@ -295,7 +295,7 @@ def test_build_primary_baselines_encoding_and_firewall():
     assert set(bq_ema) == {
         "trade_count_per_year_q", "hit_rate_q", "median_per_trade_return_q",
         "hit_rate_vs_other_regimes", "return_vs_other_regimes", "n_events",
-        "rankable", "low_confidence",
+        "n_events_audit_window", "rankable", "low_confidence",
     }
     for k in ("trade_count_per_year_q", "hit_rate_q", "median_per_trade_return_q"):
         v = bq_ema[k]
@@ -349,7 +349,7 @@ def test_build_primary_baselines_firewall_leaves_only_safe_types():
                     assert val is None or (isinstance(val, float) and 0.0 <= val <= 1.0)
                 elif key in ("hit_rate_vs_other_regimes", "return_vs_other_regimes"):
                     assert val in _ALLOWED_TAGS
-                elif key == "n_events":
+                elif key in ("n_events", "n_events_audit_window"):
                     assert isinstance(val, int) and not isinstance(val, bool)
                 elif key in ("rankable", "low_confidence"):
                     assert isinstance(val, bool)
