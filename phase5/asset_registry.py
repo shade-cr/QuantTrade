@@ -71,6 +71,30 @@ ASSET_REGISTRY: dict[str, AssetSpec] = {
     "NVDA": AssetSpec("NVDA", "equity", ("D1",), _EQUITY_PACK),
 }
 
+_EQUITY_INDEX_PACK = ("cs_spread_21",)  # sector ETFs: own-bar liquidity + auto macro pack
+
+_M3_UNIVERSE_PATH = Path("configs/universe_equity_m3.yaml")
+
+
+def _load_m3_universe_specs() -> dict[str, AssetSpec]:
+    """M3 cross-section universe (B0003): registry entries generated from the
+    frozen universe yaml so the ticker list is never duplicated in code.
+    Missing file → empty (keeps the registry importable in stripped checkouts).
+    """
+    if not _M3_UNIVERSE_PATH.exists():
+        return {}
+    import yaml
+    payload = yaml.safe_load(_M3_UNIVERSE_PATH.read_text(encoding="utf-8"))
+    specs: dict[str, AssetSpec] = {}
+    for t in payload.get("stocks", []):
+        specs[t] = AssetSpec(t, "equity", ("D1",), _EQUITY_PACK)
+    for t in payload.get("etfs", []):
+        specs[t] = AssetSpec(t, "equity_index", ("D1",), _EQUITY_INDEX_PACK)
+    return specs
+
+
+ASSET_REGISTRY.update(_load_m3_universe_specs())
+
 
 def resolve_csv(ticker: str, frequency: str) -> Path:
     """Delegate to the labeler's resolver so there is one source of truth (L1)."""

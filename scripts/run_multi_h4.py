@@ -129,6 +129,13 @@ HP_SPACES = {
                  "iterations": [300, 600], "l2_leaf_reg": [3, 7]},
     "rf": {"n_estimators": [300, 600], "max_depth": [5, 10, None],
            "min_samples_leaf": [5, 20], "max_features": ["sqrt", 0.5]},
+    # M3 (B0003): equity D1 pooled runs use the B0053 model set (lgbm/lr) —
+    # spaces copied verbatim from scripts/run_backtest.py so pooled and
+    # per-asset paths search identical grids.
+    "lgbm": {"num_leaves": [15, 31, 63], "learning_rate": [0.03, 0.05, 0.1],
+             "n_estimators": [200, 400], "min_child_samples": [10, 20, 40],
+             "reg_lambda": [0.5, 1.0, 5.0]},
+    "lr": {"C": [0.01, 0.1, 1.0], "max_iter": [500, 1000]},
 }
 
 
@@ -1366,6 +1373,10 @@ _BAR_DURATION_BY_CLASS = {
     "fx": pd.Timedelta(days=365.25 / 1560),
     "metal": pd.Timedelta(days=365.25 / 1560),
     "crypto": pd.Timedelta(days=365.25 / 2190),
+    # M3 (B0003): D1 equity bars — 252 trading days/year. Sizing the pooled
+    # embargo off the fx H4 fallback would under-embargo D1 by ~6x.
+    "equity": pd.Timedelta(days=365.25 / 252),
+    "equity_index": pd.Timedelta(days=365.25 / 252),
 }
 
 _POOL_CLASSES = ("fx", "metal", "crypto")
