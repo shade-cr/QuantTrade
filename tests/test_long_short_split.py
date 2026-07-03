@@ -44,6 +44,20 @@ def test_threshold_filters_trades():
     assert out["long"]["n_trades"] == 30
 
 
+def test_tz_naive_oof_aligns_with_tz_aware_events():
+    """Pooled trainer's oof index is tz-naive (np.concatenate strips tz); events
+    stays tz-aware UTC. Same instants, same order -> must align, not SKIP."""
+    oof, events = _fixtures()
+    baseline = long_short_split(oof, events, model="lr", threshold=0.55, cost_bps=0.0)
+
+    oof_naive = oof.copy()
+    oof_naive.index = oof_naive.index.tz_convert("UTC").tz_localize(None)
+
+    out = long_short_split(oof_naive, events, model="lr", threshold=0.55, cost_bps=0.0)
+    assert out["long"]["n_trades"] == baseline["long"]["n_trades"]
+    assert out["short"]["n_trades"] == baseline["short"]["n_trades"]
+
+
 def test_misaligned_inputs_raise():
     """Verify positional-alignment guard rejects misaligned oof/events."""
     oof, events = _fixtures()

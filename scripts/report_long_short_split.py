@@ -25,6 +25,21 @@ HEADLINE_THRESHOLD = 0.55  # fixed by spec — never selected from the test grid
 MIN_TRADES_FOR_SHARPE = 30  # pipeline invariant: NaN (not 0) below this
 
 
+def _naive_utc_index(idx: pd.DatetimeIndex) -> pd.DatetimeIndex:
+    """Normalize a DatetimeIndex to tz-naive UTC for alignment comparisons.
+
+    The pooled trainer builds its oof index via np.concatenate([idx.values, ...]),
+    which strips tz info, so per-asset oof_predictions.parquet ends up tz-naive
+    while events_side_fwd.parquet (written separately) stays tz-aware UTC. Same
+    instants, same order — just a tz-metadata mismatch. Strip tz on both sides
+    before comparing so genuinely misaligned inputs (different length/order)
+    still raise.
+    """
+    if idx.tz is not None:
+        return idx.tz_convert("UTC").tz_localize(None)
+    return idx
+
+
 def split_metrics(pnl: pd.Series, years: float) -> dict:
     n = int(len(pnl))
     out = {"n_trades": n,
@@ -44,7 +59,9 @@ def long_short_split(oof: pd.DataFrame, events: pd.DataFrame, model: str,
     # POSITIONAL alignment, not index joins: pooling concatenates many assets
     # whose event timestamps overlap, so the index is NOT unique. Caller must
     # pass row-aligned frames (same order, same length).
-    if len(oof) != len(events) or not (oof.index == events.index).all():
+    if len(oof) != len(events) or not (
+        _naive_utc_index(oof.index) == _naive_utc_index(events.index)
+    ).all():
         raise ValueError("oof and events must be row-aligned (same index, same order)")
     p = oof[model].to_numpy(dtype=float)
     side = events["side"].to_numpy()
@@ -76,7 +93,9 @@ def main() -> int:
         primary = ev_path.parent.name
         oof = pd.read_parquet(oof_path)
         ev = pd.read_parquet(ev_path)
-        if len(oof) != len(ev) or not (oof.index == ev.index).all():
+        if len(oof) != len(ev) or not (
+            _naive_utc_index(oof.index) == _naive_utc_index(ev.index)
+        ).all():
             print(f"  SKIP {ev_path.parent}: oof/events misaligned")
             continue
         for model in oof.columns:
