@@ -15,13 +15,14 @@ from __future__ import annotations
 
 import json
 import math
+import subprocess
 from pathlib import Path
 
 import pytest
 import yaml
 
 from phase5 import run_proposal
-from phase5.proposal import load_proposal
+from phase5.proposal import FalsificationCriterion, load_proposal
 
 
 def _proposal_dict() -> dict:
@@ -68,6 +69,14 @@ def _proposal_dict() -> dict:
 def _load_proposal(tmp_path: Path):
     path = tmp_path / "proposal.json"
     path.write_text(json.dumps(_proposal_dict()), encoding="utf-8")
+    return load_proposal(path)
+
+
+def _load_proposal_with_criterion(tmp_path: Path, criterion: dict, *, name: str = "proposal_fc.json"):
+    payload = _proposal_dict()
+    payload["falsification_criterion"] = criterion
+    path = tmp_path / name
+    path.write_text(json.dumps(payload), encoding="utf-8")
     return load_proposal(path)
 
 
@@ -273,3 +282,177 @@ def test_run_pooled_audit_count_subprocess_failure_persists_subprocess_failed(tm
     assert record["status"] == "subprocess_failed"
     assert record["mode"] == "pooled_universe"
     assert any("boom" in e for e in record["errors"])
+
+
+# --------------------------------------------------------------------------- #
+# (d) _criterion_eval_pooled_v1 — direct unit coverage
+# --------------------------------------------------------------------------- #
+
+def test_criterion_eval_pooled_v1_direct(tmp_path):
+    criterion = {
+        "audit_class_in": ["STABLE", "MARGINAL_2FOLDS"],
+        "median_active_fold_sharpe_min": 0.5,
+        "n_trades_total_min": 50,
+        "per_episode_survival_fraction": 0.6,
+        "per_episode_min_trades": 5,
+    }
+    p = _load_proposal_with_criterion(tmp_path, criterion)
+
+    # (a) computable keys pass and record the observed values; non-computable
+    # keys are explicitly flagged rather than silently skipped or forced pass.
+    grading_ok = {"median_active_fold_sharpe": 0.8, "n_trades_total": 120}
+    out_ok = run_proposal._criterion_eval_pooled_v1(p, grading_ok)
+
+    assert out_ok["median_active_fold_sharpe_min"] == {
+        "computed": 0.8, "threshold": 0.5, "passed": True,
+    }
+    assert out_ok["n_trades_total_min"] == {
+        "computed": 120, "threshold": 50, "passed": True,
+    }
+    assert out_ok["audit_class_in"] == "not_applicable_pooled_v1"
+    assert out_ok["per_episode_survival_fraction"] == "not_applicable_pooled_v1"
+    assert out_ok["dsr_min"] == "not_applicable_pooled_v1"
+
+    # (b) median None (no active fold anywhere in the pool) must not raise and
+    # must not claim a pass — it's a "no measurement", not a "0 measurement".
+    grading_none = {"median_active_fold_sharpe": None, "n_trades_total": 10}
+    out_none = run_proposal._criterion_eval_pooled_v1(p, grading_none)
+
+    assert out_none["median_active_fold_sharpe_min"]["computed"] is None
+    assert out_none["median_active_fold_sharpe_min"]["passed"] is False
+    assert out_none["median_active_fold_sharpe_min"]["threshold"] == 0.5
+    # n_trades_total_min is independent of the sharpe branch and still evaluates.
+    assert out_none["n_trades_total_min"] == {
+        "computed": 10, "threshold": 50, "passed": False,
+    }
+
+
+# --------------------------------------------------------------------------- #
+# (e) run_pooled_audit — full mocked FULL-SUCCESS path
+# --------------------------------------------------------------------------- #
+
+def _fake_count_pooled_events_subprocess(assets: list[str], primary: str, n_events: int):
+    """Mimics count_pooled_events_subprocess: writes member_event_counts.json
+    at the transient config's output_dir and returns the same list, well above
+    any plausible wf_event_floor so run_pooled_audit proceeds past the gate.
+    """
+    def _inner(cfg_path):
+        cfg = yaml.safe_load(Path(cfg_path).read_text(encoding="utf-8"))
+        out_dir = Path(cfg["output_dir"])
+        out_dir.mkdir(parents=True, exist_ok=True)
+        counts = [{"asset": a, "primary": primary, "n_events": n_events} for a in assets]
+        (out_dir / "member_event_counts.json").write_text(json.dumps(counts), encoding="utf-8")
+        return counts
+    return _inner
+
+
+def _fake_run_pooled_pipeline_subprocess(asset_artifacts: dict, primary: str):
+    """Mimics run_pooled_pipeline_subprocess: fabricates the per-asset artifact
+    tree (summary.json + metrics_per_fold.json) _run_one_pool would have
+    produced, then reports success.
+    """
+    def _inner(cfg_path, dry_run=False):
+        cfg = yaml.safe_load(Path(cfg_path).read_text(encoding="utf-8"))
+        out_dir = Path(cfg["output_dir"])
+        for asset, (best_model, fold_rows) in asset_artifacts.items():
+            _write_asset_artifacts(out_dir, asset, primary, best_model, fold_rows)
+        return subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
+    return _inner
+
+
+def _fake_run_long_short_split_subprocess(payload: dict):
+    """Mimics report_long_short_split.py: writes long_short_split.json under
+    the pooled output dir and reports success.
+    """
+    def _inner(out_dir, cost_bps):
+        out_dir = Path(out_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "long_short_split.json").write_text(json.dumps(payload), encoding="utf-8")
+        return subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
+    return _inner
+
+
+def test_run_pooled_audit_success_path_end_to_end_mocked(tmp_path, monkeypatch):
+    monkeypatch.setattr(run_proposal, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(run_proposal, "POOLED_RESULTS_DIR", tmp_path / "results" / "phase5_pooled")
+    monkeypatch.setattr(run_proposal, "AUDIT_RESULTS_DIR", tmp_path / "audit_results")
+    p = _load_proposal(tmp_path)
+    primary = p.primary  # "ema_cross" per _proposal_dict
+
+    # (1) count-events-only subprocess: well above the event floor for both
+    # pool members so the full pooled subprocess IS invoked.
+    monkeypatch.setattr(
+        run_proposal, "count_pooled_events_subprocess",
+        _fake_count_pooled_events_subprocess(["AAA", "BBB"], primary, 5000),
+    )
+
+    # (2) full pooled subprocess: fabricate 2 assets x 1 primary artifacts,
+    # mirroring the real metrics_per_fold.json / summary.json schema.
+    asset_artifacts = {
+        "AAA": ("xgb", [
+            {"fold": 0, "model": "xgb", "sharpe_net": 1.0, "n_trades": 60},
+            {"fold": 1, "model": "xgb", "sharpe_net": 0.6, "n_trades": 70},
+        ]),
+        "BBB": ("lgbm", [
+            {"fold": 0, "model": "lgbm", "sharpe_net": 0.9, "n_trades": 50},
+            {"fold": 1, "model": "lgbm", "sharpe_net": 1.1, "n_trades": 55},
+        ]),
+    }
+    monkeypatch.setattr(
+        run_proposal, "run_pooled_pipeline_subprocess",
+        _fake_run_pooled_pipeline_subprocess(asset_artifacts, primary),
+    )
+
+    # (3) long/short split subprocess: minimal fabricated payload.
+    long_short_payload = {"note": "fabricated for test", "n_long": 10, "n_short": 8}
+    monkeypatch.setattr(
+        run_proposal, "run_long_short_split_subprocess",
+        _fake_run_long_short_split_subprocess(long_short_payload),
+    )
+
+    record = run_proposal.run_pooled_audit(p)
+
+    assert record["status"] == "completed_pending_human_read"
+    assert record["mode"] == "pooled_universe"
+    assert record["grading_version"] == "pooled_v1"
+
+    # Grading arithmetic, hand-computed from the fabricated fold rows above:
+    #   n_trades_total = 60+70+50+55 = 235
+    #   active sharpes (all n_trades>=30): [1.0, 0.6, 0.9, 1.1] -> median 0.95
+    #   AAA: total=130>=30, agg=nanmedian([1.0,0.6])=0.8>0 -> breadth pass
+    #   BBB: total=105>=30, agg=nanmedian([0.9,1.1])=1.0>0 -> breadth pass
+    grading = record["grading"]
+    assert grading["n_trades_total"] == 235
+    assert grading["median_active_fold_sharpe"] == pytest.approx(0.95)
+    assert grading["breadth"] == 2
+    assert grading["per_asset"]["AAA"]["n_trades_total"] == 130
+    assert grading["per_asset"]["AAA"]["breadth_pass"] is True
+    assert grading["per_asset"]["BBB"]["n_trades_total"] == 105
+    assert grading["per_asset"]["BBB"]["breadth_pass"] is True
+
+    # criterion_eval: proposal's own falsification_criterion has
+    # median_active_fold_sharpe_min=0.5, n_trades_total_min=60 (see
+    # _proposal_dict) -- both clear against the fabricated grading, and the
+    # single-name-only keys are flagged not-applicable rather than skipped.
+    ce = record["criterion_eval"]
+    assert ce["median_active_fold_sharpe_min"] == {
+        "computed": pytest.approx(0.95), "threshold": 0.5, "passed": True,
+    }
+    assert ce["n_trades_total_min"] == {
+        "computed": 235, "threshold": 60, "passed": True,
+    }
+    assert ce["audit_class_in"] == "not_applicable_pooled_v1"
+    assert ce["per_episode_survival_fraction"] == "not_applicable_pooled_v1"
+    assert ce["dsr_min"] == "not_applicable_pooled_v1"
+
+    assert record["long_short"] == long_short_payload
+
+    out_path = tmp_path / "audit_results" / f"{p.id}.json"
+    assert out_path.exists()
+    persisted = json.loads(out_path.read_text(encoding="utf-8"))
+    assert persisted["status"] == "completed_pending_human_read"
+    assert persisted["mode"] == "pooled_universe"
+    assert persisted["grading_version"] == "pooled_v1"
+    assert persisted["grading"]["n_trades_total"] == 235
+    assert persisted["long_short"] == long_short_payload
+    assert persisted["criterion_eval"]["audit_class_in"] == "not_applicable_pooled_v1"
