@@ -65,3 +65,35 @@ def test_ranks_are_cross_sectional_not_temporal(panel):
     vals = sorted(feats[t].loc[date, "cs_mom_12_1_rank"] for t in TICKERS)
     expected = [(i + 1) / len(TICKERS) for i in range(len(TICKERS))]
     assert np.allclose(vals, expected)
+
+
+def test_mid_panel_gap_raises(panel):
+    """A mid-series NaN in one ticker must fail loud, not silently reweight
+    the cross-sectional basket used for every other ticker's residuals."""
+    gappy = {t: df.copy() for t, df in panel.items()}
+    gap_ticker = "CCC"
+    gappy[gap_ticker].loc[gappy[gap_ticker].index[100:103], "close"] = np.nan
+    with pytest.raises(ValueError, match=gap_ticker):
+        build_cross_sectional_features(gappy, TICKERS)
+
+
+def test_leading_nans_allowed(panel):
+    """Leading NaNs (simulated later listing) must NOT raise. The late
+    ticker's own stock-level (rank) features stay NaN over its leading
+    window, while other tickers' rank features at those same dates are
+    still computed (the guard must not be so strict it blocks warmup)."""
+    later_listed = {t: df.copy() for t, df in panel.items()}
+    late_ticker = "DDD"
+    idx = later_listed[late_ticker].index[:50]
+    later_listed[late_ticker].loc[idx, "close"] = np.nan
+    later_listed[late_ticker].loc[idx, "volume"] = np.nan
+
+    feats = build_cross_sectional_features(later_listed, TICKERS)  # must not raise
+
+    rank_cols = [c for c in EXPECTED if c.endswith("_rank")]
+    late_feats = feats[late_ticker][rank_cols].iloc[:50]
+    assert late_feats.isna().all().all()
+
+    other_ticker = "AAA"
+    other_feats = feats[other_ticker][rank_cols].iloc[:50]
+    assert not other_feats.dropna(how="all").empty
