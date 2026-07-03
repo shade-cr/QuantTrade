@@ -1,6 +1,7 @@
 """Per-side pooled metrics: NaN-not-zero under 30 trades; sides split correctly."""
 import numpy as np
 import pandas as pd
+import pytest
 
 from scripts.report_long_short_split import long_short_split
 
@@ -41,3 +42,16 @@ def test_threshold_filters_trades():
     oof.iloc[:30, 0] = 0.40  # below threshold -> dropped
     out = long_short_split(oof, events, model="lr", threshold=0.55, cost_bps=0.0)
     assert out["long"]["n_trades"] == 30
+
+
+def test_misaligned_inputs_raise():
+    """Verify positional-alignment guard rejects misaligned oof/events."""
+    oof, events = _fixtures()
+
+    # Scenario 1: events truncated by one row (different lengths)
+    with pytest.raises(ValueError, match="row-aligned"):
+        long_short_split(oof, events.iloc[:-1], model="lr", threshold=0.55, cost_bps=0.0)
+
+    # Scenario 2: same length but index order shuffled (same length, different order)
+    with pytest.raises(ValueError, match="row-aligned"):
+        long_short_split(oof, events.iloc[::-1], model="lr", threshold=0.55, cost_bps=0.0)
