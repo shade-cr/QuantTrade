@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-03T20:35:39Z",
+  "updated_at": "2026-07-03T22:50:24Z",
   "entries": [
     {
       "id": "B0001",
@@ -137,6 +137,36 @@
         "loop-a",
         "phase5",
         "equity",
+        "m3"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0011",
+      "status": "proposed",
+      "title": "Persist pooled_effective_N to pooled-run artifacts",
+      "updated_at": "2026-07-03",
+      "effort": "S",
+      "value": "M",
+      "tags": [
+        "m3",
+        "reproducibility",
+        "loop-a"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0012",
+      "status": "proposed",
+      "title": "Methodology consult: cross-asset wall-clock uniqueness redundancy assumption",
+      "updated_at": "2026-07-03",
+      "effort": "M",
+      "value": "H",
+      "tags": [
+        "methodology",
+        "phase5",
         "m3"
       ],
       "blocks_count": 0,

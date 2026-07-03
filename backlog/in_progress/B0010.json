@@ -29,7 +29,9 @@
     "related": [
       "B0003",
       "B0006",
-      "B0009"
+      "B0009",
+      "B0011",
+      "B0012"
     ],
     "supersedes": [],
     "superseded_by": [],
@@ -164,6 +166,78 @@
       "date": "2026-07-03",
       "event": "t002d1_verdict",
       "reason": "T002D1 pooled re-audit READ (2026-07-03): NOT CONFIRMED - breadth-collapse single-name/single-fold artifact. Grading pooled_v1 nominally passes (median_active_fold_sharpe 0.663 >= 0.5; n_trades_total 515 >= 50) at the audit effective threshold 0.3643 (ev_breakeven tp2.5/sl1.0), but breadth=1/35: only GE clears the 30-trade+positive gate, so the 0.663 median IS GE's number - specifically GE lr fold-2 (31 trades) alone; GE's other 3 models are anti-discriminative (OOF AUC xgb 0.403/lgbm 0.358/rf 0.433 <0.5) and GE DSR ~0 (1e-147..0). At the fixed 0.55 headline the strategy nearly empties: rf 5 long + 13 short ALL losers (hit 0.0), lgbm/lr/xgb 0 trades. DA caveats applied: full B0003 long-side inflation, no surviving long/short population at headline, cs_spread_21/vix_chg_5 MDA in noise band (see B0006), 68% gate moot. Also STARVED: pre-flight pooled effective-N ~650-690 < 799 floor (raw 11,901 events). Hypothesis under-tested, NOT falsified as mechanism; do not promote. Readout: docs/superpowers/reports/2026-07-03-pooled-audit-b0006-readout.md. Status unchanged (human decision)."
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0011",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0006",
+          "B0009"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0006",
+          "B0009",
+          "B0011"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0012",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0006",
+          "B0009",
+          "B0011"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003",
+          "B0006",
+          "B0009",
+          "B0011",
+          "B0012"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
     }
   ]
 }

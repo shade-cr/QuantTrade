@@ -68,6 +68,8 @@ Clustered MDA (F1-scored, from `clustered_mda.json`, aggregated over every model
 
 The **pure-CS clustered-MDA sits in the same ~1e-4 magnitude band as the non-CS noise floor** (1.66e-4 vs 7.4e-5 for state; 6.0e-5 vs 8.9e-5 for cusum) — i.e. dropping the CS clusters barely moves F1. The dominant real driver is the technical/primary cluster (`primary_side|macd|r_*|rsi|z_r20…`) at **0.007–0.032**, two to three orders of magnitude larger. The mixed-CS bucket's larger mean is contaminated: ONC merges one or two CS features into that dominant technical cluster (substitution), so its importance is carried by the technical/primary features, not by the CS features — it cannot be attributed to the pack. The pure-CS sign is weakly positive (frac_pos 0.58–0.65), but (a) the effect size is negligible vs the real drivers and (b) the fold/asset units are cross-sectionally correlated (market-wide bursts), so the apparent >0 tilt is not trustworthy as independent evidence. **Verdict: indistinguishable from zero → criterion 1 fires.**
 
+> **Footnote.** Individual (non-clustered) MDA shows `cs_basket_beta_rank` (75.0% positive-sign folds), `cs_breadth_200` (78.1%), `cs_idio_vol_rank` (71.9%) — sign-consistency above chance, though magnitudes stay ~1e-4, two orders of magnitude below the technical cluster. Verdict unchanged, but this is the concrete starting point if the CS pack is ever revisited outside ONC clustering.
+
 ### B.2 Criterion 2 — "No skill uplift" → **FIRES (fails)**
 
 `metrics_per_fold.json` carries no explicit F1; the available NaN-safe classification metrics are ROC-AUC, PR-AUC, precision@recall{0.3,0.5}, MCC (named explicitly). nanmedian over all asset×model×fold cells:
@@ -132,7 +134,7 @@ The binding constraint is **the cross-asset wall-clock uniqueness methodology it
 
 | Check | Finding |
 |---|---|
-| **Single-class folds** | None. OOF base rate ≈ 0.28 across all runs (0 single-class cells in a/baseline/b). Failure mode is starvation, not label collapse. |
+| **Single-class folds** | None. OOF base rate ≈ 0.25 across all runs (independent verification: mean/median of unique per-asset-primary base rates ≈ 0.25; 0 single-class cells in a/baseline/b). Failure mode is starvation, not label collapse. |
 | **Zero-trade models** | Pervasive. Zero-trade model-folds: **92.5%** (run a), **95.3%** (baseline), **98.8%** (run b). At the 0.55 headline, xgb/lgbm/lr fire ~0 trades pool-wide in every run. |
 | **Calibration keep-rate collapse** | Confirmed via the zero-trade rate above (sigmoid-calibrated 0.55 is effectively unreachable at the ~0.28 win base rate). The CS pack marginally *reduces* collapse (92.5% vs 95.3% zero-trade) but not enough to matter; cusum is worst (98.8%). |
 | **One lucky name/fold (nanmedian discipline)** | The decisive check. **T002D1's 0.663 is one name (GE), one model (lr), one fold (31 trades)** — the nanmedian over active folds degenerates to a single cell because breadth = 1/35. For B0006, nanmedian ROC-AUC ≈ 0.545 with no CS uplift — no isolated cell rescues the pack. |

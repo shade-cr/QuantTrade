@@ -1,0 +1,45 @@
+{
+  "id": "B0011",
+  "title": "Persist pooled_effective_N to pooled-run artifacts",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "m3",
+    "reproducibility",
+    "loop-a"
+  ],
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-03",
+  "source": "2026-07-03 pooled-audit B0006 readout verification pass",
+  "why": "Today's runtime-only stdout print means skeptical reviewers cannot reproduce effective-N without rerunning (verified 2026-07-03: re-derivation matched to ~4.5% only). The pooled effective-N vs the 799 floor is the decisive number in every pooled verdict this round (T002D1, dense-state baselines, ungated sparse cusum) and currently exists nowhere on disk.",
+  "value_rationale": "Cheap (S) fix that protects reproducibility of the load-bearing pooled effective-N number used across every pooled audit and readout.",
+  "scope": [
+    "Write raw_N / effective_N / refusal_floor per pool into a JSON at the pooled output root (additive; likely a small function in scripts/run_pooled_equity_d1.py after member build, NOT inside run_multi_h4.py)",
+    "Surface the same numbers in the pooled audit record"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0010"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "event": "created",
+      "reason": "logged from 2026-07-03 pooled-audit B0006 readout verification pass"
+    }
+  ]
+}
