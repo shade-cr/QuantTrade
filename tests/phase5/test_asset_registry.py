@@ -21,11 +21,21 @@ _DATA_PRESENT = (REPO_ROOT / "data" / "D1_22y").exists() or (REPO_ROOT / "data" 
 
 
 def test_keys_are_full_tickers_and_match_id():
+    # The length guard is scoped by asset class: fx/metal/crypto use 6-char
+    # broker symbols, and a short key (e.g. 'XAG' instead of 'XAGUSD') is a
+    # real alias-bug risk that would silently resolve to a nonexistent CSV
+    # via pipeline.regimes._resolve_data_path. US equity tickers, by contrast,
+    # are legitimately 1-5 chars (e.g. 'T', 'C', 'GE', 'KO') and are not at
+    # risk of that alias collision, so they get a looser shape check instead.
     for key, spec in ASSET_REGISTRY.items():
         assert key == spec.ticker, f"registry key {key!r} != spec.ticker {spec.ticker!r}"
-        # keys must match their spec.ticker exactly; length varies by asset class
-        # (FX/metal/crypto use 6-char broker symbols, equities use standard tickers)
-        assert 4 <= len(key) <= 6, f"{key!r} ticker length must be 4–6 chars"
+        if spec.asset_class in {"fx", "metal", "crypto"}:
+            assert 4 <= len(key) <= 6, f"{key!r} ticker length must be 4–6 chars"
+        else:
+            assert spec.asset_class in {"equity", "equity_index"}, f"{spec.ticker}: unexpected class {spec.asset_class!r}"
+            assert 1 <= len(key) <= 5, f"{key!r} equity ticker length must be 1–5 chars"
+            assert key.isalnum() and key == key.upper(), f"{key!r} equity ticker must be uppercase alphanumeric"
+            assert spec.ticker == key
 
 
 def test_asset_class_valid():
