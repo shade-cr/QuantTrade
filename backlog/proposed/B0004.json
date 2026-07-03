@@ -1,0 +1,79 @@
+{
+  "id": "B0004",
+  "title": "Survivorship-safe equity data: point-in-time vendor swap (Norgate/Sharadar) via EquityDataSource seam",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "data",
+    "equity"
+  ],
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-03",
+  "source": "2026-07-03 deep project review (alpha-readiness audit); gaps previously lived only in spec prose",
+  "why": "yfinance has no point-in-time index membership — only currently-listed names. Spec section 7 explicitly required this backlog item; it was never created. Long-side results on a survivor universe are inflated (~1-2pp/yr large-cap anchor) and the short side is deflated (best shorts — failures — are absent). The meta-labeler can also learn survivor-only regularities ('large drawdowns always recovered'). The point-in-time re-run is the definitive acceptance gate for anything Loop B-bound; until then all M3 claims are within-universe relative claims only.",
+  "value_rationale": "Acceptance gate for promotion toward paper trading; converts caveated M3 results into trustworthy ones.",
+  "scope": [
+    "Pick vendor (Norgate / Sharadar / Alpaca PIT) and implement behind the existing EquityDataSource seam",
+    "Point-in-time index membership + delisting returns handling",
+    "Re-run the M3 universe (B0003) on PIT data; compare vs survivor-universe results to measure the bias-meta interaction"
+  ],
+  "recommendation": "Not a blocker for the first M3 test (B0003 runs caveated); it IS the gate before Loop B / paper trading.",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0003"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/superpowers/specs/2026-06-28-quanttrade-equity-swing-repurpose-design.md",
+      "relation": "spec",
+      "label": "spec section 7 known limitation + N4/R1"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "event": "created",
+      "reason": "logged from 2026-07-03 alpha-readiness review"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0003",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

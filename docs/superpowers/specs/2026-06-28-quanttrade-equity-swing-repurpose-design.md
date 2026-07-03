@@ -144,6 +144,7 @@ The central methodological risk is the **single-name overfit**: an "edge" found 
 ## 10. Open questions / risks
 
 - **OQ1.** Universe definition for M3 (S&P 100? a hand-picked liquid 30? sector ETFs as a stepping stone?) — decide before M3.
+  - **DECIDED 2026-07-03 (B0003, reversible):** ~35 liquid US large-caps selected on *t0* (~2006) information — not current index membership — plus the 9 long-history SPDR sector ETFs as a survivorship-clean parallel control. Current-members S&P 100 deferred until the point-in-time vendor swap (B0004). Rationale, caveats, and interpretation rules recorded in B0003 (`backlog/proposed/B0003.json`, history event `decision`).
 - **OQ2.** Does the hypothesizer need equity-specific *features* (earnings-surprise, analyst-revision alt-data) to find anything, or is macro+microstructure enough for v1? Start with macro+microstructure; add equity alt-data only if the loop is signal-starved.
 - **R1.** yfinance reliability/gaps — mitigated by the data-sanity checks already in `pipeline/data_sanity.py`.
 - **R2.** Carrying over a hackathon assumption silently in a copied module — mitigated by the green-test gate (M0) and a grep for `mt5/lottery/tournament/osr` symbols post-copy.

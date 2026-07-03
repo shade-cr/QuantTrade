@@ -1,0 +1,80 @@
+{
+  "id": "B0006",
+  "title": "Cross-sectional feature pack: relative-to-peers ranks, dispersion, sector-relative signals",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "features",
+    "equity",
+    "cross-section"
+  ],
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-03",
+  "source": "2026-07-03 deep project review (alpha-readiness audit); gaps previously lived only in spec prose",
+  "why": "Current equity pack is own-bar only (cs_spread_21) + macro. Nothing relative-to-peers: no cross-sectional momentum/vol ranks, no sector-relative returns, no universe dispersion. Equity alpha is largely relative; with own-bar + macro features the meta-model has little to discriminate on cross-sectionally. Spec OQ2 said add equity-specific features only if the loop is signal-starved — the B0003 first run is the test of that; this item is staged so it can start immediately if B0003 comes back signal-starved.",
+  "value_rationale": "High if B0003 is signal-starved (likely per audit); the structural enabler of relative-value equity alpha.",
+  "scope": [
+    "Cross-sectional z-scores/ranks of momentum, vol, and volume across the B0003 universe (point-in-time within panel, no lookahead)",
+    "Sector/universe-relative return features; universe dispersion features",
+    "Wire into build_tier2_features behind the asset-class pack mechanism; MDA importance check post-run"
+  ],
+  "recommendation": "",
+  "out_of_scope": "Earnings-surprise / analyst-revision alt-data (spec OQ2 second half) — separate item if still starved after this.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0003"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/superpowers/specs/2026-06-28-quanttrade-equity-swing-repurpose-design.md",
+      "relation": "spec",
+      "label": "OQ2"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "event": "created",
+      "reason": "logged from 2026-07-03 alpha-readiness review"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0003",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

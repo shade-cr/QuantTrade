@@ -1,0 +1,154 @@
+{
+  "id": "B0003",
+  "title": "M3 cross-section: equity universe run (OQ1 decided: ~35 t0-selected large-caps + ETF control)",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "m3",
+    "equity",
+    "cross-section"
+  ],
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-03",
+  "source": "2026-07-03 deep project review (alpha-readiness audit); gaps previously lived only in spec prose",
+  "why": "The single biggest blocker to a credible equity-alpha claim. Everything to date is the NVDA n=1 plumbing smoke test (B0001); spec Milestone 1 says an edge is believed only if it shows up broadly across names. Requires: universe list file, batch ingestion (fetch_equity_daily.py is one-ticker-per-invocation), registering tickers in phase5/asset_registry.py, a pooled equity config wired to pooled_walk_forward.py, and an M3 plan doc. OQ1 (universe definition) decided 2026-07-03 — see recommendation + history.",
+  "value_rationale": "Gates every downstream alpha claim; without breadth the project cannot meet its own evidence bar.",
+  "scope": [
+    "Freeze selection rule ex-ante: ~35 largest/most-liquid US large-caps selected on t0 (~2006) information (e.g. top 35 by 2006 market cap/ADV with full history), NOT current index membership; enumerate excluded 2006-era delistees in the plan doc",
+    "Batch fetch + registry: ingest universe OHLCV via equity_source, register tickers + regime dossiers",
+    "Pooled equity config (configs/) wired to cross_asset.py + pooled_walk_forward.py; --dry-run first",
+    "Parallel control run: 9 long-history SPDR sector ETFs (survivorship-clean, low breadth) with ex-ante interpretation rule recorded in the plan",
+    "Report long/short metrics separately; M3 claim is strictly 'meta adds value over primary within this universe', never absolute Sharpe/PSR",
+    "Write M3 plan doc under docs/superpowers/plans/ before implementation"
+  ],
+  "recommendation": "OQ1 decision (2026-07-03, quant-phd-advisor consult, reversible): Option B modified — t0-selected (~2006) liquid large-cap basket of ~35 names, with sector ETFs as parallel survivorship-clean control group. Rationale: survivorship bias concentrates in small/distressed names and in t_end selection (Shumway JF 1997; LdP 2015 seminar defines the sin as composing the universe on a later date); t0 selection bounds the residual to a short, enumerable, mostly-M&A delistee list (~1-2pp/yr anchor for large caps). ETFs alone fail as primary test: ~3-4 effective independent bets (Grinold breadth), idiosyncratic dispersion averaged away, flat 10bps punitive vs their real costs. Current S&P 100 (A) deferred to the point-in-time vendor swap (B0004) — it is the textbook t_end sin. Validate event density with a 5-ticker --dry-run before freezing universe size; if primaries fire <~3 events/yr/name, broaden toward A despite the bias.",
+  "out_of_scope": "Point-in-time membership (B0004); per-ticker friction (B0005); cross-sectional features (B0006); sizing/portfolio construction.",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0004",
+      "B0005",
+      "B0006"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [
+    {
+      "path": "docs/superpowers/specs/2026-06-28-quanttrade-equity-swing-repurpose-design.md",
+      "relation": "spec",
+      "label": "repurpose design (OQ1, section 7 Milestone 1)"
+    }
+  ],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "event": "created",
+      "reason": "logged from 2026-07-03 alpha-readiness review"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0004",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0005",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004",
+          "B0005"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0006",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004",
+          "B0005"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004",
+          "B0005",
+          "B0006"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "event": "decision",
+      "reason": "OQ1 decided (delegated by user, quant-phd-advisor consulted, explicitly reversible): universe = ~35 t0-selected (~2006) liquid US large-caps + 9 SPDR sector ETFs as survivorship-clean control; current-members S&P 100 deferred to PIT vendor (B0004). Caveats recorded: (1) asymmetric bias — report long/short separately, within-universe relative claims only, no absolute-Sharpe promotion until PIT re-run; (2) universe swaps count as trials — increment DSR trial count if re-run on a different basket after a fail; (3) bias-meta interaction unmeasured until PIT — check MDA for trend/recovery-feature domination, ETF control is the canary."
+    }
+  ]
+}

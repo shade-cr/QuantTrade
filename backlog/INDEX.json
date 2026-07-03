@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-06-28T18:07:24Z",
+  "updated_at": "2026-07-03T08:22:14Z",
   "entries": [
     {
       "id": "B0001",
@@ -22,6 +22,64 @@
       "effort": "S",
       "value": "L",
       "tags": [],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0003",
+      "status": "proposed",
+      "title": "M3 cross-section: equity universe run (OQ1 decided: ~35 t0-selected large-caps + ETF control)",
+      "updated_at": "2026-07-03",
+      "effort": "M",
+      "value": "H",
+      "tags": [
+        "m3",
+        "equity",
+        "cross-section"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0004",
+      "status": "proposed",
+      "title": "Survivorship-safe equity data: point-in-time vendor swap (Norgate/Sharadar) via EquityDataSource seam",
+      "updated_at": "2026-07-03",
+      "effort": "M",
+      "value": "H",
+      "tags": [
+        "data",
+        "equity"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0005",
+      "status": "proposed",
+      "title": "Equity-appropriate transaction-cost model: per-ticker spread/slippage instead of flat 10bps",
+      "updated_at": "2026-07-03",
+      "effort": "S",
+      "value": "M",
+      "tags": [
+        "costs",
+        "equity"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0006",
+      "status": "proposed",
+      "title": "Cross-sectional feature pack: relative-to-peers ranks, dispersion, sector-relative signals",
+      "updated_at": "2026-07-03",
+      "effort": "M",
+      "value": "H",
+      "tags": [
+        "features",
+        "equity",
+        "cross-section"
+      ],
       "blocks_count": 0,
       "blocked_by_count": 0
     }
