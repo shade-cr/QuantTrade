@@ -1,0 +1,101 @@
+# THE frozen M3 cross-section universe (B0003; OQ1 decision 2026-07-03).
+# Selection is t0 (~2006) information ONLY — largest/most-liquid US large-caps
+# as of early 2006 that still have continuous yfinance history today. This is
+# NOT current index membership (that would be the textbook survivorship sin,
+# AFML ch.11). Residual bias: 2006 mega-caps that later delisted cannot be
+# included; they are ENUMERATED below so the long-side inflation is bounded
+# and auditable. Do not edit lists ad hoc — any change is a recorded trial
+# (B0003 history, DSR trial count).
+selection_rule: >-
+  Top 35 by early-2006 market capitalization among US common stocks with
+  continuous yfinance daily history from 2006-01-03 or earlier, frozen
+  2026-07-03 before any M3 result was observed. Substitution on fetch/sanity
+  failure ONLY, in the deterministic order of `alternates`, recorded in
+  B0003 history.
+selected_at: "2026-07-03"
+
+stocks:
+  - XOM
+  - GE
+  - MSFT
+  - C      # 10:1 reverse split 2011 — adjusted history is continuous
+  - BAC
+  - WMT
+  - PG
+  - JNJ
+  - PFE
+  - AIG    # 2008 near-failure survivor kept IN — partially offsets long-side bias
+  - MO
+  - IBM
+  - CVX
+  - JPM
+  - INTC
+  - WFC
+  - CSCO
+  - KO
+  - VZ
+  - PEP
+  - HD
+  - COP
+  - T      # SBC->AT&T rename 2005; yfinance history is continuous under T
+  - ABT
+  - MRK
+  - ORCL
+  - QCOM
+  - MMM
+  - UPS
+  - DIS
+  - MCD
+  - GS
+  - BA
+  - UNH
+  - CAT
+
+# Survivorship-clean parallel control group (B0003): the 9 SPDR sector ETFs
+# with full history since Dec-1998. XLRE (2015) and XLC (2018) excluded —
+# insufficient history for the 2006-2026 window.
+etfs:
+  - XLB
+  - XLE
+  - XLF
+  - XLI
+  - XLK
+  - XLP
+  - XLU
+  - XLV
+  - XLY
+
+# Deterministic substitution order if a stock fails the fetch/sanity gate
+# (next-largest 2006 caps, still listed).
+alternates:
+  - AXP
+  - SLB
+  - TXN
+  - LLY
+  - AMGN
+  - BMY
+  - TGT
+  - USB
+
+# 2006-era top-cap names that CANNOT be included (delisted / ticker
+# discontinuity). Distress exits (the ones whose absence inflates the long
+# side): LEH, WB, MER, WM, FNM, FRE, GM. The rest are mostly M&A/neutral.
+excluded_delistees:
+  LEH: "Lehman Brothers — bankruptcy 2008 (distress)"
+  WB: "Wachovia — distressed sale to Wells Fargo 2008 (distress)"
+  MER: "Merrill Lynch — distressed sale to Bank of America 2009 (distress)"
+  WM: "Washington Mutual — bank failure 2008 (distress)"
+  FNM: "Fannie Mae — conservatorship, delisted 2010 (distress)"
+  FRE: "Freddie Mac — conservatorship, delisted 2010 (distress)"
+  GM: "General Motors — Chapter 11 2009; relisted GM is a different entity (distress)"
+  BUD: "Anheuser-Busch — acquired by InBev 2008 (M&A)"
+  WYE: "Wyeth — acquired by Pfizer 2009 (M&A)"
+  SGP: "Schering-Plough — merged into Merck 2009 (M&A)"
+  BLS: "BellSouth — merged into AT&T 2006 (M&A)"
+  TWX: "Time Warner — acquired by AT&T 2018 (M&A)"
+  DELL: "Dell — LBO 2013; relisted DELL is a different capital structure (going-private)"
+  MOT: "Motorola — 2011 split into MSI/MMI (restructuring)"
+  UTX: "United Technologies — merged into RTX 2020 (ticker discontinuity)"
+  DOW: "Dow Chemical — DowDuPont restructuring 2017-19 (ticker discontinuity)"
+  TYC: "Tyco — merged into Johnson Controls 2016 (M&A)"
+  S: "Sprint — merged into T-Mobile 2020 (M&A)"
