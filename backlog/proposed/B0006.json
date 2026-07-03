@@ -19,7 +19,7 @@
     "Sector/universe-relative return features; universe dispersion features",
     "Wire into build_tier2_features behind the asset-class pack mechanism; MDA importance check post-run"
   ],
-  "recommendation": "",
+  "recommendation": "PROMOTED TO SPEC 2026-07-03: docs/superpowers/specs/2026-07-03-b0006-cross-sectional-features.md (v1 pack: 6 rank features + 2 panel scalars; market-residualization; collider guard; pre-registered falsification criteria). Grounded in quant-phd-advisor consult (Blitz 2011, George-Hwang 2004, Gu-Kelly-Xiu 2020, LdP-Zoonekynd 2024).",
   "out_of_scope": "Earnings-surprise / analyst-revision alt-data (spec OQ2 second half) — separate item if still starved after this.",
   "links": {
     "blocks": [],
@@ -75,6 +75,19 @@
         "spawned_by": [],
         "spawned_from": []
       }
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "signal-starved trigger fired (M3 NO EDGE readout); spec written",
+      "field": "recommendation",
+      "from": "",
+      "to": "PROMOTED TO SPEC 2026-07-03: docs/superpowers/specs/2026-07-03-b0006-cross-sectional-features.md (v1 pack: 6 rank features + 2 panel scalars; market-residualization; collider guard; pre-registered falsification criteria). Grounded in quant-phd-advisor consult (Blitz 2011, George-Hwang 2004, Gu-Kelly-Xiu 2020, LdP-Zoonekynd 2024)."
+    },
+    {
+      "date": "2026-07-03",
+      "event": "decision",
+      "reason": "Promoted to spec after M3 NO EDGE confirmed the signal-starved trigger. Advisor consult recommends 6 CS percentile-rank features (sector/market-residual momentum, 52wk-high, residual reversal, idio-vol, turnover, basket-beta) + dispersion & breadth panel scalars; cap justified by ~690 effective bets and 35-name panel width (Marcenko-Pastur). Key guards: no sector one-hots (collider bias), percentile ranks not z-scores, clustered MDA with F1. Spec: docs/superpowers/specs/2026-07-03-b0006-cross-sectional-features.md"
     }
   ]
 }

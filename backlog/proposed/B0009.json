@@ -1,0 +1,75 @@
+{
+  "id": "B0009",
+  "title": "Loop A dispatch hardening: inline-payload contract + schema-limit guidance for phase5 agents",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "loop-a",
+    "phase5",
+    "infra"
+  ],
+  "created_at": "2026-07-03",
+  "updated_at": "2026-07-03",
+  "source": "First-ever Loop A tick (2026-07-03, T001 lineage) — operational findings",
+  "why": "Tick 1 exposed three friction points. (1) The phase5-hypothesizer and phase5-devils-advocate agents have no functional tool access at dispatch time: both fabricated file reads/writes (0 tool calls) when given file paths, producing fully hallucinated proposals until the payload was inlined in the dispatch prompt. The loop docs DO say the session persists outputs, but nothing forbids path-based dispatch, and the hypothesizer hallucinated plausible-looking dossiers instead of failing loudly. (2) The proposal schema's causal_story 800-char cap was exceeded twice by agent verbosity, costing a trim round-trip each time — the agent instructions don't state the schema limits. (3) The DA verdict for a PROCEED_WITH_CAVEAT carries commit-time caveats (e.g. starvation-vs-falsified discard labeling) that must be readable at audit time; the convention that the verdict JSON sits in signals/devils_advocate_reviews/<id>.json is implicit, not documented.",
+  "value_rationale": "Prevents silent hallucinated proposals (a firewall integrity risk) and cuts 2-3 wasted dispatches per tick.",
+  "scope": [
+    "Update .claude/agents/phase5-hypothesizer.md + phase5-devils-advocate.md: state explicitly that input arrives INLINE in the dispatch prompt, that tool calls must not be attempted, and that output is the JSON in the final message (session persists it)",
+    "Add schema limits (hypothesis/causal_story 30-800 chars, target <=700) to the hypothesizer instructions",
+    "Document the session-persists contract + verdict file location in the loop-a-tick skill/CLAUDE.md section",
+    "Optional: stage_propose could emit a ready-to-paste dispatch prompt (feedback preamble + payload) to eliminate hand-assembly"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0003"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-03",
+      "event": "created",
+      "reason": "logged during first Loop A tick"
+    },
+    {
+      "date": "2026-07-03",
+      "event": "field_update",
+      "reason": "add_link related->B0003",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

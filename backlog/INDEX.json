@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-03T16:49:47Z",
+  "updated_at": "2026-07-03T17:24:29Z",
   "entries": [
     {
       "id": "B0001",
@@ -107,6 +107,21 @@
       "tags": [
         "m3",
         "reproducibility"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0009",
+      "status": "proposed",
+      "title": "Loop A dispatch hardening: inline-payload contract + schema-limit guidance for phase5 agents",
+      "updated_at": "2026-07-03",
+      "effort": "S",
+      "value": "M",
+      "tags": [
+        "loop-a",
+        "phase5",
+        "infra"
       ],
       "blocks_count": 0,
       "blocked_by_count": 0
