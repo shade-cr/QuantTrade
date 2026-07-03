@@ -60,7 +60,7 @@ def _mutate(mutator):
         ),
         (
             "stocks_not_a_list",
-            _mutate(lambda p: p.__setitem__("stocks", "AAA")),
+            _mutate(lambda p: p.__setitem__("stocks", 123)),
         ),
         (
             "excluded_delistees_not_a_dict",
