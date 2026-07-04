@@ -116,6 +116,11 @@
       "reason": "ingestion + scheduler + pre-registration shipped; primary module next",
       "from": "proposed",
       "to": "in_progress"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "da_code_review_passed",
+      "reason": "Custom-primary adversarial review: r1 BLOCK (AMC same-session leak in calendar features; 8-K/A + re-disclosure corruption of scheduler; post-early-actual fires) -> all fixed with tests (effective_knowledge_day 20:00 UTC cutoff; filter_amendments 30d - data shows 35 tickers with sub-30d 2.02 re-disclosures, IBM 52, so the filter is load-bearing; next-actual cap on windows) -> r2 PROCEED_WITH_CAVEAT + convention unification applied. Remaining caveats documented: seasonal 1-session conservative deferral for 15-16h ET winter filings (safe direction). READY FOR POOLED AUDIT."
     }
   ]
 }
