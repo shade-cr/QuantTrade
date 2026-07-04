@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from pipeline.frac_features import frac_diff_ffd
-from pipeline.microstructure import corwin_schultz_spread
+from pipeline.microstructure import amihud_lambda, corwin_schultz_spread, kyle_lambda_tvalue
 
 # B0134 (AFML Ch5, FFD). Fractionally-differentiated log-price adds the
 # long-memory level information that every integer-differenced feature
@@ -149,6 +149,28 @@ def build_technical_features(ohlcv: pd.DataFrame) -> pd.DataFrame:
     # rv_20 0.29-0.44 on XAU/EUR D1 + BTC H4, 2026-06-11), so the raw S is
     # used without a volatility-netted variant.
     out["cs_spread_21"] = corwin_schultz_spread(h, l, beta_window=21)
+
+    # B0016: overnight/intraday return decomposition (Lou-Polk-Skouras, JFE
+    # 2019). Anomaly returns split cleanly across the close-to-open and
+    # open-to-close components; in LARGE CAPS momentum accrues overnight, and
+    # EWMA'd components forecast returns at the 5-10d horizon (persistence
+    # within component, reversal across). r_overnight + r_intraday == r_1 by
+    # construction. Requires true session opens — verified across the 52-name
+    # M3-wide panel 2026-07-04 (fabricated-open feeds show open==prev_close
+    # with ~zero overnight std; ours: frac<0.19, std 0.4-3%).
+    o = ohlcv["open"]
+    out["r_overnight"] = np.log(o / c.shift(1))
+    out["r_intraday"] = np.log(c / o)
+    for hl in (21, 60):
+        out[f"on_ewma_{hl}"] = out["r_overnight"].ewm(halflife=hl, adjust=False).mean()
+        out[f"in_ewma_{hl}"] = out["r_intraday"].ewm(halflife=hl, adjust=False).mean()
+    out["tug_21"] = out["on_ewma_21"] - out["in_ewma_21"]
+
+    # B0016: Kyle lambda t-value + Amihud illiquidity (AFML §19.4) — top of
+    # LdP's own MDA feature ranking among bar-computable features. Liquidity
+    # state conditions whether a signal is tradable; meta-features only.
+    out["amihud_20"] = amihud_lambda(c, ohlcv["volume"], window=20)
+    out["kyle_t_20"] = kyle_lambda_tvalue(c, ohlcv["volume"], window=20)
 
     _add_volume_features(out, ohlcv)
 

@@ -242,6 +242,10 @@ def test_d1_builder_columns_unchanged_after_t5(synth_ohlcv):
         "ffd_logclose",
         # B0135: Corwin-Schultz high-low spread (liquidity dimension).
         "cs_spread_21",
+        # B0016: overnight/intraday decomposition + Kyle/Amihud lambdas.
+        "r_overnight", "r_intraday",
+        "on_ewma_21", "on_ewma_60", "in_ewma_21", "in_ewma_60", "tug_21",
+        "amihud_20", "kyle_t_20",
         # B0149: volume-participation block (PIT-safe derived transforms).
         "volume_z42", "volume_pct_rank_21", "volume_rel_median_42",
         # Macro

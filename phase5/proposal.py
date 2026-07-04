@@ -84,6 +84,11 @@ KNOWN_TIER2_FEATURES: frozenset[str] = frozenset({
     "atr_14_norm", "_atr_14", "bb_width_20",
     "rv_20", "rv_regime", "rv_term_structure", "ffd_logclose",
     "cs_spread_21",  # B0135: Corwin-Schultz high-low spread (liquidity)
+    # B0016: overnight/intraday decomposition (Lou-Polk-Skouras JFE 2019)
+    # + Kyle/Amihud lambdas (AFML §19.4)
+    "r_overnight", "r_intraday",
+    "on_ewma_21", "on_ewma_60", "in_ewma_21", "in_ewma_60", "tug_21",
+    "amihud_20", "kyle_t_20",
     "volume_z42", "volume_pct_rank_21", "volume_rel_median_42",
     # B0147: GLD real-volume block (metals-only, config-gated alt-data)
     "gld_dvol_z42", "gld_amihud_z252",
