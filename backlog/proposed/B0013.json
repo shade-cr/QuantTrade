@@ -144,6 +144,11 @@
       "date": "2026-07-04",
       "event": "raw_gate_bit_again",
       "reason": "T004D1 pooled audit (2026-07-04): raw gate passed (2,852 > 599) but effective_n_rho1 = 521.7 < 799 - the audit burned a full run on a formally floor-invalid verdict, exactly the B0013 scope item. DA caveat #1 had pre-registered this as FAIL. Priority of the effective-N gate fix rises."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "effective_n_gate_shipped",
+      "reason": "Pooled audit now gates on effective_n_rho1 (cheap --effective-n-only subprocess, fail-loud on measurement failure) before the full run; completed records persist pooled_effective_n. Commit 71b36d6."
     }
   ]
 }

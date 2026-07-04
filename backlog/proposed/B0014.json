@@ -157,6 +157,11 @@
       "date": "2026-07-04",
       "event": "t004d1_audit_outcome",
       "reason": "T004D1 (cusum@1.0 long, BULL_STRESSED, symmetric 1.5/1.5) audit: NOT CONFIRMED + effective-N fail. Raw gated events 2,852 (hypothesizer extrapolation 2.8-4.2k was accurate) but effective_n_rho1 521.7 < floor 799 (DA objection: gated events pile on the same stress days - confirmed empirically). Falsification criteria failed outright: 4 trades at ev-threshold 0.583 vs 100 minimum, zero active folds, breadth 0. Long/short split flat (hit ~0.4-0.6, pnl ~0 on n<=28 cells). Regime-gated pooled D1 paths still cannot reach the effective-N floor even with dense primaries; the gate-vs-horizon tension is structural: gating to 7% of bars concentrates events onto few days."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "add_feature_gate_shipped",
+      "reason": "regime_gate add_feature mode shipped (commit follows 71b36d6): keeps all pooled events, adds regime_in_scope 0/1 to meta X. Unlocks minority-regime hypotheses on the pooled path without effective-N collapse. Next Loop A ticks should prefer add_feature for regimes <15% of bars."
     }
   ]
 }
