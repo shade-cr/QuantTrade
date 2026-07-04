@@ -1,7 +1,7 @@
 {
   "id": "B0015",
   "title": "Loop A: DA objection severity vocabulary mismatch (fatal/major/minor vs counted 'high')",
-  "status": "proposed",
+  "status": "done",
   "effort": "S",
   "value": "M",
   "tags": [
@@ -38,6 +38,13 @@
       "date": "2026-07-04",
       "event": "created",
       "reason": "logged from tick 3 observation"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "severity normalization + objection-text rendering shipped with tests (tests/test_loop_a_severity.py)",
+      "from": "proposed",
+      "to": "done"
     }
   ]
 }
