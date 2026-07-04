@@ -88,6 +88,29 @@ MAX_HYPOTHESIZER_RETRIES = 3
 MAX_DA_RETRIES = 2
 
 
+def _norm_severity(objection: dict) -> str:
+    """B0015: DA agents have emitted both {high,medium,low} and
+    {fatal,major,minor}. Normalize at read time — never persist a count
+    computed from a single vocabulary (tick 3 recorded 2 fatal objections
+    as da_objections_high=0 and skipped the retry loop)."""
+    return str(objection.get("severity", "")).strip().lower()
+
+
+def _is_high_severity(objection: dict) -> bool:
+    return _norm_severity(objection) in ("high", "fatal", "critical")
+
+
+def _objection_text(objection: dict) -> str:
+    """DA output has used both 'claim'/'claim_attacked' and carried the
+    substance in 'objection' — render whichever is present so retry
+    feedback never shows blank numbered items (observed tick 4)."""
+    claim = objection.get("claim") or objection.get("claim_attacked") or ""
+    body = objection.get("objection") or ""
+    if claim and body:
+        return f"{claim} — {body}"
+    return claim or body
+
+
 def _format_da_feedback(verdict: dict) -> str:
     """Render a devil's-advocate BLOCK verdict as natural-language feedback
     for the hypothesizer retry loop (B0037). Mirrors the style of
@@ -97,8 +120,8 @@ def _format_da_feedback(verdict: dict) -> str:
     argument FOR its previous attempt.
     """
     objs = verdict.get("objections", [])
-    high = [o for o in objs if o.get("severity") == "high"]
-    medium = [o for o in objs if o.get("severity") == "medium"]
+    high = [o for o in objs if _is_high_severity(o)]
+    medium = [o for o in objs if _norm_severity(o) in ("medium", "major")]
     must_haves = verdict.get("must_have_mods_before_proceed", [])
     steel_man = verdict.get("steel_man", "").strip()
 
@@ -115,7 +138,7 @@ def _format_da_feedback(verdict: dict) -> str:
     if high:
         lines.append("HIGH-severity objections (MUST be addressed in retry):")
         for i, o in enumerate(high, 1):
-            lines.append(f"  {i}. {o.get('claim', '')}")
+            lines.append(f"  {i}. {_objection_text(o)[:400]}")
             evidence = o.get("evidence", "")
             if evidence:
                 lines.append(f"     evidence: {evidence[:300]}")
@@ -131,7 +154,7 @@ def _format_da_feedback(verdict: dict) -> str:
     if medium:
         lines.append("Medium-severity objections (address if possible):")
         for o in medium:
-            lines.append(f"  - {o.get('claim', '')[:200]}")
+            lines.append(f"  - {_objection_text(o)[:200]}")
         lines.append("")
     lines.extend([
         "Constraints carried forward from the anti-circularity lint (B0034):",
@@ -584,14 +607,14 @@ def run_preflight(proposal_path: str, verdict_path: str) -> dict:
         "proposal_id": json.loads(prop_path.read_text(encoding="utf-8"))["id"],
         "da_verdict": verdict["verdict"],
         "da_objections_total": len(verdict.get("objections", [])),
-        "da_objections_high": sum(1 for o in verdict.get("objections", []) if o.get("severity") == "high"),
+        "da_objections_high": sum(1 for o in verdict.get("objections", []) if _is_high_severity(o)),
     }
 
     if verdict["verdict"] == "BLOCK":
         # B0037 — DA-feedback retry loop: if there's a high-severity objection
         # AND we haven't burned our DA-retry budget, re-dispatch the hypothesizer
         # with the DA's objections as feedback.
-        has_high = any(o.get("severity") == "high" for o in verdict.get("objections", []))
+        has_high = any(_is_high_severity(o) for o in verdict.get("objections", []))
         da_retry_count = state["current_tick"].get("da_retry_count", 0)
         if has_high and da_retry_count < MAX_DA_RETRIES:
             new_da_retry_count = da_retry_count + 1
