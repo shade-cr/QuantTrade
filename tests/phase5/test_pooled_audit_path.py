@@ -106,6 +106,8 @@ def test_build_transient_pooled_config_overlays_and_preserves_template(tmp_path,
 
     # regime_scope + feature_overrides at top level (run_pooled_equity_d1.py contract)
     assert set(cfg["regime_scope"]) == {"BULL_QUIET", "BEAR_QUIET"}
+    # B0014: the proposal's gate mode reaches the pooled runner verbatim.
+    assert cfg["regime_gate_mode"] == "filter_events"
     assert cfg["feature_overrides_add"] == []
     assert cfg["feature_overrides_drop"] == []
 

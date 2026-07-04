@@ -135,6 +135,61 @@ def test_regime_gate_filters_member_events(synth_ohlcv, cfg, tmp_path, monkeypat
     assert len(gated["X"]) < len(ungated["X"])
 
 
+def test_regime_gate_add_feature_keeps_all_events_and_adds_column(synth_ohlcv, cfg, tmp_path, monkeypatch):
+    """B0014 follow-up: regime_gate_mode 'add_feature' must NOT filter events
+    (filtering to a minority regime collapses pooled effective-N — T004D1);
+    instead the meta X gains a 'regime_in_scope' 0/1 column so the learner
+    can model the conditionality without destroying statistical power."""
+    features = _features_for(synth_ohlcv)
+    ohlcv = synth_ohlcv.loc[features.index]
+
+    ungated = build_member_inputs("TEST", "ema_cross", ohlcv, features, cfg)
+    assert ungated is not None
+    assert "regime_in_scope" not in ungated["X"].columns
+
+    n = len(ohlcv.index)
+    midpoint = ohlcv.index[n // 2]
+    regime_id = np.where(np.arange(n) < n // 2, "BULL_QUIET", "BEAR_QUIET")
+    regimes = pd.DataFrame({"regime_id": regime_id}, index=ohlcv.index)
+    regime_path = tmp_path / "TEST_d1_regimes.parquet"
+    regimes.to_parquet(regime_path)
+    monkeypatch.setattr(runner, "_regimes_path", lambda asset: regime_path)
+
+    af_cfg = dict(cfg)
+    af_cfg["regime_scope"] = ["BULL_QUIET"]
+    af_cfg["regime_gate_mode"] = "add_feature"
+    m = build_member_inputs("TEST", "ema_cross", ohlcv, features, af_cfg)
+
+    assert m is not None
+    # No filtering: same event set as the ungated run.
+    assert m["X"].index.equals(ungated["X"].index)
+    # The conditionality is a feature, correct per-bar.
+    assert "regime_in_scope" in m["X"].columns
+    col = m["X"]["regime_in_scope"]
+    assert set(col.unique()) <= {0.0, 1.0}
+    assert (col[m["X"].index < midpoint] == 1.0).all()
+    assert (col[m["X"].index >= midpoint] == 0.0).all()
+
+
+def test_regime_gate_unknown_mode_fails_loud(synth_ohlcv, cfg, tmp_path, monkeypatch):
+    """'weight_events' is schema-legal but unimplemented in the pooled runner;
+    silently treating it as filter_events (or ignoring it) would misrepresent
+    the audit. Any mode other than filter_events/add_feature must raise."""
+    features = _features_for(synth_ohlcv)
+    ohlcv = synth_ohlcv.loc[features.index]
+
+    regimes = pd.DataFrame({"regime_id": ["BULL_QUIET"] * len(ohlcv)}, index=ohlcv.index)
+    regime_path = tmp_path / "TEST_d1_regimes.parquet"
+    regimes.to_parquet(regime_path)
+    monkeypatch.setattr(runner, "_regimes_path", lambda asset: regime_path)
+
+    bad_cfg = dict(cfg)
+    bad_cfg["regime_scope"] = ["BULL_QUIET"]
+    bad_cfg["regime_gate_mode"] = "weight_events"
+    with pytest.raises(ValueError, match="regime_gate_mode"):
+        build_member_inputs("TEST", "ema_cross", ohlcv, features, bad_cfg)
+
+
 def test_feature_overrides_drop_removes_column(synth_ohlcv, cfg):
     """cfg feature_overrides_drop=['f_mom'] -> 'f_mom' absent from member X;
     baseline run has it present."""

@@ -78,14 +78,26 @@ def build_member_inputs(
     # triple-barrier labeling, so weights/labels/folds are computed only on
     # in-scope events.
     scope = cfg.get("regime_scope") or []
+    gate_mode = cfg.get("regime_gate_mode", "filter_events")
+    if gate_mode not in ("filter_events", "add_feature"):
+        raise ValueError(
+            f"regime_gate_mode={gate_mode!r} not implemented by the pooled runner "
+            "(supported: filter_events, add_feature); refusing to run with a gate "
+            "that silently differs from the proposal's attestation"
+        )
+    in_scope_ts = None
     if scope:
         regimes = pd.read_parquet(_regimes_path(asset))
         in_scope_ts = regimes.index[regimes["regime_id"].isin(set(scope))]
-        n_before = len(events)
-        events = events[events.index.isin(in_scope_ts)]
-        print(f"  {asset}/{primary_name}: regime gate kept {len(events)}/{n_before} events")
-        if events.empty:
-            return None
+        if gate_mode == "filter_events":
+            n_before = len(events)
+            events = events[events.index.isin(in_scope_ts)]
+            print(f"  {asset}/{primary_name}: regime gate kept {len(events)}/{n_before} events")
+            if events.empty:
+                return None
+        # add_feature: keep ALL events (a minority-regime filter collapses
+        # pooled effective-N onto few distinct days — T004D1, B0014); the
+        # conditionality is handed to the meta as a column instead (below).
 
     atr = features["_atr_14"]
     labels = triple_barrier_labels(
@@ -120,6 +132,8 @@ def build_member_inputs(
     else:
         X["primary_strength"] = features["z_r20"].loc[valid.index].values
     X["bars_since_signal"] = state["bars_since_signal"].values
+    if scope and gate_mode == "add_feature":
+        X["regime_in_scope"] = X.index.isin(in_scope_ts).astype(float)
 
     pre_drop_index = X.index
     X = X.dropna()

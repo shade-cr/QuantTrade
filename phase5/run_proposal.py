@@ -889,6 +889,9 @@ def build_transient_pooled_config(p: Proposal) -> Path:
     cfg["triple_barrier"]["sl_atr_mult"] = p.barrier_geometry_attestation.sl_atr_mult
 
     cfg["regime_scope"] = list(p.regime_scope)
+    # B0014: carry the proposal's gate mode into the pooled runner (which
+    # fail-louds on modes it does not implement, e.g. weight_events).
+    cfg["regime_gate_mode"] = p.regime_gate.mode
     cfg["feature_overrides_add"] = list(p.feature_overrides.add)
     cfg["feature_overrides_drop"] = list(p.feature_overrides.drop)
 

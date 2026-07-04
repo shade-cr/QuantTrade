@@ -37,7 +37,10 @@ DEFAULT_FALSIFICATION = {
     "n_trades_total_min": 50,
 }
 
-REGIME_GATE_MODES = ("filter_events", "weight_events")
+# add_feature (B0014): keep all events, expose in-scope membership to the meta
+# as a 0/1 column — the reachable alternative when a minority-regime filter
+# would collapse pooled effective-N (T004D1: 2,852 raw -> 521.7 effective).
+REGIME_GATE_MODES = ("filter_events", "weight_events", "add_feature")
 
 # --------------------------------------------------------------------------- #
 # B0155 — pre-registered EV-breakeven threshold rule (Elkan 2001 cost-ratio
