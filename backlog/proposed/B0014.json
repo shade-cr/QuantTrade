@@ -162,6 +162,16 @@
       "date": "2026-07-04",
       "event": "add_feature_gate_shipped",
       "reason": "regime_gate add_feature mode shipped (commit follows 71b36d6): keeps all pooled events, adds regime_in_scope 0/1 to meta X. Unlocks minority-regime hypotheses on the pooled path without effective-N collapse. Next Loop A ticks should prefer add_feature for regimes <15% of bars."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "t005_gate_saves",
+      "reason": "T005 (bollinger 21/2.0, BEAR_QUIET filter_events): B0013 gate killed both audit attempts pre-run. h40 template bug found+fixed (POOLED_AUDIT_HORIZON=10, effective-N 658->737.5) but still < 799: even a 21.4pct well-dispersed regime under filter_events fails the floor with a sparse primary (3,270 raw). Confirms add_feature as the only viable gate mode for sparse-primary regime hypotheses. Refinement T005R1 (add_feature) dispatched."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "t005r2_lineage_closed",
+      "reason": "T005R2 (add_feature): FIRST honest floor pass (937.8>799, 18,443 raw). Base criteria FAILED (42<50 trades, no active folds); in-scope split: 83 trades, +0.56 gross but per-trade mean below pooled; regime_in_scope MDA ~zero (clustered) -> meta ignored conditionality -> regime hypothesis NOT supported. Lineage T005 closed at DSR trials>=2, no R3 per DA caveat. Observation (NOT a claim): ungated pooled bollinger loose-count 404 trades gross hit 0.62 mean +1.1pct/trade - candidate for its own pre-registered proposal via a future tick."
     }
   ]
 }
