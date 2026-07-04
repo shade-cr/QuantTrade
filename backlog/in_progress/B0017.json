@@ -1,7 +1,7 @@
 {
   "id": "B0017",
   "title": "Earnings-date event primary (announcement PREMIUM, not PEAD) + PIT dates from EDGAR 8-K",
-  "status": "proposed",
+  "status": "in_progress",
   "effort": "M",
   "value": "H",
   "tags": [
@@ -104,6 +104,18 @@
         "spawned_by": [],
         "spawned_from": []
       }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "ingestion_complete",
+      "reason": "EDGAR 8-K Item 2.02 ingestion complete: 43/43 tickers, 87-139 announcements each, 2004->2026 (full audit window). Coverage holes (thin sample, not lookahead): DIS only 29 events 2019+ (did not tag 2.02 earlier), ORCL starts 2006-03. Pre-registration FROZEN at 740bacf BEFORE any data look. Remaining: phase5_earnings_premium module (+adversarial lookahead review, custom code not auto-trusted), days_to/since meta-features, pooled audit."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "ingestion + scheduler + pre-registration shipped; primary module next",
+      "from": "proposed",
+      "to": "in_progress"
     }
   ]
 }

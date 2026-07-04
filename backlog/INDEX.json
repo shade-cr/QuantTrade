@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-04T18:00:19Z",
+  "updated_at": "2026-07-04T18:34:03Z",
   "entries": [
     {
       "id": "B0001",
@@ -233,7 +233,7 @@
     },
     {
       "id": "B0017",
-      "status": "proposed",
+      "status": "in_progress",
       "title": "Earnings-date event primary (announcement PREMIUM, not PEAD) + PIT dates from EDGAR 8-K",
       "updated_at": "2026-07-04",
       "effort": "M",
