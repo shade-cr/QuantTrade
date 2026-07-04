@@ -1,7 +1,7 @@
 {
   "id": "B0017",
   "title": "Earnings-date event primary (announcement PREMIUM, not PEAD) + PIT dates from EDGAR 8-K",
-  "status": "in_progress",
+  "status": "done",
   "effort": "M",
   "value": "H",
   "tags": [
@@ -121,6 +121,18 @@
       "date": "2026-07-04",
       "event": "da_code_review_passed",
       "reason": "Custom-primary adversarial review: r1 BLOCK (AMC same-session leak in calendar features; 8-K/A + re-disclosure corruption of scheduler; post-early-actual fires) -> all fixed with tests (effective_knowledge_day 20:00 UTC cutoff; filter_amendments 30d - data shows 35 tickers with sub-30d 2.02 re-disclosures, IBM 52, so the filter is load-bearing; next-actual cap on windows) -> r2 PROCEED_WITH_CAVEAT + convention unification applied. Remaining caveats documented: seasonal 1-session conservative deferral for 15-16h ET winter filings (safe direction). READY FOR POOLED AUDIT."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "audit_not_confirmed",
+      "reason": "h3 audit completed with valid floor (837.0 > 799, trial 2 after h10 gate fail). Pre-registered criteria FAILED: 0 best-model trades at ev 0.583 (capacity discard per pre-commitment), no active folds, breadth 0. Unconditional event-level read (permitted at audit read): +10.8 bp/event GROSS, hit 52.5pct, t=1.45 (insignificant), positive 16/20 years with losses exactly in stress years (2007-09, 2020) - sign and crash-risk signature CONSISTENT with the literature premium, but magnitude ~1bp net of 10bp costs: economically nil for our cost model (literature 30bp was value-weighted). VERDICT: NOT CONFIRMED - the premium exists in direction but is too small to trade at retail friction on equal-weighted D1 bars. DSR: 2 family trials. No further amendment permitted."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "audit chain complete: NOT CONFIRMED (capacity discard + economically nil unconditional premium)",
+      "from": "in_progress",
+      "to": "done"
     }
   ]
 }
