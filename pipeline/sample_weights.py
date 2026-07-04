@@ -7,6 +7,8 @@ References:
   t ∈ [t_start_i, t_end_i].
 """
 from __future__ import annotations
+import warnings
+
 import numpy as np
 import pandas as pd
 
@@ -195,3 +197,119 @@ def effective_number_of_bets(rho: "pd.DataFrame") -> float:
     vals = np.clip(vals, 1e-12, None)
     p = vals / vals.sum()
     return float(np.exp(-(p * np.log(p)).sum()))
+
+
+def corr_discounted_uniqueness(
+    event_time, label_end_time, asset, rho_schedule, grid,
+) -> np.ndarray:
+    """B0012 v2 FIT-WEIGHTS: correlation-discounted cross-asset uniqueness.
+
+    c_a(t) = n_a(t) + sum_{b != a} rho*_{ab}(t) * n_b(t); u = 1/c; u_bar = mean
+    over the event's span days on `grid`. Same-asset concurrency keeps full
+    AFML §4.3 weight (shared price path). Cross-asset concurrency is discounted
+    by the PIT shrunk correlation (spec §2). Days before the first schedule
+    entry — and assets missing from the matrices — use rho*=1 (conservative:
+    reduces to the rho=1 rule, never credits unearned independence).
+
+    FIREWALL (spec §1): this feeds sample_weight for fit/search/calibration
+    ONLY. Gates, floors and DSR keep consuming `pooled_avg_uniqueness`.
+    """
+    ev = pd.DatetimeIndex(event_time)
+    le = pd.DatetimeIndex(label_end_time)
+    asset = np.asarray(asset, dtype=object)
+    if not (len(ev) == len(le) == len(asset)):
+        raise ValueError("event_time, label_end_time, asset must be aligned")
+    grid = pd.DatetimeIndex(grid)
+    assets = sorted(set(asset.tolist()))
+    a_pos = {a: i for i, a in enumerate(assets)}
+    n_days, n_assets = len(grid), len(assets)
+
+    # Open-event counts per (day, asset) via entry/exit difference arrays.
+    counts = np.zeros((n_days, n_assets), dtype=float)
+    # NOTE (deviation from brief, documented in task-2-report.md): e_idx uses
+    # side="left" - 1, NOT side="right" - 1 as in the brief's draft. The brief's
+    # version double-counts the label_end_time day as still "open" (inclusive
+    # both ends -> a dur=5 event spans 6 grid days), whereas
+    # pooled_avg_uniqueness's continuous half-open-segment convention treats
+    # the span as [event_time, label_end_time) -> 5 grid days. side="left" - 1
+    # reproduces that exclusive-end convention so the two functions' baseline
+    # (rho*=1) concurrency counts match exactly, per spec's "mirroring
+    # pooled_avg_uniqueness" requirement.
+    s_idx = np.clip(grid.searchsorted(ev, side="left"), 0, n_days - 1)
+    e_idx = np.clip(grid.searchsorted(le, side="left") - 1, 0, n_days - 1)
+    e_idx = np.maximum(e_idx, s_idx)
+    for k in range(len(ev)):
+        j = a_pos[asset[k]]
+        counts[s_idx[k], j] += 1.0
+        if e_idx[k] + 1 < n_days:
+            counts[e_idx[k] + 1, j] -= 1.0
+    counts = np.cumsum(counts, axis=0)
+
+    # rho* per day: schedule step function; rho*=1 before the first entry.
+    # Index-array optimization (per implementer NOTE): map each grid day to
+    # the schedule slot in effect, avoiding an O(days) python loop per entry.
+    ones = np.ones((n_assets, n_assets), dtype=float)
+    sched_ts = [ts for ts, _ in rho_schedule]
+    sched_mx = []
+    for _, m in rho_schedule:
+        mx = ones.copy()
+        common = [a for a in assets if a in m.index]
+        if len(common) < len(assets):
+            missing = sorted(set(assets) - set(common))
+            warnings.warn(f"corr_discounted_uniqueness: assets {missing} missing "
+                          f"from rho matrix — using rho*=1 for them", RuntimeWarning)
+        sub = m.loc[common, common].values
+        for i, ai in enumerate(common):
+            for j, aj in enumerate(common):
+                mx[a_pos[ai], a_pos[aj]] = sub[i, j]
+        sched_mx.append(mx)
+
+    if sched_ts:
+        starts = np.searchsorted(grid.values, pd.DatetimeIndex(sched_ts).values,
+                                 side="left")
+        # slot[d] = index into sched_mx in effect at grid day d, or -1 if before
+        # the first effective_from (conservative rho*=1 warmup).
+        slot = np.searchsorted(starts, np.arange(n_days), side="right") - 1
+    else:
+        slot = np.full(n_days, -1, dtype=int)
+
+    # c per (day, asset): counts @ rho_row, keeping the same-asset term at weight 1.
+    inv_c = np.zeros((n_days, n_assets), dtype=float)
+    for d in range(n_days):
+        mx = sched_mx[slot[d]] if slot[d] >= 0 else ones
+        c_row = counts[d] @ mx  # includes own-asset term at rho=1 (diag)
+        with np.errstate(divide="ignore"):
+            inv_c[d] = np.where(c_row > 0, 1.0 / c_row, 0.0)
+
+    # NOTE (deviation from brief, documented in task-2-report.md): the mean
+    # over an event's span days is DURATION-WEIGHTED by the actual wall-clock
+    # gap to the next grid day, not a plain arithmetic mean over day count.
+    # `pooled_avg_uniqueness` averages 1/concurrency over CONTINUOUS atomic
+    # sub-intervals weighted by their real elapsed time — on a business-day
+    # grid a Fri->Mon gap carries 3x the weight of a Mon->Tue gap. A plain
+    # per-day mean silently disagrees with that (~10-20% off at rho*=1 in the
+    # dense-event fixture, entirely a weekend-gap artifact, not a rho effect)
+    # and breaks the spec's "mirroring pooled_avg_uniqueness" contract and the
+    # single-asset bit-identical test (§5.2). Weighting by the grid's own
+    # inter-day duration reproduces pooled_avg_uniqueness's segment durations
+    # exactly at rho*=1.
+    grid_ns = grid.asi8.astype(np.float64)
+    if n_days > 1:
+        gaps = np.diff(grid_ns)
+        day_dur = np.append(gaps, gaps[-1])
+    else:
+        day_dur = np.ones(max(n_days, 1), dtype=np.float64)
+
+    weights = np.empty(len(ev), dtype=float)
+    for k in range(len(ev)):
+        j = a_pos[asset[k]]
+        lo, hi = s_idx[k], e_idx[k] + 1
+        vals = inv_c[lo:hi, j]
+        dur = day_dur[lo:hi]
+        mask = vals > 0
+        total_dur = dur[mask].sum()
+        if total_dur > 0:
+            weights[k] = float((vals[mask] * dur[mask]).sum() / total_dur)
+        else:
+            weights[k] = 1.0
+    return weights
