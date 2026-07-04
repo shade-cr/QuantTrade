@@ -137,6 +137,11 @@
         "spawned_by": [],
         "spawned_from": []
       }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "horizon_curve_measured",
+      "reason": "Free experiment run 2026-07-04 (--effective-n-only, 35 names, cusum, D1): horizon 40 -> 654.0, horizon 20 -> 716.3, horizon 10 -> 904.9. THE FLOOR (799) CLEARS AT HORIZON ~10-15 WITH NO NEW DATA. Caveats before acting: (1) h10 is a different strategy class (TP 3.0 ATR rarely reachable in 10 days -> timeout-dominated labels; barrier geometry must be re-derived, e.g. tp/sl ~1.0-1.5 ATR); (2) each horizon tested is a recorded trial for DSR counting; (3) intraday vendor path stays in scope only if short-horizon D1 audits still starve after regime gating."
     }
   ]
 }
