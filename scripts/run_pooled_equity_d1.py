@@ -180,6 +180,12 @@ def _apply_fit_weight_mode(
     """
     mp = cfg.get("meta_pooling") or {}
     mode = mp.get("fit_weight", "rho1_pooled") or "rho1_pooled"
+    valid_modes = {"rho1_pooled", "corr_discounted_v2", "per_asset"}
+    if mode not in valid_modes:
+        raise ValueError(
+            f"meta_pooling.fit_weight={mode!r} is not one of {sorted(valid_modes)}; "
+            "refusing to fall back silently to rho1_pooled"
+        )
     pooled_uniqueness_flag = bool(mp.get("pooled_uniqueness", True))
 
     rho_schedule = None
@@ -239,7 +245,13 @@ def _apply_fit_weight_mode(
             # rho1_pooled / per_asset: weights untouched; the diagnostic
             # correlation schedule is NOT built here (would be spec-legal
             # only "if cheap" and adds no value when nothing consumes it).
-            fit_weight_sum = float(sum(np.asarray(m["w"]).sum() for m in members))
+            # fit_weight_sum must describe the weights the fit ACTUALLY uses:
+            # with pooled_uniqueness on, _run_one_pool discards m["w"] and
+            # fits on the rho=1 pooled weights (sum == effective_n_rho1).
+            if mode == "rho1_pooled" and pooled_uniqueness_flag:
+                fit_weight_sum = effective_n_rho1
+            else:
+                fit_weight_sum = float(sum(np.asarray(m["w"]).sum() for m in members))
             enb_ceiling_reason = "fit_weight mode does not use a rho schedule"
 
         diagnostics_by_primary[primary] = {
