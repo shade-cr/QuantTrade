@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-04T15:05:29Z",
+  "updated_at": "2026-07-04T18:00:19Z",
   "entries": [
     {
       "id": "B0001",
@@ -218,7 +218,7 @@
     },
     {
       "id": "B0016",
-      "status": "proposed",
+      "status": "done",
       "title": "Overnight/intraday decomposition + daily microstructure proxies (zero-cost new-information features)",
       "updated_at": "2026-07-04",
       "effort": "S",

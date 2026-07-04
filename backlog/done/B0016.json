@@ -1,7 +1,7 @@
 {
   "id": "B0016",
   "title": "Overnight/intraday decomposition + daily microstructure proxies (zero-cost new-information features)",
-  "status": "proposed",
+  "status": "done",
   "effort": "S",
   "value": "H",
   "tags": [
@@ -102,6 +102,18 @@
         "spawned_by": [],
         "spawned_from": []
       }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "ab_null_result",
+      "reason": "Pre-registered A/B executed (results/clf_equity_m3_cusum_cs_v2_h10_od vs _h10 baseline, identical config, only feature code differs): panel ROC-AUC 0.5297 WITH the overnight/lambda block vs 0.5310 without - falsification criterion fires: the block adds NO discriminative power to the meta on cusum events. The best documented price-derived effect (JFE 2019, t~5 in large caps) does not rescue an uninformative primary. Features stay in tier2 (harmless, may matter for event primaries where timing aligns with the mechanism); the evidence weight shifts fully to event data: B0017 earnings premium, B0018 insiders. NOTE: this tests the features as META-features on cusum events - NOT the Lou-Polk-Skouras effect itself (which is a portfolio-formation claim); an overnight-momentum EVENT primary remains untested."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "shipped + A/B null recorded; block retained in tier2",
+      "from": "proposed",
+      "to": "done"
     }
   ]
 }
