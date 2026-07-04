@@ -68,12 +68,15 @@ def signal(ohlcv: pd.DataFrame, features: pd.DataFrame, cfg: dict) -> pd.Series:
         exp = pd.Timestamp(expected_date).tz_localize(None).normalize()
         window_start = exp - pd.tseries.offsets.BusinessDay(ENTRY_DAYS_BEFORE)
         window_end = exp - pd.tseries.offsets.BusinessDay(1)
-        known = pd.Timestamp(row["known_asof"]).tz_localize(None)
-        # Eligible bars: inside the window AND strictly after the expectation
-        # became known (belt-and-braces: known_asof precedes the window by ~a
-        # quarter under the median-gap rule, but never assume).
+        # Eligible bars: inside the window AND at/after the first session that
+        # could know the generating announcement (effective_knowledge_day —
+        # the ONE knowledge-day convention everywhere; DA r2 low #3: a second
+        # convention here is how the round-1 AMC leak regresses silently).
+        known_day = effective_knowledge_day(
+            pd.DatetimeIndex([row["known_asof"]])
+        )[0]
         mask = (bar_dates >= window_start) & (bar_dates <= window_end) & (
-            bar_dates > known.normalize()
+            bar_dates >= known_day
         )
         # DA review 2026-07-04 medium: if the ACTUAL next announcement lands
         # early (inside/before the window), entering after it no longer
