@@ -31,7 +31,9 @@ import numpy as np
 import pandas as pd
 
 from pipeline.earnings_events import (
+    effective_knowledge_day,
     expected_announcement_schedule,
+    filter_amendments,
     load_earnings_announcements,
 )
 
@@ -47,8 +49,11 @@ def signal(ohlcv: pd.DataFrame, features: pd.DataFrame, cfg: dict) -> pd.Series:
             "phase5_earnings_premium requires cfg['_current_asset'] (injected by the "
             "runner) to load the ticker's earnings cache — refusing to guess"
         )
-    ann = load_earnings_announcements(asset)
-    sched = expected_announcement_schedule(ann.index)
+    # DA review 2026-07-04 high #2: strip 8-K/A amendments / same-quarter
+    # re-disclosures BEFORE scheduling — they corrupt the median gap and
+    # spawn bogus expectation windows.
+    ann_clean = filter_amendments(load_earnings_announcements(asset).index)
+    sched = expected_announcement_schedule(ann_clean)
 
     out = pd.Series(0, index=ohlcv.index, dtype=int)
     if sched.empty:
@@ -56,8 +61,10 @@ def signal(ohlcv: pd.DataFrame, features: pd.DataFrame, cfg: dict) -> pd.Series:
 
     # Normalized session dates of the bars (tz handled by comparing dates).
     bar_dates = pd.DatetimeIndex(ohlcv.index).tz_localize(None).normalize()
+    # First session that could know each announcement (AMC rolls to next day).
+    ann_known_days = effective_knowledge_day(ann_clean)
 
-    for expected_date, row in sched.iterrows():
+    for i, (expected_date, row) in enumerate(sched.iterrows()):
         exp = pd.Timestamp(expected_date).tz_localize(None).normalize()
         window_start = exp - pd.tseries.offsets.BusinessDay(ENTRY_DAYS_BEFORE)
         window_end = exp - pd.tseries.offsets.BusinessDay(1)
@@ -68,6 +75,12 @@ def signal(ohlcv: pd.DataFrame, features: pd.DataFrame, cfg: dict) -> pd.Series:
         mask = (bar_dates >= window_start) & (bar_dates <= window_end) & (
             bar_dates > known.normalize()
         )
+        # DA review 2026-07-04 medium: if the ACTUAL next announcement lands
+        # early (inside/before the window), entering after it no longer
+        # expresses the pre-announcement premium — cap eligibility at the
+        # session that first knows announcement i+1.
+        if i + 1 < len(ann_known_days):
+            mask &= bar_dates < ann_known_days[i + 1]
         idx = np.flatnonzero(mask)
         if len(idx):
             out.iloc[idx[0]] = 1  # first bar in window only — one shot per event

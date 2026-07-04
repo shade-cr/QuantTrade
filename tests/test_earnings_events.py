@@ -117,6 +117,55 @@ def test_calendar_features_pit_and_caps():
     pd.testing.assert_frame_equal(f.loc[early], f_trunc.loc[early])
 
 
+# ----------------------------------------------- DA-review fixes (2026-07-04) #
+
+def test_amc_acceptance_not_known_same_session():
+    """DA high #1: an 8-K accepted at/after the session close (>=20:00 UTC)
+    must NOT be visible to that session's features — days_since > 0 on the
+    filing day, 0 only on the next session."""
+    from pipeline.earnings_events import earnings_calendar_features
+
+    early = [pd.Timestamp("2010-01-15 12:00", tz="UTC") + pd.Timedelta(days=91 * i)
+             for i in range(4)]
+    amc = pd.Timestamp("2011-01-14 21:30", tz="UTC")  # after 16:00 ET close
+    ann = pd.DatetimeIndex(early + [amc])
+    bars = pd.bdate_range("2010-01-01", periods=300, tz="UTC")
+    f = earnings_calendar_features(bars, ann)
+
+    naive = bars.tz_localize(None).normalize()
+    on_day = f.loc[bars[naive == pd.Timestamp("2011-01-14")], "days_since_last_announcement"]
+    next_day = f.loc[bars[naive == pd.Timestamp("2011-01-17")], "days_since_last_announcement"]
+    assert (on_day > 0).all(), "AMC filing leaked into same-session features"
+    assert (next_day <= 3).all()  # known by the following session (weekend gap)
+
+
+def test_filter_amendments_drops_near_duplicates():
+    from pipeline.earnings_events import filter_amendments
+
+    base = pd.Timestamp("2010-01-15 12:00", tz="UTC")
+    ann = pd.DatetimeIndex([
+        base,
+        base + pd.Timedelta(days=5),    # 8-K/A amendment — dropped
+        base + pd.Timedelta(days=91),   # next real quarter — kept
+        base + pd.Timedelta(days=92),   # re-disclosure — dropped
+        base + pd.Timedelta(days=182),  # kept
+    ])
+    kept = filter_amendments(ann)
+    assert list(kept) == [base, base + pd.Timedelta(days=91), base + pd.Timedelta(days=182)]
+
+
+def test_effective_knowledge_day_rolls_amc():
+    from pipeline.earnings_events import effective_knowledge_day
+
+    ts = pd.DatetimeIndex([
+        pd.Timestamp("2010-01-15 12:00", tz="UTC"),  # BMO -> same day
+        pd.Timestamp("2010-01-15 21:30", tz="UTC"),  # AMC -> next day
+    ])
+    eff = effective_knowledge_day(ts)
+    assert eff[0] == pd.Timestamp("2010-01-15")
+    assert eff[1] == pd.Timestamp("2010-01-16")
+
+
 # -------------------------------------------------------------- extraction #
 
 def test_extract_8k202_filters_forms_and_items():

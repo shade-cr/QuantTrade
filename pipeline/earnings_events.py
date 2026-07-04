@@ -43,6 +43,44 @@ FALLBACK_GAP_DAYS = 91
 DEFAULT_LOOKBACK_GAPS = 8
 MIN_GAPS = 3
 
+# US session close in UTC. 16:00 ET is 20:00 UTC (EDT) / 21:00 UTC (EST); the
+# EARLIER bound (20:00) is used so ambiguity always defers knowledge to the
+# next session — conservative, never a leak. DA review 2026-07-04, high #1.
+SESSION_CLOSE_UTC_HOUR = 20
+# Announcements closer than this to the previously kept one are 8-K/A
+# amendments / duplicate disclosures, not new earnings events (quarterly
+# cadence is ~63 BD). DA review 2026-07-04, high #2.
+AMENDMENT_MIN_GAP_DAYS = 30
+
+
+def effective_knowledge_day(acceptance: pd.DatetimeIndex) -> pd.DatetimeIndex:
+    """Map EDGAR acceptance timestamps (UTC) to the first SESSION DATE whose
+    close could know them: acceptances at/after the session close roll to the
+    next calendar day. Direction-safe: may defer knowledge, never advance it."""
+    ts = pd.DatetimeIndex(acceptance)
+    naive = ts.tz_localize(None) if ts.tz is not None else ts
+    rolled = naive.normalize() + pd.to_timedelta(
+        (naive.hour >= SESSION_CLOSE_UTC_HOUR).astype(int), unit="D"
+    )
+    return pd.DatetimeIndex(rolled)
+
+
+def filter_amendments(
+    announcements: pd.DatetimeIndex, min_gap_days: int = AMENDMENT_MIN_GAP_DAYS
+) -> pd.DatetimeIndex:
+    """Drop announcements closer than ``min_gap_days`` to the previously KEPT
+    one (keep the earliest of each cluster). Removes 8-K/A amendments and
+    same-quarter re-disclosures that would otherwise corrupt the median-gap
+    scheduler and spawn bogus entry windows."""
+    ts = pd.DatetimeIndex(announcements).sort_values()
+    if len(ts) == 0:
+        return ts
+    kept = [ts[0]]
+    for t in ts[1:]:
+        if (t - kept[-1]).days >= min_gap_days:
+            kept.append(t)
+    return pd.DatetimeIndex(kept)
+
 
 def load_earnings_announcements(
     ticker: str, cache_dir: Path = EARNINGS_CACHE_DIR
@@ -125,8 +163,10 @@ def earnings_calendar_features(
     announcements per bar — truncation-invariant by construction.
     """
     bars = pd.DatetimeIndex(bar_index).tz_localize(None).normalize()
-    ann = pd.DatetimeIndex(announcements).sort_values()
-    ann_days = ann.tz_localize(None).normalize()
+    ann = filter_amendments(pd.DatetimeIndex(announcements).sort_values())
+    # AMC filings (accepted at/after the session close) are knowable only from
+    # the NEXT session — a bar's features are close-of-session information.
+    ann_days = effective_knowledge_day(ann)
     out = pd.DataFrame(index=bar_index)
 
     # days since last announcement (searchsorted on normalized days)
