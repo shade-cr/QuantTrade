@@ -9,3 +9,4 @@ signals/
 catboost_info/
 *.log
 .sdd/
+phase5/runtime/
