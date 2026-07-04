@@ -939,6 +939,38 @@ def count_pooled_events_subprocess(cfg_path: Path) -> list[dict]:
     return json.loads(counts_path.read_text(encoding="utf-8"))
 
 
+def effective_n_pooled_subprocess(cfg_path: Path, primary: str) -> dict:
+    """Run scripts/run_pooled_equity_d1.py --effective-n-only and parse the
+    effective_n_<primary>.json it writes at the config's output_dir (B0011
+    persistence). Cheap (~2 min: panel load + weights, no model fitting).
+
+    B0013: the binding pooled floor quantity is the concurrency-adjusted
+    effective-N, not the raw event count — regime-gated pools concentrate
+    events onto the same stress days and collapse an order of magnitude
+    below raw (T004D1: raw 2,852 vs effective 521.7 < floor 799).
+
+    Raises RuntimeError on subprocess failure or a missing/inconsistent
+    artifact — the caller turns that into `subprocess_failed` rather than
+    silently degrading to the raw gate.
+    """
+    cfg = yaml.safe_load(Path(cfg_path).read_text(encoding="utf-8"))
+    out_dir = Path(cfg["output_dir"])
+    cmd = [sys.executable, "scripts/run_pooled_equity_d1.py", "--config", str(cfg_path),
+           "--effective-n-only"]
+    print(f"+ {' '.join(cmd)}")
+    proc = subprocess.run(cmd, check=False, capture_output=True, text=True)
+    eff_path = out_dir / f"effective_n_{primary}.json"
+    if proc.returncode != 0 or not eff_path.exists():
+        raise RuntimeError(
+            f"pooled effective-n-only subprocess did not produce {eff_path} "
+            f"(returncode {proc.returncode}): {(proc.stderr or '')[-1000:]}"
+        )
+    diag = json.loads(eff_path.read_text(encoding="utf-8"))
+    if "effective_n_rho1" not in diag:
+        raise RuntimeError(f"{eff_path} lacks 'effective_n_rho1' — refusing to gate on raw N")
+    return diag
+
+
 def run_pooled_pipeline_subprocess(cfg_path: Path, dry_run: bool = False) -> subprocess.CompletedProcess:
     """Invoke scripts/run_pooled_equity_d1.py for the full pooled run."""
     cmd = [sys.executable, "scripts/run_pooled_equity_d1.py", "--config", str(cfg_path)]
@@ -1146,6 +1178,37 @@ def run_pooled_audit(p: Proposal, dry_run: bool = False) -> dict:
             },
         )
 
+    # B0013: raw counts clearing the floor is necessary but NOT sufficient —
+    # regime-gated pools pile events onto the same days and the rho=1
+    # effective-N (the quantity make_folds actually starves on) can sit far
+    # below raw. Measure it cheaply (no fitting) and gate BEFORE the full run.
+    try:
+        eff = effective_n_pooled_subprocess(cfg_path, p.primary)
+    except RuntimeError as e:
+        return _persist_record(
+            p, status="subprocess_failed", errors=[str(e)],
+            extras={"mode": "pooled_universe", "config_path": str(cfg_path),
+                    "member_event_counts": primary_counts},
+        )
+    effective_n = float(eff["effective_n_rho1"])
+    if effective_n < floor:
+        return _persist_record(
+            p, status="event_floor",
+            errors=[
+                f"pooled effective-N floor: effective_n_rho1 {effective_n:.1f} < "
+                f"wf_event_floor {floor} despite {total_events} raw in-scope events "
+                f"(concurrency collapse — events concentrated on few distinct days). "
+                f"Relax the regime gate (e.g. add_feature mode), widen regime scope, "
+                f"or shorten barrier durations."
+            ],
+            extras={
+                "mode": "pooled_universe",
+                "config_path": str(cfg_path),
+                "member_event_counts": primary_counts,
+                "pooled_effective_n": {**eff, "wf_event_floor": floor},
+            },
+        )
+
     proc = run_pooled_pipeline_subprocess(cfg_path, dry_run=dry_run)
     if proc.returncode != 0:
         err_txt = proc.stderr or ""
@@ -1180,6 +1243,7 @@ def run_pooled_audit(p: Proposal, dry_run: bool = False) -> dict:
             "config_path": str(cfg_path),
             "results_dir": str(out_dir),
             "member_event_counts": primary_counts,
+            "pooled_effective_n": {**eff, "wf_event_floor": floor},
             "grading": grading,
             "long_short": long_short,
             "criterion_eval": criterion_eval,

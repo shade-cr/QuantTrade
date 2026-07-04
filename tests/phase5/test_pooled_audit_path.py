@@ -266,6 +266,75 @@ def test_run_pooled_audit_event_floor_short_circuits(tmp_path, monkeypatch):
     assert persisted["mode"] == "pooled_universe"
 
 
+def test_run_pooled_audit_effective_n_floor_short_circuits(tmp_path, monkeypatch):
+    """B0013: the binding pooled quantity is effective-N, not raw N. T004D1
+    (2026-07-04) passed the raw gate with 2,852 events but ran the full audit
+    at effective_n_rho1 = 521.7 < floor 799 — a formally floor-invalid verdict
+    that burned ~30 min. Raw-count pass + effective-N fail must short-circuit
+    to event_floor BEFORE the full pipeline subprocess."""
+    monkeypatch.setattr(run_proposal, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(run_proposal, "POOLED_RESULTS_DIR", tmp_path / "results")
+    monkeypatch.setattr(run_proposal, "AUDIT_RESULTS_DIR", tmp_path / "audit_results")
+    p = _load_proposal(tmp_path)
+
+    # Raw counts comfortably above the raw wf_event_floor...
+    fat_counts = [
+        {"asset": "AAA", "primary": "ema_cross", "n_events": 1500},
+        {"asset": "BBB", "primary": "ema_cross", "n_events": 1500},
+    ]
+    monkeypatch.setattr(run_proposal, "count_pooled_events_subprocess",
+                        lambda cfg_path: fat_counts)
+
+    # ...but the concurrency-adjusted effective-N is below the same floor.
+    starved_eff = {"primary": "ema_cross", "raw_n": 3000,
+                   "effective_n_rho1": 120.5, "fit_weight_mode": "rho1_pooled"}
+    monkeypatch.setattr(run_proposal, "effective_n_pooled_subprocess",
+                        lambda cfg_path, primary: starved_eff)
+
+    def _fail_if_called(*args, **kwargs):
+        raise AssertionError("full pooled subprocess must NOT run below the effective-N floor")
+
+    monkeypatch.setattr(run_proposal, "run_pooled_pipeline_subprocess", _fail_if_called)
+    monkeypatch.setattr(run_proposal, "run_long_short_split_subprocess", _fail_if_called)
+
+    record = run_proposal.run_pooled_audit(p)
+
+    assert record["status"] == "event_floor"
+    assert record["mode"] == "pooled_universe"
+    assert record["pooled_effective_n"]["effective_n_rho1"] == 120.5
+    assert record["pooled_effective_n"]["wf_event_floor"] > 120.5
+    assert any("effective" in e for e in record["errors"])
+
+    persisted = json.loads((tmp_path / "audit_results" / f"{p.id}.json").read_text(encoding="utf-8"))
+    assert persisted["status"] == "event_floor"
+
+
+def test_run_pooled_audit_effective_n_subprocess_failure_is_fail_loud(tmp_path, monkeypatch):
+    """A broken effective-N measurement must not silently degrade to the raw
+    gate (that would resurrect the exact B0013 hole)."""
+    monkeypatch.setattr(run_proposal, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(run_proposal, "POOLED_RESULTS_DIR", tmp_path / "results")
+    monkeypatch.setattr(run_proposal, "AUDIT_RESULTS_DIR", tmp_path / "audit_results")
+    p = _load_proposal(tmp_path)
+
+    fat_counts = [{"asset": "AAA", "primary": "ema_cross", "n_events": 3000}]
+    monkeypatch.setattr(run_proposal, "count_pooled_events_subprocess",
+                        lambda cfg_path: fat_counts)
+
+    def _raise(cfg_path, primary):
+        raise RuntimeError("boom: no effective_n json emitted")
+
+    monkeypatch.setattr(run_proposal, "effective_n_pooled_subprocess", _raise)
+
+    def _fail_if_called(*args, **kwargs):
+        raise AssertionError("full pooled subprocess must NOT run when effective-N is unmeasurable")
+
+    monkeypatch.setattr(run_proposal, "run_pooled_pipeline_subprocess", _fail_if_called)
+
+    record = run_proposal.run_pooled_audit(p)
+    assert record["status"] == "subprocess_failed"
+
+
 def test_run_pooled_audit_count_subprocess_failure_persists_subprocess_failed(tmp_path, monkeypatch):
     monkeypatch.setattr(run_proposal, "RUNTIME_DIR", tmp_path / "runtime")
     monkeypatch.setattr(run_proposal, "POOLED_RESULTS_DIR", tmp_path / "results")
@@ -418,6 +487,14 @@ def test_run_pooled_audit_success_path_end_to_end_mocked(tmp_path, monkeypatch):
     monkeypatch.setattr(
         run_proposal, "count_pooled_events_subprocess",
         _fake_count_pooled_events_subprocess(["AAA", "BBB"], primary, 5000),
+    )
+
+    # (1b) effective-N gate (B0013): healthy — above any plausible floor.
+    monkeypatch.setattr(
+        run_proposal, "effective_n_pooled_subprocess",
+        lambda cfg_path, prim: {"primary": prim, "raw_n": 10000,
+                                "effective_n_rho1": 5000.0,
+                                "fit_weight_mode": "rho1_pooled"},
     )
 
     # (2) full pooled subprocess: fabricate 2 assets x 1 primary artifacts,
