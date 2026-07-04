@@ -99,10 +99,12 @@ def test_build_transient_pooled_config_overlays_and_preserves_template(tmp_path,
     assert cfg["primary"]["ema_cross"]["fast"] == 20
     assert cfg["primary"]["ema_cross"]["slow"] == 50
 
-    # Barrier geometry from the proposal; horizon untouched (stays template's 40)
+    # Barrier geometry from the proposal; horizon pinned to the pooled audit
+    # value (B0014: template's 40 caps effective-N ~650 < floor 799; 10 is
+    # the only D1 horizon measured to clear it — T005 died at 658.3 on h40).
     assert cfg["triple_barrier"]["tp_atr_mult"] == 3.0
     assert cfg["triple_barrier"]["sl_atr_mult"] == 1.0
-    assert cfg["triple_barrier"]["horizon"] == 40
+    assert cfg["triple_barrier"]["horizon"] == run_proposal.POOLED_AUDIT_HORIZON == 10
 
     # regime_scope + feature_overrides at top level (run_pooled_equity_d1.py contract)
     assert set(cfg["regime_scope"]) == {"BULL_QUIET", "BEAR_QUIET"}

@@ -860,6 +860,10 @@ def _persist_record(p: Proposal, status: str, errors: list[str] | None = None,
 
 POOLED_TEMPLATE_CONFIG = Path("configs/equity_m3_d1.yaml")
 POOLED_RESULTS_DIR = Path("results/phase5_pooled")
+# B0014 horizon curve (2026-07-04): pooled rho=1 effective-N is bounded by
+# calendar-span/event-duration — h40→654, h20→716, h10→905+ vs floor 799.
+# 10 is the only D1 horizon measured to clear the pre-flight floor.
+POOLED_AUDIT_HORIZON = 10
 
 
 def build_transient_pooled_config(p: Proposal) -> Path:
@@ -869,9 +873,14 @@ def build_transient_pooled_config(p: Proposal) -> Path:
     scripts/run_pooled_equity_d1.py's config contract (top-level
     `regime_scope` / `feature_overrides_add` / `feature_overrides_drop`,
     `features.cross_sectional`, `primary.candidates` + per-primary param
-    block) rather than the single-name regime-mask-parquet path. `horizon`
-    is left at the template's value (40) — only the tp/sl multipliers come
-    from the proposal's barrier_geometry_attestation.
+    block) rather than the single-name regime-mask-parquet path.
+
+    `horizon` is overlaid to POOLED_AUDIT_HORIZON (10). The template's 40
+    caps pooled effective-N at ~650 < floor 799 regardless of breadth or
+    regime dispersion (B0014 horizon curve: h40→654, h20→716, h10→905+;
+    T005 died at 658.3 under h40 after attesting h10-compatible geometry).
+    Every pooled audit therefore runs on the one horizon empirically able
+    to clear the pre-flight floor — proposals attest tp/sl only.
     """
     if not POOLED_TEMPLATE_CONFIG.exists():
         raise FileNotFoundError(f"Pooled template config not found at {POOLED_TEMPLATE_CONFIG}")
@@ -887,6 +896,7 @@ def build_transient_pooled_config(p: Proposal) -> Path:
 
     cfg["triple_barrier"]["tp_atr_mult"] = p.barrier_geometry_attestation.tp_atr_mult
     cfg["triple_barrier"]["sl_atr_mult"] = p.barrier_geometry_attestation.sl_atr_mult
+    cfg["triple_barrier"]["horizon"] = POOLED_AUDIT_HORIZON
 
     cfg["regime_scope"] = list(p.regime_scope)
     # B0014: carry the proposal's gate mode into the pooled runner (which
