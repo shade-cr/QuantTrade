@@ -75,6 +75,14 @@ def qualifying_filings(purchases: pd.DataFrame) -> pd.DataFrame:
     df = purchases.copy()
     df["notional"] = (df["shares"] * df["price"]).fillna(0.0)
     tdate = pd.to_datetime(df["trans_date"], format="%d-%b-%Y", errors="coerce")
+    # DA review 2026-07-04 medium #2: silent NaT coercion empties classification
+    # history and, under the relaxed rule, flips everything to opportunistic —
+    # fail loud instead. (Measured rate on the real cache: 0.0000%.)
+    if len(df) and tdate.isna().mean() > 0.01:
+        raise ValueError(
+            f"trans_date parse failure rate {tdate.isna().mean():.2%} > 1% — "
+            "DERA format drift; fix the parser before classifying"
+        )
     df["_ym"] = list(zip(tdate.dt.year, tdate.dt.month))
     g = df.groupby("accession", sort=False)
     out = pd.DataFrame(

@@ -98,6 +98,27 @@ tickers** (8 filings excluded as routine). This is family trial #2 (recorded in
 signals/trial_ledger.json at audit time). No further classification relaxation is
 permitted regardless of outcome.
 
+## DA review remediations (2026-07-04, PROCEED_WITH_CAVEAT, pre-audit)
+
+1. **Hypothesis relabeled**: with the contingency exercised, the classifier passes
+   99.3% of qualifying filings — the tested claim is **"insider open-market purchase
+   event (code P, officer/director, ≥$10k)"**, NOT CMP-opportunistic timing. Any
+   survival may not cite CMP as mechanism. The strict-CMP 33-event subset is
+   diagnostic-only.
+2. **Coercion guard**: trans_date NaT rate measured 0.0000% on the real cache;
+   fail-loud >1% assertion added to `qualifying_filings` (a silent parse failure
+   would fabricate unclassifiability and flip everything opportunistic).
+3. **Row duplicates**: 30/2,591 exact-duplicate transaction rows (1.2%) — plausible
+   identical lots within a filing; affects notional sums and flow counts marginally,
+   noted as caveat, not corrected (no way to distinguish from genuine dual lots).
+4. **Pre-committed 0-trades reading** (B0017 lesson): if the audit yields 0
+   best-model trades at the ev-breakeven threshold, the verdict is recorded as
+   "capacity discard / threshold-unreachable — NOT falsified, NOT survivor", and the
+   permitted unconditional event-level read (gross bp/event, hit rate, t-stat,
+   per-year sign) is the headline economics. 10b5-1 plan contamination (unfiltered,
+   flag only mandatory since ~a decade into the sample) biases toward null — a null
+   is NOT evidence the discretionary effect is absent.
+
 ## Known caveats (pre-committed reading rules)
 
 1. Post-2012 publication decay — even a confirmed positive mean must beat costs
