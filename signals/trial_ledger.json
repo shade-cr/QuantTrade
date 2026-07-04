@@ -1,0 +1,85 @@
+{
+  "_schema": "one row per audit ATTEMPT (not per proposal); family_key = primary_family x regime_scope x geometry_class. Any future survivor's DSR must be computed against the day-aggregate trial count, not the lineage count. Created 2026-07-04 per skeptic finding 5.",
+  "trials": [
+    {
+      "date": "2026-07-03",
+      "proposal": "20260703-ABT-D1-BULL_QUI-T002D1",
+      "family_key": "cusum_filter|BULL_QUIET|asym_2.5_1.0",
+      "attempt": 1,
+      "outcome": "completed_not_confirmed",
+      "notes": "pre effective-N gate era; breadth 1/35"
+    },
+    {
+      "date": "2026-07-04",
+      "proposal": "20260704-ABT-D1-BULL_STR-T004D1",
+      "family_key": "cusum_filter|BULL_STRESSED|sym_1.5",
+      "attempt": 1,
+      "outcome": "completed_not_confirmed_plus_effective_n_fail",
+      "notes": "raw gate passed 2852, effective 521.7 < 799; 4 trades"
+    },
+    {
+      "date": "2026-07-04",
+      "proposal": "20260704-AIG-D1-BEAR_QUI-T005",
+      "family_key": "bollinger_meanrev|BEAR_QUIET|sym_1.5",
+      "attempt": 1,
+      "outcome": "event_floor_h40_config_bug",
+      "notes": "658.3 < 799; horizon pin fix followed"
+    },
+    {
+      "date": "2026-07-04",
+      "proposal": "20260704-AIG-D1-BEAR_QUI-T005",
+      "family_key": "bollinger_meanrev|BEAR_QUIET|sym_1.5",
+      "attempt": 2,
+      "outcome": "event_floor",
+      "notes": "h10, 737.5 < 799"
+    },
+    {
+      "date": "2026-07-04",
+      "proposal": "20260704-AIG-D1-BEAR_QUI-T005R2",
+      "family_key": "bollinger_meanrev|BEAR_QUIET|sym_1.5",
+      "attempt": 3,
+      "outcome": "completed_not_confirmed",
+      "notes": "first honest floor pass 937.8; 42<50 trades; regime flag MDA ~0; lineage closed"
+    },
+    {
+      "date": "2026-07-04",
+      "proposal": "20260704-AIG-D1-BEAR_STR-T006",
+      "family_key": "cusum_filter|BEAR_STRESSED|sym_1.5",
+      "attempt": 1,
+      "outcome": "completed_falsified",
+      "notes": "floor 964.1 ok; 0 best-model trades; loose 68 net-negative both subsets; family cusum@1.0 x stress 0-for-2 with T004D1"
+    },
+    {
+      "date": "2026-07-04",
+      "proposal": "20260704-PANEL-D1-ALL-B0017EP",
+      "family_key": "phase5_earnings_premium|ALL|sym_1.5",
+      "attempt": 1,
+      "outcome": "event_floor_h10",
+      "notes": "earnings-season clustering: 667.7 < 799"
+    },
+    {
+      "date": "2026-07-04",
+      "proposal": "20260704-PANEL-D1-ALL-B0017EP",
+      "family_key": "phase5_earnings_premium|ALL|sym_1.5",
+      "attempt": 2,
+      "outcome": "completed_not_confirmed",
+      "notes": "h3 amendment (plumbing-only); floor 837 ok; 0 trades at ev threshold; unconditional +10.8bp gross t=1.45"
+    },
+    {
+      "date": "2026-07-04",
+      "proposal": "20260704-PANEL-D1-ALL-B0018IE",
+      "family_key": "phase5_insider_event|ALL|sym_1.5",
+      "attempt": 1,
+      "outcome": "event_floor_raw",
+      "notes": "615 events (m3 35 names) < 799; m3w projection 748 still short; classification amendment (admit unclassifiable, pre-committed contingency) counts as family trial 2; no returns computed"
+    }
+  ],
+  "day_aggregates": {
+    "2026-07-04": {
+      "proposals": 8,
+      "audit_attempts": 8,
+      "distinct_families": 6,
+      "survivors": 0
+    }
+  }
+}

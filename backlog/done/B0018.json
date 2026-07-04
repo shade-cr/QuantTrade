@@ -1,7 +1,7 @@
 {
   "id": "B0018",
   "title": "Form 4 opportunistic-insider event primary (Cohen-Malloy-Pomorski filter) via EDGAR",
-  "status": "in_progress",
+  "status": "done",
   "effort": "M",
   "value": "M",
   "tags": [
@@ -84,6 +84,23 @@
       "date": "2026-07-04",
       "event": "preregistration_frozen",
       "reason": "CMP opportunistic filter (3-prior-year classifiability, routine-month exclusion), P-code officer/director >=10k notional, filing-acceptance knowledge moment, h10 sym 1.5/1.5, one pre-committed plumbing contingency (<500 events -> admit unclassifiable, recorded trial)"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "da_review",
+      "reason": "PROCEED_WITH_CAVEAT (0 high, 4 medium, 1 low). Mediums: (1) 99.3pct classifier pass-through after contingency -> hypothesis relabeled 'insider purchase event', CMP-strict diagnostic-only; (2) trans_date coercion risk -> fail-loud guard added, measured 0pct; (3) 10b5-1 plan contamination unfiltered (biases to null) + 30 dup tx rows noted; (4) ev-threshold structural-null risk -> 0-trades reading pre-committed. Remediations applied, audit launched."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "audit_event_floor",
+      "reason": "Pooled audit (m3, 35 names): 615 in-scope events < wf_event_floor 799. Plumbing projection with m3w 43 names: +133 = 748, STILL < 799 -> widening trial NOT burned. Refire-gap relaxation would only re-add overlapping events the rho=1 effective-N gate collapses. NO returns were ever computed - statistically clean capacity verdict."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "EVENT FLOOR - insider purchase events structurally too rare in mega-caps (~17/name over 20y) for the WF discipline (615-748 vs floor 799). Family closed at audit attempt 1 (classification amendment = trial 2 per spec discipline). The CMP-strict subset was 33 events panel-wide. No edge claim was ever measurable; verdict is capacity, not falsification.",
+      "from": "in_progress",
+      "to": "done"
     }
   ]
 }
