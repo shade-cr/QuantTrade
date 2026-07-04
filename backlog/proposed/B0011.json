@@ -72,6 +72,11 @@
         "spawned_by": [],
         "spawned_from": []
       }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "Absorbed into the B0012 v2 plan Task 3: unconditional effective_n_<primary>.json persistence at every pooled run output root."
     }
   ]
 }

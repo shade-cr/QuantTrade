@@ -80,6 +80,11 @@
       "date": "2026-07-04",
       "event": "decision",
       "reason": "quant-phd-advisor consult COMPLETE (2026-07-04). Key findings: (1) AFML 4.3 concurrency is SAME-price-path only (verified in exact text) - our full cross-asset redundancy rule is an extension beyond the book, and pipeline/sample_weights.py docstring already concedes it is the rho=1 conservative bound. (2) Observed effective-N convergence ~650-690 is the mathematical fingerprint of rho=1: breadth forced to ~1. With 35 large-caps at rho~0.4, equicorrelation ENB ~ 35/(1+34*0.4) ~ 2.3 contemporaneous independent bets - not 1, not 35. (3) RECOMMENDATION: decouple FIT-WEIGHT from INFERENCE effective-N. Fit-weight v2 = correlation-discounted concurrency c_t = 1 + sum rho*_ij (same asset rho*=1; cross-asset rho* = clip(denoised PIT EWMA rho, floor, 1)) - unstarves training. Inference/gate KEEPS the rho=1 conservative count (+ Meucci ENB as ceiling diagnostic); the gate must never use the generous number or PSR/DSR become theater. (4) Floor should compare against the conservative inference effective-N; honest possible outcome: 35 correlated large-caps on D1 may NEVER clear a 799 floor - a real finding, not a bug. (5) Mandatory validation before trusting v2: synthetic recovery test (reject if upward-biased), bit-identical single-asset H4 parity, phase-randomization placebo (credited ENB must not rise), gate monotonicity (v2 survivors must be subset of rho=1 survivors). Top false-edge risk: downward-biased PIT rho in calm regimes credits fake independence exactly when edges are least real. Sources: AFML 4.3-4.6, MLAM denoising, Meucci SSRN 1358533 (ENB). Next: human decision on promoting to spec."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "Promoted to spec (docs/superpowers/specs/2026-07-04-b0012-uniqueness-v2-decoupling.md) + implementation plan (docs/superpowers/plans/2026-07-04-b0012-uniqueness-v2.md). 4 tasks: rho schedule+ENB, corr-discounted uniqueness+validation battery, runner fit_weight modes+unconditional effective-N persistence (absorbs B0011), A/B execution with gate-monotonicity verification."
     }
   ]
 }
