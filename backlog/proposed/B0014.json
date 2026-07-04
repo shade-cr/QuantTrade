@@ -147,6 +147,11 @@
       "date": "2026-07-04",
       "event": "h10_audit_readout",
       "reason": "h10 full pooled audit executed (results/clf_equity_m3_cusum_cs_v2_h10). FIRST pre-flight PASS in project history: effective_n_rho1=1237.7 > floor 799. Verdict with statistical standing: NO EDGE - panel AUC 0.531, meta keeps 145/19659 trades (0.7%), zero cells reach the 30-trade Sharpe floor, stack 0/35, GE/KO PSR 0.61-0.75 below promote thresholds. Binding constraint now unambiguously the primary (cusum uninformative), not statistical power. Loop A audit path is now passable. Readout: docs/superpowers/reports/2026-07-04-h10-pooled-audit-readout.md"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "shorts_followup_closed",
+      "reason": "Short-side anomaly follow-up (h10 run): 12/16 unique short trades are 2020-03-05/06 (COVID crash, one two-day episode, all winners); remaining 4 are 2023-03-15/17 (SVB stress) and ALL LOST (fwd_ret positive against the short). Single memorized episode, failed out-of-episode replication. CLOSED as no-edge; not to be cited again without new evidence."
     }
   ]
 }
