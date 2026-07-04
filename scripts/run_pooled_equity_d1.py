@@ -38,7 +38,13 @@ from pipeline.equity_universe import load_universe
 from pipeline.features import build_tier2_features, feature_add_status
 from pipeline.labels import compute_primary_state, triple_barrier_labels
 from pipeline.macro_fetch import build_macro_frame
-from pipeline.sample_weights import avg_uniqueness
+from pipeline.sample_weights import (
+    avg_uniqueness,
+    corr_discounted_uniqueness,
+    effective_number_of_bets,
+    pooled_avg_uniqueness,
+    rolling_panel_rho,
+)
 from scripts.run_backtest import _select_primary
 from scripts.run_multi_h4 import _run_one_pool
 
@@ -151,6 +157,107 @@ def build_member_inputs(
     }
 
 
+def _apply_fit_weight_mode(
+    members_by_primary: dict[str, list[dict]],
+    panel: dict[str, pd.DataFrame],
+    cfg: dict,
+) -> tuple[dict[str, list[dict]], bool, dict[str, dict]]:
+    """B0012 v2 wiring (spec §3-4). Decides the fit-weight mode from
+    ``cfg["meta_pooling"]["fit_weight"]`` and returns:
+
+    - ``members_by_primary`` with ``m["w"]`` overwritten in-place for
+      ``corr_discounted_v2`` (untouched otherwise).
+    - ``pooled_uniqueness_flag``: the ONE thing that may vary in the
+      downstream ``_run_one_pool`` call across modes (the firewall — spec
+      §1/§4's "Firewall assertion in code").
+    - ``diagnostics_by_primary``: unconditional per-pool effective-N record
+      (closes B0011), written by the caller to
+      ``<output_dir>/effective_n_<primary>.json`` in EVERY mode.
+
+    The conservative rho=1 ``effective_n_rho1`` (via `pooled_avg_uniqueness`)
+    is computed IDENTICALLY regardless of mode — this is the gate-monotonicity
+    invariant (spec §5.4): no gate input may ever depend on `fit_weight`.
+    """
+    mp = cfg.get("meta_pooling") or {}
+    mode = mp.get("fit_weight", "rho1_pooled") or "rho1_pooled"
+    pooled_uniqueness_flag = bool(mp.get("pooled_uniqueness", True))
+
+    rho_schedule = None
+    union_grid = None
+    if mode == "corr_discounted_v2":
+        pooled_uniqueness_flag = False
+        for df in panel.values():
+            union_grid = df.index if union_grid is None else union_grid.union(df.index)
+        union_grid = union_grid.sort_values()
+        close_frame = pd.DataFrame({t: panel[t]["close"].reindex(union_grid) for t in panel})
+        rho_schedule = rolling_panel_rho(close_frame)
+    elif mode == "per_asset":
+        pooled_uniqueness_flag = False
+
+    diagnostics_by_primary: dict[str, dict] = {}
+    for primary, members in members_by_primary.items():
+        if not members:
+            continue
+        event_time_all = pd.DatetimeIndex(
+            np.concatenate([np.asarray(m["event_time"]) for m in members])
+        )
+        label_end_all = pd.DatetimeIndex(
+            np.concatenate([np.asarray(m["label_end_time"]) for m in members])
+        )
+        asset_all = np.concatenate(
+            [np.full(len(m["event_time"]), m["asset"], dtype=object) for m in members]
+        )
+        raw_n = int(len(event_time_all))
+
+        # Gate-side quantity: UNCHANGED regardless of fit_weight mode.
+        w_rho1_all = pooled_avg_uniqueness(event_time_all, label_end_all)
+        effective_n_rho1 = float(w_rho1_all.sum())
+
+        enb_ceiling = None
+        enb_ceiling_reason = None
+        rho_panel_mean_last = None
+
+        if mode == "corr_discounted_v2":
+            v2_weights = corr_discounted_uniqueness(
+                event_time_all, label_end_all, asset_all, rho_schedule, union_grid,
+            )
+            offset = 0
+            for m in members:
+                n = len(m["event_time"])
+                m["w"] = np.asarray(v2_weights[offset: offset + n])
+                offset += n
+            fit_weight_sum = float(v2_weights.sum())
+            if rho_schedule:
+                last_rho = rho_schedule[-1][1]
+                enb_ceiling = effective_number_of_bets(last_rho)
+                off_mask = ~np.eye(len(last_rho), dtype=bool)
+                off_vals = last_rho.values[off_mask]
+                rho_panel_mean_last = float(np.nanmean(off_vals)) if off_vals.size else None
+            else:
+                enb_ceiling_reason = "no rho schedule produced (insufficient history)"
+        else:
+            # rho1_pooled / per_asset: weights untouched; the diagnostic
+            # correlation schedule is NOT built here (would be spec-legal
+            # only "if cheap" and adds no value when nothing consumes it).
+            fit_weight_sum = float(sum(np.asarray(m["w"]).sum() for m in members))
+            enb_ceiling_reason = "fit_weight mode does not use a rho schedule"
+
+        diagnostics_by_primary[primary] = {
+            "primary": primary,
+            "pool_key": members[0]["pool_key"],
+            "fit_weight_mode": mode,
+            "raw_n": raw_n,
+            "effective_n_rho1": effective_n_rho1,
+            "fit_weight_sum": fit_weight_sum,
+            "enb_ceiling": enb_ceiling,
+            "enb_ceiling_reason": enb_ceiling_reason,
+            "rho_panel_mean_last": rho_panel_mean_last,
+            "computed_at": pd.Timestamp.now(tz="UTC").isoformat(),
+        }
+
+    return members_by_primary, pooled_uniqueness_flag, diagnostics_by_primary
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", required=True)
@@ -235,6 +342,14 @@ def main() -> int:
         return 0
 
     mp = cfg["meta_pooling"]
+    members_by_primary, pooled_uniqueness_flag, diagnostics_by_primary = _apply_fit_weight_mode(
+        members_by_primary, panel, cfg
+    )
+    for primary, diag in diagnostics_by_primary.items():
+        (out_root / f"effective_n_{primary}.json").write_text(
+            json.dumps(diag, indent=2), encoding="utf-8"
+        )
+
     for primary, members in members_by_primary.items():
         if not members:
             continue
@@ -245,7 +360,7 @@ def main() -> int:
             cfg=cfg,
             schema=mp.get("schema", "core"),
             weight_balance=mp.get("weight_balance", "per_class"),
-            pooled_uniqueness=bool(mp.get("pooled_uniqueness", True)),
+            pooled_uniqueness=pooled_uniqueness_flag,
             train_min_frac=float(mp.get("train_min_frac", 0.5)),
             out_root=out_root,
             dry_run=args.dry_run,

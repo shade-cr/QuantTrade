@@ -387,3 +387,203 @@ def test_cross_sectional_join_is_config_gated(tmp_path, monkeypatch, synth_ohlcv
         else:
             assert not any(c.startswith("cs_") for c in cols), \
                 f"{asset}: unexpected cs_ columns when cross_sectional=False: {cols}"
+
+
+# --- B0012 v2 fit-weight mode wiring (Task 3) --------------------------------
+
+
+def _write_universe(tmp_path, tickers, name="universe.yaml"):
+    universe_path = tmp_path / name
+    universe_path.write_text(
+        yaml.safe_dump(
+            {
+                "selection_rule": "test fixture",
+                "selected_at": "2026-07-03",
+                "stocks": list(tickers),
+                "etfs": [],
+                "alternates": [],
+                "excluded_delistees": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    return universe_path
+
+
+def _run_main_capture(tmp_path, monkeypatch, ohlcv_by_ticker, meta_pooling_extra, cfg,
+                      date_range, out_dir):
+    """Runs the real main() (not --count-events-only) with load_dataset /
+    build_macro_frame / build_tier2_features mocked and _run_one_pool replaced
+    by a kwargs-capturing stub. Returns the list of captured _run_one_pool
+    call-kwargs dicts."""
+    universe_path = _write_universe(tmp_path, list(ohlcv_by_ticker), name=f"universe_{out_dir.name}.yaml")
+    full_cfg = dict(cfg)
+    full_cfg.update(
+        {
+            "universe_path": str(universe_path),
+            "universe_segment": "stocks",
+            "date_range": date_range,
+            "meta_pooling": {
+                "schema": "core",
+                "weight_balance": "per_class",
+                "pooled_uniqueness": True,
+                "train_min_frac": 0.5,
+                **meta_pooling_extra,
+            },
+            "output_dir": str(out_dir),
+        }
+    )
+    config_path = tmp_path / f"config_{out_dir.name}.yaml"
+    config_path.write_text(yaml.safe_dump(full_cfg), encoding="utf-8")
+
+    def _load(path):
+        path_str = str(path)
+        for t, df in ohlcv_by_ticker.items():
+            if f"{t}_D1" in path_str:
+                return df.copy()
+        raise AssertionError(f"unexpected load_dataset path {path_str}")
+
+    monkeypatch.setattr(runner, "load_dataset", _load)
+    monkeypatch.setattr(runner, "build_macro_frame", lambda s, e, cache_dir: pd.DataFrame())
+    monkeypatch.setattr(runner, "build_tier2_features", lambda ohlcv, macro: _features_for(ohlcv))
+
+    calls = []
+
+    def _capture(**kwargs):
+        calls.append(kwargs)
+        return None
+
+    monkeypatch.setattr(runner, "_run_one_pool", _capture)
+    monkeypatch.setattr(
+        sys, "argv", ["run_pooled_equity_d1.py", "--config", str(config_path)],
+    )
+
+    rc = runner.main()
+    assert rc == 0
+    return calls
+
+
+def _two_ticker_ohlcv_variants():
+    """Two tickers with DIFFERENT price paths (BBB scaled + independent noise
+    added on top of a shared factor) sharing a common date grid, long enough
+    (1500 bars) to clear rolling_panel_rho's 252-bar window at least once."""
+    rng = np.random.default_rng(123)
+    n = 1500
+    dates = pd.date_range("2005-01-03", periods=n, freq="B", tz="UTC")
+    factor = rng.normal(0.0001, 0.01, size=n)
+    close_a = 100.0 * np.exp(np.cumsum(factor))
+    noise_b = rng.normal(0.0, 0.015, size=n)
+    close_b = 50.0 * np.exp(np.cumsum(0.3 * factor + noise_b))
+
+    def _mk(close):
+        spread = np.abs(rng.normal(0.0, 0.005, size=n)) * close
+        open_ = np.concatenate([[close[0]], close[:-1]])
+        high = np.maximum.reduce([close + spread, open_, close])
+        low = np.minimum.reduce([close - spread, open_, close])
+        volume = rng.integers(50_000, 500_000, size=n).astype(float)
+        return pd.DataFrame(
+            {"open": open_, "high": high, "low": low, "close": close, "volume": volume},
+            index=dates,
+        )
+
+    return {"AAA": _mk(close_a), "BBB": _mk(close_b)}
+
+
+def test_fit_weight_default_is_byte_identical(tmp_path, monkeypatch, synth_ohlcv, cfg):
+    ohlcv = (
+        synth_ohlcv.set_index("time")[["open", "high", "low", "close", "volume"]]
+        .astype("float64")
+    )
+    date_range = {"start": "2010-01-01", "end": "2013-01-01"}
+
+    out_absent = tmp_path / "out_absent"
+    calls_absent = _run_main_capture(
+        tmp_path, monkeypatch, {"AAA": ohlcv}, {}, cfg, date_range, out_absent,
+    )
+    out_rho1 = tmp_path / "out_rho1"
+    calls_rho1 = _run_main_capture(
+        tmp_path, monkeypatch, {"AAA": ohlcv}, {"fit_weight": "rho1_pooled"}, cfg,
+        date_range, out_rho1,
+    )
+
+    assert len(calls_absent) == len(calls_rho1) == len(cfg["primary"]["candidates"])
+    for c in calls_absent + calls_rho1:
+        assert c["pooled_uniqueness"] is True
+
+    by_primary_absent = {c["primary_name"]: c for c in calls_absent}
+    by_primary_rho1 = {c["primary_name"]: c for c in calls_rho1}
+    for primary in by_primary_absent:
+        members_a = by_primary_absent[primary]["members"]
+        members_b = by_primary_rho1[primary]["members"]
+        assert len(members_a) == len(members_b)
+        for ma, mb in zip(members_a, members_b):
+            np.testing.assert_allclose(np.asarray(ma["w"]), np.asarray(mb["w"]))
+
+    counts_absent = json.loads((out_absent / "member_event_counts.json").read_text(encoding="utf-8"))
+    for out_dir in (out_absent, out_rho1):
+        for primary in cfg["primary"]["candidates"]:
+            p = out_dir / f"effective_n_{primary}.json"
+            assert p.exists()
+            diag = json.loads(p.read_text(encoding="utf-8"))
+            assert diag["fit_weight_mode"] == "rho1_pooled"
+            assert diag["effective_n_rho1"] > 0
+            total = sum(c["n_events"] for c in counts_absent if c["primary"] == primary)
+            assert diag["raw_n"] == total
+
+
+def test_fit_weight_v2_overrides_weights_and_flags(tmp_path, monkeypatch, cfg):
+    ohlcv_by_ticker = _two_ticker_ohlcv_variants()
+    date_range = {"start": "2005-01-01", "end": "2011-06-01"}
+
+    out_base = tmp_path / "out_base"
+    calls_base = _run_main_capture(
+        tmp_path, monkeypatch, ohlcv_by_ticker, {}, cfg, date_range, out_base,
+    )
+    out_v2 = tmp_path / "out_v2"
+    calls_v2 = _run_main_capture(
+        tmp_path, monkeypatch, ohlcv_by_ticker, {"fit_weight": "corr_discounted_v2"}, cfg,
+        date_range, out_v2,
+    )
+
+    for c in calls_v2:
+        assert c["pooled_uniqueness"] is False
+
+    by_primary_base = {c["primary_name"]: c for c in calls_base}
+    by_primary_v2 = {c["primary_name"]: c for c in calls_v2}
+
+    for primary in by_primary_base:
+        base_w = np.concatenate([np.asarray(m["w"]) for m in by_primary_base[primary]["members"]])
+        v2_w = np.concatenate([np.asarray(m["w"]) for m in by_primary_v2[primary]["members"]])
+        assert not np.allclose(base_w, v2_w), "v2 must overwrite member weights"
+
+        diag = json.loads((out_v2 / f"effective_n_{primary}.json").read_text(encoding="utf-8"))
+        assert diag["fit_weight_mode"] == "corr_discounted_v2"
+        assert diag["fit_weight_sum"] > diag["effective_n_rho1"], \
+            "v2 must unstarve the fit relative to the rho=1 conservative sum"
+        assert diag["enb_ceiling"] is not None
+        assert 1.0 - 1e-6 <= diag["enb_ceiling"] <= 2.0 + 1e-6
+
+
+def test_gate_inputs_unchanged_by_fit_weight(tmp_path, monkeypatch, cfg):
+    ohlcv_by_ticker = _two_ticker_ohlcv_variants()
+    date_range = {"start": "2005-01-01", "end": "2011-06-01"}
+
+    diag_by_mode: dict[str, dict] = {}
+    for mode_key, extra in (
+        ("default", {}),
+        ("v2", {"fit_weight": "corr_discounted_v2"}),
+        ("per_asset", {"fit_weight": "per_asset"}),
+    ):
+        out_dir = tmp_path / f"out_{mode_key}"
+        _run_main_capture(tmp_path, monkeypatch, ohlcv_by_ticker, extra, cfg, date_range, out_dir)
+        diag_by_mode[mode_key] = {
+            primary: json.loads((out_dir / f"effective_n_{primary}.json").read_text(encoding="utf-8"))
+            for primary in cfg["primary"]["candidates"]
+        }
+
+    for primary in cfg["primary"]["candidates"]:
+        rho1 = diag_by_mode["default"][primary]["effective_n_rho1"]
+        v2 = diag_by_mode["v2"][primary]["effective_n_rho1"]
+        per_asset = diag_by_mode["per_asset"][primary]["effective_n_rho1"]
+        assert rho1 == pytest.approx(v2)
+        assert rho1 == pytest.approx(per_asset)
