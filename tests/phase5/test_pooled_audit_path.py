@@ -382,12 +382,60 @@ def test_run_pooled_audit_refuses_phase5_primary_before_any_subprocess(tmp_path,
 
     assert record["status"] == "failed_validation"
     assert record["mode"] == "pooled_universe"
-    assert any("phase5_" in e and "B0013" in e for e in record["errors"])
+    assert any("not importable" in e for e in record["errors"])
+
+
+def test_run_pooled_audit_refuses_phase5_primary_with_feature_inputs(tmp_path, monkeypatch):
+    """B0017 relaxation boundary: a phase5_* primary that DECLARES feature
+    inputs still gets the fail-loud refusal (no B0015b disjointness check on
+    the pooled path)."""
+    monkeypatch.setattr(run_proposal, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(run_proposal, "POOLED_RESULTS_DIR", tmp_path / "results")
+    monkeypatch.setattr(run_proposal, "AUDIT_RESULTS_DIR", tmp_path / "audit_results")
+    payload = _proposal_dict()
+    payload["primary"] = "phase5_cot_extremes"  # real module, non-empty INPUT_COLUMNS
+    path = tmp_path / "phase5_proposal.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    p = load_proposal(path)
+
+    def _fail_if_called(*args, **kwargs):
+        raise AssertionError("no subprocess for a feature-consuming phase5_* primary")
+
+    monkeypatch.setattr(run_proposal, "count_pooled_events_subprocess", _fail_if_called)
+    record = run_proposal.run_pooled_audit(p)
+    assert record["status"] == "failed_validation"
+    assert any("INPUT_COLUMNS" in e for e in record["errors"])
+
+
+def test_run_pooled_audit_allows_feature_independent_phase5_primary(tmp_path, monkeypatch):
+    """B0017: phase5_earnings_premium declares INPUT_COLUMNS == () (reads only
+    ohlcv + its own event cache), so the pooled path may audit it — the guard
+    must let it reach the count stage."""
+    monkeypatch.setattr(run_proposal, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(run_proposal, "POOLED_RESULTS_DIR", tmp_path / "results")
+    monkeypatch.setattr(run_proposal, "AUDIT_RESULTS_DIR", tmp_path / "audit_results")
+    payload = _proposal_dict()
+    payload["primary"] = "phase5_earnings_premium"
+    payload["primary_params"] = {}
+    path = tmp_path / "phase5_proposal.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    p = load_proposal(path)
+
+    reached = {"count": False}
+
+    def _count(cfg_path):
+        reached["count"] = True
+        return [{"asset": "AAA", "primary": "phase5_earnings_premium", "n_events": 1}]
+
+    monkeypatch.setattr(run_proposal, "count_pooled_events_subprocess", _count)
+    record = run_proposal.run_pooled_audit(p)
+    assert reached["count"], "guard must not refuse a feature-independent phase5 primary"
+    assert record["status"] == "event_floor"  # 1 event < floor — expected downstream stop
 
     out_path = tmp_path / "audit_results" / f"{p.id}.json"
     assert out_path.exists()
     persisted = json.loads(out_path.read_text(encoding="utf-8"))
-    assert persisted["status"] == "failed_validation"
+    assert persisted["status"] == "event_floor"
     assert persisted["mode"] == "pooled_universe"
 
 

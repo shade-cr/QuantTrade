@@ -1,0 +1,352 @@
+{
+  "agent": "phase5-hypothesizer",
+  "action_id": "20260703_181400_propose_da_retry1_ABT_BULL_QUIET",
+  "feedback_preamble": "PREVIOUS ATTEMPT PASSED THE LINT BUT WAS BLOCKED BY THE DEVIL'S ADVOCATE.\n\nSteel-man of your previous attempt (the strongest argument FOR it):\n  Internalizes both prior failure modes: sparse event primary after the effective-N falsification, floor-aware event count after tick 1 starved. Underreaction mechanism coherent with trend geometry; discriminators all orthogonal; episode-level falsification guards vs memorization.\n\nHIGH-severity objections (MUST be addressed in retry):\n  1. 'dossier-measured default (803 events)' is false for threshold_atr=1.0: the baseline was measured at the default threshold_atr=2.0 (pipeline/labels.py cusum_filter_signal default; regime_stats.py calls it without params). Same error class that killed tick 1 at the audit floor.\n     evidence: Proposal params threshold_atr=1.0 vs baseline measured at 2.0; deviation is event-count-safe (more events) but dilutes the information-burst premise with noise crossings and borrows baseline stats from a different event population.\n     remediation: Align threshold_atr to the measured default 2.0, or keep 1.0 with the claim removed + re-measured count + mechanism justification.\n\nMandatory mods (verbatim from DA):\n  1. Resolve threshold_atr provenance: align to the measured default 2.0, or keep 1.0 with the default claim removed, a re-measured in-regime event count at 1.0, and an independent mechanism justification.\n\nMedium-severity objections (address if possible):\n  - 68.1%-of-bars regime gate is barely a gate; edge may be unconditional in a regime costume.\n  - Long-bias claim on a survivor name inflates any positive result (B0003 caveat, full force).\n\nConstraints carried forward from the anti-circularity lint (B0034):\n  - Do NOT use lookback=63, ema_cross (50,200), or rv_window=20\n  - If you include regime-defining features in feature_overrides.add,\n    justify within-regime variation in causal_story\n\nBelow is the SAME dossier you received earlier. Generate a NEW proposal\nthat addresses the high-severity objections above. Output ONLY the JSON, no preamble.\n\n=== ORIGINAL DOSSIER PAYLOAD ===",
+  "input": {
+    "asset_class": "equity",
+    "regime_id": "BULL_QUIET",
+    "regime_stats_dossier": {
+      "asset_class": "equity",
+      "regime_id": "BULL_QUIET",
+      "n_bars": 7074,
+      "n_episodes": 17,
+      "median_episode_len_bars": 375,
+      "fraction_of_total_bars": 0.6809,
+      "dominant_episode_fraction": 0.1703,
+      "n_unlabeled_bars": 1279,
+      "sample_sufficient": true,
+      "sample_insufficient_reason": null,
+      "features_quantile_summary": {
+        "open": {
+          "median_quantile": 0.5573363044223517,
+          "iqr_quantile_low": 0.3161638669866301,
+          "iqr_quantile_high": 0.7926808364758313,
+          "vs_other_regimes_rank": "similar"
+        },
+        "high": {
+          "median_quantile": 0.5573363044223517,
+          "iqr_quantile_low": 0.3162495714775454,
+          "iqr_quantile_high": 0.7926808364758313,
+          "vs_other_regimes_rank": "similar"
+        },
+        "low": {
+          "median_quantile": 0.5573363044223517,
+          "iqr_quantile_low": 0.3161638669866301,
+          "iqr_quantile_high": 0.7927665409667467,
+          "vs_other_regimes_rank": "similar"
+        },
+        "close": {
+          "median_quantile": 0.5572505999314364,
+          "iqr_quantile_low": 0.3161638669866301,
+          "iqr_quantile_high": 0.7927665409667467,
+          "vs_other_regimes_rank": "similar"
+        },
+        "volume": {
+          "median_quantile": 0.47754542338018513,
+          "iqr_quantile_low": 0.25445663352759684,
+          "iqr_quantile_high": 0.7066335275968461,
+          "vs_other_regimes_rank": "similar"
+        },
+        "rv_20": {
+          "median_quantile": 0.38375686813186816,
+          "iqr_quantile_low": 0.18028846153846154,
+          "iqr_quantile_high": 0.6193337912087912,
+          "vs_other_regimes_rank": "lower"
+        },
+        "ma_50": {
+          "median_quantile": 0.5543506325845597,
+          "iqr_quantile_low": 0.31327997245890354,
+          "iqr_quantile_high": 0.7916343919442292,
+          "vs_other_regimes_rank": "similar"
+        },
+        "ma_200": {
+          "median_quantile": 0.537535966518441,
+          "iqr_quantile_low": 0.2970616444328189,
+          "iqr_quantile_high": 0.7760920742872089,
+          "vs_other_regimes_rank": "similar"
+        },
+        "roc_63": {
+          "median_quantile": 0.5692373976734166,
+          "iqr_quantile_low": 0.34467901766479964,
+          "iqr_quantile_high": 0.7805256355019389,
+          "vs_other_regimes_rank": "higher"
+        },
+        "real_yield_5y_z252d": {
+          "median_quantile": 0.527900441589723,
+          "iqr_quantile_low": 0.25270975511842636,
+          "iqr_quantile_high": 0.7603372139702931,
+          "vs_other_regimes_rank": "higher",
+          "cadence": "daily",
+          "effective_n": 3356,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.209,
+            "ma_50": 0.138,
+            "ma_200": 0.163,
+            "rv_20": 0.104
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "vix_level": {
+          "median_quantile": 0.39030067895247333,
+          "iqr_quantile_low": 0.19107662463627545,
+          "iqr_quantile_high": 0.6271580989330747,
+          "vs_other_regimes_rank": "lower",
+          "cadence": "daily",
+          "effective_n": 3470,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.269,
+            "ma_50": 0.002,
+            "ma_200": 0.039,
+            "rv_20": 0.478
+          },
+          "quasi_circular": true,
+          "vetting_inconclusive": false
+        },
+        "vix_chg_5": {
+          "median_quantile": 0.5015527950310559,
+          "iqr_quantile_low": 0.24592391304347827,
+          "iqr_quantile_high": 0.7581521739130435,
+          "vs_other_regimes_rank": "similar",
+          "cadence": "daily",
+          "effective_n": 3470,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.004,
+            "ma_50": -0.001,
+            "ma_200": -0.005,
+            "rv_20": -0.046
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "dxy_z252": {
+          "median_quantile": 0.533614288581176,
+          "iqr_quantile_low": 0.2831627533614289,
+          "iqr_quantile_high": 0.7623921332530604,
+          "vs_other_regimes_rank": "similar",
+          "cadence": "daily",
+          "effective_n": 3357,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.166,
+            "ma_50": 0.19,
+            "ma_200": 0.218,
+            "rv_20": 0.169
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "breakeven_5y_chg5": {
+          "median_quantile": 0.530667701863354,
+          "iqr_quantile_low": 0.27290372670807456,
+          "iqr_quantile_high": 0.7699922360248447,
+          "vs_other_regimes_rank": "similar",
+          "cadence": "daily",
+          "effective_n": 3470,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": 0.01,
+            "ma_50": 0.023,
+            "ma_200": 0.023,
+            "rv_20": -0.019
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "us_5y2y_z252": {
+          "median_quantile": 0.46868727418707345,
+          "iqr_quantile_low": 0.25431553592934564,
+          "iqr_quantile_high": 0.7219991971095946,
+          "vs_other_regimes_rank": "similar",
+          "cadence": "daily",
+          "effective_n": 3356,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.014,
+            "ma_50": -0.015,
+            "ma_200": -0.055,
+            "rv_20": 0.04
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "cs_spread_21": {
+          "median_quantile": 0.48922469305400534,
+          "iqr_quantile_low": 0.398901004550528,
+          "iqr_quantile_high": 0.7144329011762686,
+          "vs_other_regimes_rank": "lower",
+          "cadence": "smoothed_21bar",
+          "effective_n": 1414,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.035,
+            "ma_50": -0.024,
+            "ma_200": -0.022,
+            "rv_20": 0.133
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        }
+      },
+      "orthogonal_features": [
+        "volume",
+        "real_yield_5y_z252d",
+        "vix_chg_5",
+        "dxy_z252",
+        "breakeven_5y_chg5",
+        "us_5y2y_z252",
+        "cs_spread_21"
+      ],
+      "regime_defining_features": [
+        "roc_63",
+        "ma_50",
+        "ma_200",
+        "rv_20"
+      ],
+      "return_distribution_quantile": {
+        "median_quantile": 0.5081854804148452,
+        "iqr_low": 0.27830633410473987,
+        "iqr_high": 0.7342075940687409
+      },
+      "regime_episode_ordinals": [
+        0,
+        3,
+        5,
+        9,
+        14,
+        17,
+        19,
+        24,
+        26,
+        28,
+        30,
+        32,
+        34,
+        36,
+        38,
+        40,
+        42
+      ],
+      "primary_baseline_summary": {
+        "ema_crossover": {
+          "trade_count_per_year_q": 0.75,
+          "hit_rate_q": 1.0,
+          "median_per_trade_return_q": 1.0,
+          "hit_rate_vs_other_regimes": "higher",
+          "return_vs_other_regimes": "higher",
+          "n_events": 6098,
+          "rankable": true,
+          "low_confidence": false
+        },
+        "momentum_zscore": {
+          "trade_count_per_year_q": 0.5,
+          "hit_rate_q": 0.5,
+          "median_per_trade_return_q": 1.0,
+          "hit_rate_vs_other_regimes": "similar",
+          "return_vs_other_regimes": "higher",
+          "n_events": 5382,
+          "rankable": true,
+          "low_confidence": false
+        },
+        "bollinger_meanrev": {
+          "trade_count_per_year_q": 1.0,
+          "hit_rate_q": 0.5,
+          "median_per_trade_return_q": 1.0,
+          "hit_rate_vs_other_regimes": "similar",
+          "return_vs_other_regimes": "higher",
+          "n_events": 713,
+          "rankable": true,
+          "low_confidence": false
+        },
+        "cusum_filter": {
+          "trade_count_per_year_q": 0.75,
+          "hit_rate_q": 0.75,
+          "median_per_trade_return_q": 1.0,
+          "hit_rate_vs_other_regimes": "similar",
+          "return_vs_other_regimes": "higher",
+          "n_events": 803,
+          "rankable": true,
+          "low_confidence": false
+        }
+      }
+    },
+    "available_features": [
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "rv_20",
+      "ma_50",
+      "ma_200",
+      "roc_63",
+      "real_yield_5y_z252d",
+      "vix_level",
+      "vix_chg_5",
+      "dxy_z252",
+      "breakeven_5y_chg5",
+      "us_5y2y_z252",
+      "cs_spread_21"
+    ],
+    "available_primaries": {
+      "ema_cross": {
+        "fast": {
+          "type": "int",
+          "required": true,
+          "description": "Fast EMA span (bars)."
+        },
+        "slow": {
+          "type": "int",
+          "required": true,
+          "description": "Slow EMA span (bars); must exceed fast."
+        },
+        "dead_zone_atr": {
+          "type": "float",
+          "required": false,
+          "description": "Min EMA separation in ATR units to fire.",
+          "default": 0.25
+        }
+      },
+      "momentum_zscore": {
+        "lookback": {
+          "type": "int",
+          "required": true,
+          "description": "Rolling window (bars) for the momentum z-score."
+        },
+        "threshold": {
+          "type": "float",
+          "required": false,
+          "description": "Absolute z-score required to fire a side.",
+          "default": 0.3
+        }
+      },
+      "cusum_filter": {
+        "threshold_atr": {
+          "type": "float",
+          "required": true,
+          "description": "CUSUM trigger in ATR-multiple units (threshold_atr * ATR[t-1] / close[t-1])."
+        }
+      },
+      "bollinger_meanrev": {
+        "period": {
+          "type": "int",
+          "required": true,
+          "description": "Rolling window (bars) for the band middle/std."
+        },
+        "k_stdev": {
+          "type": "float",
+          "required": true,
+          "description": "Band half-width in standard deviations."
+        }
+      },
+      "phase5_custom": {
+        "_note": "Custom primary ships its own signal(); param names are free-form."
+      }
+    },
+    "id_hint": "20260703-ABT-D1-BULL_QUI-T002D1"
+  },
+  "output_path": "signals/proposals/20260703-ABT-D1-BULL_QUI-T002D1.json"
+}

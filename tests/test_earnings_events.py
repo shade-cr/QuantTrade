@@ -81,6 +81,42 @@ def test_load_roundtrip(tmp_path):
     assert len(df) == 2 and df.index.tz is not None
 
 
+# ---------------------------------------------------------- calendar feats #
+
+def test_calendar_features_pit_and_caps():
+    from pipeline.earnings_events import earnings_calendar_features
+
+    ann = _quarterly("2010-01-15 12:00", 5, gap_days=91)
+    bars = pd.bdate_range("2010-01-01", periods=400, tz="UTC")
+    f = earnings_calendar_features(bars, ann)
+
+    naive = bars.tz_localize(None).normalize()
+    # Before the first announcement: both NaN.
+    pre = naive < pd.Timestamp("2010-01-15")
+    assert f.loc[bars[pre], "days_since_last_announcement"].isna().all()
+    assert f.loc[bars[pre], "days_to_expected_earnings"].isna().all()
+
+    # Day after the first announcement: since == 1.
+    day_after = bars[naive == pd.Timestamp("2010-01-18")]  # Monday after Fri 15th
+    assert f.loc[day_after, "days_since_last_announcement"].iloc[0] == 3
+
+    # Caps respected.
+    assert (f["days_since_last_announcement"].dropna() <= 63).all()
+    assert (f["days_to_expected_earnings"].dropna() <= 63).all()
+
+    # Overdue expectation (expected date passed, announcement not yet filed)
+    # clamps to 0 — never NaN, which dropna would silently remove.
+    post = ~pre
+    assert (f.loc[bars[post], "days_to_expected_earnings"] >= 0).all()
+    assert not f.loc[bars[post], "days_to_expected_earnings"].isna().any()
+
+    # PIT: truncating future announcements must not change earlier bars.
+    cutoff = ann[2]
+    early = bars[naive <= cutoff.tz_localize(None).normalize()]
+    f_trunc = earnings_calendar_features(bars, ann[:3])
+    pd.testing.assert_frame_equal(f.loc[early], f_trunc.loc[early])
+
+
 # -------------------------------------------------------------- extraction #
 
 def test_extract_8k202_filters_forms_and_items():

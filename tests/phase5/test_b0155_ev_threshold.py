@@ -254,12 +254,16 @@ def test_registry_regenerates_from_synthetic_build(synth_ohlcv):
     # orchestrator (metals only), not a builder output — union its canonical
     # module constant so the registry equality still forces same-commit sync.
     from pipeline.alt_data.gld_volume import GLD_VOLUME_FEATURES
+    # B0017: earnings-calendar block is likewise config-gated and joined by
+    # the pooled runner, not a builder output.
+    from pipeline.earnings_events import EARNINGS_CALENDAR_FEATURES
     cols = (
         set(build_technical_features(ohlcv).columns)
         | set(_build_h4_technical(ohlcv).columns)
         | set(build_macro_features(macro, idx).columns)
         | set(_build_session_one_hot(idx).columns)
         | set(GLD_VOLUME_FEATURES)
+        | set(EARNINGS_CALENDAR_FEATURES)
     )
     assert cols == set(KNOWN_TIER2_FEATURES)
 

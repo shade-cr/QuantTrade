@@ -1,0 +1,345 @@
+{
+  "agent": "phase5-hypothesizer",
+  "action_id": "20260704_122510_propose_ABT_BULL_STRESSED",
+  "input": {
+    "asset_class": "equity",
+    "regime_id": "BULL_STRESSED",
+    "regime_stats_dossier": {
+      "asset_class": "equity",
+      "regime_id": "BULL_STRESSED",
+      "n_bars": 731,
+      "n_episodes": 7,
+      "median_episode_len_bars": 86,
+      "fraction_of_total_bars": 0.0704,
+      "dominant_episode_fraction": 0.2886,
+      "n_unlabeled_bars": 1279,
+      "sample_sufficient": true,
+      "sample_insufficient_reason": null,
+      "features_quantile_summary": {
+        "open": {
+          "median_quantile": 0.6035310250257113,
+          "iqr_quantile_low": 0.46160438806993487,
+          "iqr_quantile_high": 0.8371614672608845,
+          "vs_other_regimes_rank": "higher"
+        },
+        "high": {
+          "median_quantile": 0.609273225917038,
+          "iqr_quantile_low": 0.46288995543366473,
+          "iqr_quantile_high": 0.8370757627699692,
+          "vs_other_regimes_rank": "higher"
+        },
+        "low": {
+          "median_quantile": 0.5985601645526225,
+          "iqr_quantile_low": 0.46100445663352757,
+          "iqr_quantile_high": 0.8372471717517997,
+          "vs_other_regimes_rank": "higher"
+        },
+        "close": {
+          "median_quantile": 0.6013884127528283,
+          "iqr_quantile_low": 0.4617757970517655,
+          "iqr_quantile_high": 0.8370757627699692,
+          "vs_other_regimes_rank": "higher"
+        },
+        "volume": {
+          "median_quantile": 0.46751799794309223,
+          "iqr_quantile_low": 0.2309736030167981,
+          "iqr_quantile_high": 0.7448577305450805,
+          "vs_other_regimes_rank": "lower"
+        },
+        "rv_20": {
+          "median_quantile": 0.8580872252747253,
+          "iqr_quantile_low": 0.7224416208791209,
+          "iqr_quantile_high": 0.9235061813186813,
+          "vs_other_regimes_rank": "similar"
+        },
+        "ma_50": {
+          "median_quantile": 0.6309493071692917,
+          "iqr_quantile_low": 0.46682158533436613,
+          "iqr_quantile_high": 0.8372493329890697,
+          "vs_other_regimes_rank": "higher"
+        },
+        "ma_200": {
+          "median_quantile": 0.6657075595082396,
+          "iqr_quantile_low": 0.4269770686197576,
+          "iqr_quantile_high": 0.8351207603104019,
+          "vs_other_regimes_rank": "higher"
+        },
+        "roc_63": {
+          "median_quantile": 0.46833261525204656,
+          "iqr_quantile_low": 0.22671262386902197,
+          "iqr_quantile_high": 0.7352003446790176,
+          "vs_other_regimes_rank": "similar"
+        },
+        "real_yield_5y_z252d": {
+          "median_quantile": 0.38157366519470093,
+          "iqr_quantile_low": 0.19108791649939783,
+          "iqr_quantile_high": 0.8729425933360097,
+          "vs_other_regimes_rank": "lower",
+          "cadence": "daily",
+          "effective_n": 373,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.209,
+            "ma_50": 0.138,
+            "ma_200": 0.163,
+            "rv_20": 0.104
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "vix_level": {
+          "median_quantile": 0.8467507274490785,
+          "iqr_quantile_low": 0.6554801163918526,
+          "iqr_quantile_high": 0.9468477206595538,
+          "vs_other_regimes_rank": "higher",
+          "cadence": "daily",
+          "effective_n": 373,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.269,
+            "ma_50": 0.002,
+            "ma_200": 0.039,
+            "rv_20": 0.478
+          },
+          "quasi_circular": true,
+          "vetting_inconclusive": false
+        },
+        "vix_chg_5": {
+          "median_quantile": 0.47884316770186336,
+          "iqr_quantile_low": 0.2358307453416149,
+          "iqr_quantile_high": 0.7690217391304348,
+          "vs_other_regimes_rank": "lower",
+          "cadence": "daily",
+          "effective_n": 373,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.004,
+            "ma_50": -0.001,
+            "ma_200": -0.005,
+            "rv_20": -0.046
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "dxy_z252": {
+          "median_quantile": 0.5330122416215132,
+          "iqr_quantile_low": 0.32590808749749145,
+          "iqr_quantile_high": 0.7732289785269918,
+          "vs_other_regimes_rank": "similar",
+          "cadence": "daily",
+          "effective_n": 373,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.166,
+            "ma_50": 0.19,
+            "ma_200": 0.218,
+            "rv_20": 0.169
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "breakeven_5y_chg5": {
+          "median_quantile": 0.43672360248447206,
+          "iqr_quantile_low": 0.21486801242236025,
+          "iqr_quantile_high": 0.7699922360248447,
+          "vs_other_regimes_rank": "lower",
+          "cadence": "daily",
+          "effective_n": 373,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": 0.01,
+            "ma_50": 0.023,
+            "ma_200": 0.023,
+            "rv_20": -0.019
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "us_5y2y_z252": {
+          "median_quantile": 0.5429546366920915,
+          "iqr_quantile_low": 0.31152147731834606,
+          "iqr_quantile_high": 0.7336411079887596,
+          "vs_other_regimes_rank": "similar",
+          "cadence": "daily",
+          "effective_n": 373,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.014,
+            "ma_50": -0.015,
+            "ma_200": -0.055,
+            "rv_20": 0.04
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        },
+        "cs_spread_21": {
+          "median_quantile": 0.5640937580492831,
+          "iqr_quantile_low": 0.398901004550528,
+          "iqr_quantile_high": 0.8512063192238345,
+          "vs_other_regimes_rank": "similar",
+          "cadence": "smoothed_21bar",
+          "effective_n": 146,
+          "low_confidence": false,
+          "correlation_with_regime_features": {
+            "roc_63": -0.035,
+            "ma_50": -0.024,
+            "ma_200": -0.022,
+            "rv_20": 0.133
+          },
+          "quasi_circular": false,
+          "vetting_inconclusive": false
+        }
+      },
+      "orthogonal_features": [
+        "volume",
+        "real_yield_5y_z252d",
+        "vix_chg_5",
+        "dxy_z252",
+        "breakeven_5y_chg5",
+        "us_5y2y_z252",
+        "cs_spread_21"
+      ],
+      "regime_defining_features": [
+        "roc_63",
+        "ma_50",
+        "ma_200",
+        "rv_20"
+      ],
+      "return_distribution_quantile": {
+        "median_quantile": 0.5043284477586355,
+        "iqr_low": 0.15445272992200224,
+        "iqr_high": 0.8149481443387332
+      },
+      "regime_episode_ordinals": [
+        4,
+        10,
+        13,
+        21,
+        29,
+        33,
+        35
+      ],
+      "primary_baseline_summary": {
+        "ema_crossover": {
+          "trade_count_per_year_q": 0.25,
+          "hit_rate_q": 0.25,
+          "median_per_trade_return_q": 0.5,
+          "hit_rate_vs_other_regimes": "lower",
+          "return_vs_other_regimes": "similar",
+          "n_events": 544,
+          "n_events_audit_window": 304,
+          "rankable": true,
+          "low_confidence": false
+        },
+        "momentum_zscore": {
+          "trade_count_per_year_q": 0.25,
+          "hit_rate_q": 0.25,
+          "median_per_trade_return_q": 0.5,
+          "hit_rate_vs_other_regimes": "lower",
+          "return_vs_other_regimes": "similar",
+          "n_events": 551,
+          "n_events_audit_window": 257,
+          "rankable": true,
+          "low_confidence": false
+        },
+        "bollinger_meanrev": {
+          "trade_count_per_year_q": 0.25,
+          "hit_rate_q": 0.75,
+          "median_per_trade_return_q": 0.5,
+          "hit_rate_vs_other_regimes": "similar",
+          "return_vs_other_regimes": "similar",
+          "n_events": 62,
+          "n_events_audit_window": 25,
+          "rankable": true,
+          "low_confidence": false
+        },
+        "cusum_filter": {
+          "trade_count_per_year_q": 0.25,
+          "hit_rate_q": 0.25,
+          "median_per_trade_return_q": 0.5,
+          "hit_rate_vs_other_regimes": "lower",
+          "return_vs_other_regimes": "similar",
+          "n_events": 73,
+          "n_events_audit_window": 39,
+          "rankable": true,
+          "low_confidence": false
+        }
+      }
+    },
+    "available_features": [
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "rv_20",
+      "ma_50",
+      "ma_200",
+      "roc_63",
+      "real_yield_5y_z252d",
+      "vix_level",
+      "vix_chg_5",
+      "dxy_z252",
+      "breakeven_5y_chg5",
+      "us_5y2y_z252",
+      "cs_spread_21"
+    ],
+    "available_primaries": {
+      "ema_cross": {
+        "fast": {
+          "type": "int",
+          "required": true,
+          "description": "Fast EMA span (bars)."
+        },
+        "slow": {
+          "type": "int",
+          "required": true,
+          "description": "Slow EMA span (bars); must exceed fast."
+        },
+        "dead_zone_atr": {
+          "type": "float",
+          "required": false,
+          "description": "Min EMA separation in ATR units to fire.",
+          "default": 0.25
+        }
+      },
+      "momentum_zscore": {
+        "lookback": {
+          "type": "int",
+          "required": true,
+          "description": "Rolling window (bars) for the momentum z-score."
+        },
+        "threshold": {
+          "type": "float",
+          "required": false,
+          "description": "Absolute z-score required to fire a side.",
+          "default": 0.3
+        }
+      },
+      "cusum_filter": {
+        "threshold_atr": {
+          "type": "float",
+          "required": true,
+          "description": "CUSUM trigger in ATR-multiple units (threshold_atr * ATR[t-1] / close[t-1])."
+        }
+      },
+      "bollinger_meanrev": {
+        "period": {
+          "type": "int",
+          "required": true,
+          "description": "Rolling window (bars) for the band middle/std."
+        },
+        "k_stdev": {
+          "type": "float",
+          "required": true,
+          "description": "Band half-width in standard deviations."
+        }
+      },
+      "phase5_custom": {
+        "_note": "Custom primary ships its own signal(); param names are free-form."
+      }
+    },
+    "id_hint": "20260704-ABT-D1-BULL_STR-T004"
+  },
+  "output_path": "signals/proposals/20260704-ABT-D1-BULL_STR-T004.json"
+}

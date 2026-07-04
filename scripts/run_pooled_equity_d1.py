@@ -67,6 +67,21 @@ def build_member_inputs(
     -> aligned y/w/fwd_ret/event & label-end timestamps."""
     cost_bps = float(cfg["metrics"]["cost_per_trade_bps"])
 
+    # B0017: asset-aware custom primaries (e.g. phase5_earnings_premium) need
+    # the ticker to load per-asset event caches; local copy, never mutated in.
+    cfg = {**cfg, "_current_asset": asset}
+
+    # B0017: PIT earnings-calendar meta-features (days since last 8-K 2.02
+    # acceptance / days to the currently-known expected announcement). Joined
+    # BEFORE the primary fires so both primary and meta see the same frame.
+    if (cfg.get("features") or {}).get("earnings_calendar"):
+        from pipeline.earnings_events import (
+            earnings_calendar_features,
+            load_earnings_announcements,
+        )
+        ann = load_earnings_announcements(asset)
+        features = features.join(earnings_calendar_features(features.index, ann.index))
+
     sig = _select_primary(primary_name, ohlcv, features, cfg)
     events = pd.DataFrame({"side": sig[sig != 0].astype(int)})
     if events.empty:

@@ -1147,16 +1147,35 @@ def run_pooled_audit(p: Proposal, dry_run: bool = False) -> dict:
         pooled_v1 grading. Status is always "completed_pending_human_read" —
         this NEVER auto-promotes.
     """
-    if p.primary.startswith("phase5_") or getattr(p, "primary_feature_blacklist", []):
+    blocked_reason = None
+    if getattr(p, "primary_feature_blacklist", []):
+        blocked_reason = (
+            "pooled_universe mode does not apply primary_feature_blacklist — "
+            "route blacklisted proposals through the single-name path."
+        )
+    elif p.primary.startswith("phase5_"):
+        # B0017: a phase5_* custom primary is pooled-safe iff it declares
+        # INPUT_COLUMNS == () (reads only ohlcv / its own event cache) — then
+        # the B0015b input-disjointness concern is vacuous by construction.
+        # Anything else keeps the original fail-loud refusal.
+        try:
+            import importlib
+            mod = importlib.import_module(f"pipeline.primaries_phase5.{p.primary}")
+            input_cols = tuple(getattr(mod, "INPUT_COLUMNS", ("<undeclared>",)))
+        except ImportError as e:
+            blocked_reason = f"custom primary module not importable: {e}"
+        else:
+            if input_cols != ():
+                blocked_reason = (
+                    f"pooled_universe supports phase5_* primaries only with "
+                    f"INPUT_COLUMNS == () (feature-independent); {p.primary} "
+                    f"declares {input_cols!r} and the pooled runner performs "
+                    f"no input-disjointness check (B0015b)."
+                )
+    if blocked_reason:
         return _persist_record(
             p, status="failed_validation",
-            errors=[
-                "pooled_universe mode v1 supports built-in primaries with "
-                "empty blacklists only — the pooled runner does not apply "
-                "primary_feature_blacklist or the B0015b input-disjointness "
-                "check; route phase5_* proposals through the single-name "
-                "path or extend the pooled runner first (B0013)."
-            ],
+            errors=[blocked_reason],
             extras={"mode": "pooled_universe"},
         )
 
