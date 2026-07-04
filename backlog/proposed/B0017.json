@@ -1,0 +1,109 @@
+{
+  "id": "B0017",
+  "title": "Earnings-date event primary (announcement PREMIUM, not PEAD) + PIT dates from EDGAR 8-K",
+  "status": "proposed",
+  "effort": "M",
+  "value": "H",
+  "tags": [
+    "m3",
+    "data",
+    "loop-a",
+    "phase5-custom"
+  ],
+  "created_at": "2026-07-04",
+  "updated_at": "2026-07-04",
+  "source": "2026-07-04 new-data frontiers research",
+  "why": "PEAD is dead in large caps (Martineau 2022) but the earnings ANNOUNCEMENT PREMIUM survives specifically in the largest ~500 names (~0.30pct/event VW; Savor-Wilson, Frazzini-Lamont, Disappearing-EAP paper). Event primary fits triple-barrier natively. PIT risk lives in the dates: vendor calendars are backfilled; reconstruct known-when datetimes from EDGAR 8-K (Item 2.02) acceptance timestamps (free, 2003+). days_to/since_earnings also become meta-features everywhere.",
+  "value_rationale": "",
+  "scope": [
+    "EDGAR 8-K ingestion for the 44 tickers via edgartools; acceptance timestamp = knowledge date; BMO/AMC from timestamp",
+    "Cross-validate a sample vs FMP/AV calendars to quantify vendor backfill error",
+    "phase5_custom primary: +1 entering N days pre-announcement (premium bet); pre-register N and geometry BEFORE any look",
+    "days_to_earnings / days_since_earnings meta-features for all primaries",
+    "Full Loop A path: DA review of the custom primary code for lookahead (custom code NOT auto-trusted)"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0016",
+      "B0018"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-04",
+      "event": "created",
+      "reason": "from advisor consult - build second, weeks 2-3, $0 engineering"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0016",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0016"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0018",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0016"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0016",
+          "B0018"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

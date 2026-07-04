@@ -1,0 +1,77 @@
+{
+  "id": "B0018",
+  "title": "Form 4 opportunistic-insider event primary (Cohen-Malloy-Pomorski filter) via EDGAR",
+  "status": "proposed",
+  "effort": "M",
+  "value": "M",
+  "tags": [
+    "m3",
+    "data",
+    "loop-a",
+    "phase5-custom"
+  ],
+  "created_at": "2026-07-04",
+  "updated_at": "2026-07-04",
+  "source": "2026-07-04 new-data frontiers research",
+  "why": "CMP (JF 2012): opportunistic (non-routine) insider trades ~82bp/mo VW; routine trades zero. Decay unverified post-publication - haircut 50pct ex ante. EDGAR Form 4 XML free 2003+, edgartools parses natively, acceptance timestamp is PIT-perfect. CRITICAL: signal from FILING timestamp only (transaction date = 2-business-day lookahead). Buys weighted; sells noisy (comp/diversification).",
+  "value_rationale": "",
+  "scope": [
+    "EDGAR Form 4 ingestion (44 tickers, 2003+); SEC structured insider datasets as cross-check",
+    "Routine filter: drop insiders trading the same calendar month in >=3 prior years",
+    "Event primary: net opportunistic buy cluster trailing 30d -> +1",
+    "Net-insider-flow (30/90d) meta-features",
+    "DSR: pre-register before any look at panel performance"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0017"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-04",
+      "event": "created",
+      "reason": "from advisor consult - build third, weeks 3-4, $0"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0017",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0017"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

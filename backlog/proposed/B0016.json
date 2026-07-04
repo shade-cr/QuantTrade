@@ -1,0 +1,107 @@
+{
+  "id": "B0016",
+  "title": "Overnight/intraday decomposition + daily microstructure proxies (zero-cost new-information features)",
+  "status": "proposed",
+  "effort": "S",
+  "value": "H",
+  "tags": [
+    "m3",
+    "features",
+    "loop-a"
+  ],
+  "created_at": "2026-07-04",
+  "updated_at": "2026-07-04",
+  "source": "2026-07-04 new-data frontiers research (docs/superpowers/reports/2026-07-04-new-data-frontiers-research.md)",
+  "why": "Lou-Polk-Skouras (JFE 2019, t~5): anomaly returns split overnight vs intraday; large-cap momentum is overnight; EWMA components forecast returns at exactly our 5-10d horizon. Computable from open+close we already have. Plus LdP ch.19 bar-computable liquidity proxies (Amihud, Corwin-Schultz, Roll) - top of his MDA ranking. Cheapest possible test of whether NEW information moves panel AUC off 0.53. PRE-CHECK REQUIRED: audit CSVs carry true session opens, not prior closes (corrupts overnight returns).",
+  "value_rationale": "",
+  "scope": [
+    "Data audit: verify open != prior close systematically across the 44 tickers",
+    "build_tier2_features: r_overnight, r_intraday, EWMA components (10/21/60d), tug-of-war spread",
+    "Amihud lambda (daily), Corwin-Schultz spread, Roll measure as meta-features",
+    "Pre-registered A/B: pooled run with vs without the block; falsification = AUC and trade-quality unmoved"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0014",
+      "B0017"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-04",
+      "event": "created",
+      "reason": "from advisor consult - build first, week 1, $0"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0014",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0014"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0017",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0014"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0014",
+          "B0017"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

@@ -29,7 +29,8 @@
     "related": [
       "B0004",
       "B0012",
-      "B0003"
+      "B0003",
+      "B0016"
     ],
     "supersedes": [],
     "superseded_by": [],
@@ -189,6 +190,41 @@
       "date": "2026-07-04",
       "event": "skeptic_dsr_flag",
       "reason": "Skeptic finding 4: the ungated-bollinger observation (404 loose trades +1.1pct gross) is data-snooped-origin. Any proposal spawned from it MUST carry a DSR penalty flag and be pre-registered before any further look. Feed-forward line adopted: capacity/plumbing numbers may reach the hypothesizer; performance numbers may NOT."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0016",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004",
+          "B0012",
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004",
+          "B0012",
+          "B0003",
+          "B0016"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
     }
   ]
 }

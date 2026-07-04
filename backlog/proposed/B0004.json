@@ -140,6 +140,11 @@
         "spawned_by": [],
         "spawned_from": []
       }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "sharadar_option_identified",
+      "reason": "New-data research (2026-07-04): Sharadar Core US Equities via Nasdaq Data Link (~$599/yr) covers most of this B-ID: PIT fundamentals (datekey), survivorship-free prices 1998+, S&P membership 1957+, insiders 2005+, 8-K events. Purchase decision is the user's; not required for the $0 month-1 plan (B0016-B0018)."
     }
   ]
 }

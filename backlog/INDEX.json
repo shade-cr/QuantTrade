@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-04T14:57:42Z",
+  "updated_at": "2026-07-04T15:05:29Z",
   "entries": [
     {
       "id": "B0001",
@@ -212,6 +212,53 @@
       "tags": [
         "loop-a",
         "polish"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0016",
+      "status": "proposed",
+      "title": "Overnight/intraday decomposition + daily microstructure proxies (zero-cost new-information features)",
+      "updated_at": "2026-07-04",
+      "effort": "S",
+      "value": "H",
+      "tags": [
+        "m3",
+        "features",
+        "loop-a"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0017",
+      "status": "proposed",
+      "title": "Earnings-date event primary (announcement PREMIUM, not PEAD) + PIT dates from EDGAR 8-K",
+      "updated_at": "2026-07-04",
+      "effort": "M",
+      "value": "H",
+      "tags": [
+        "m3",
+        "data",
+        "loop-a",
+        "phase5-custom"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0018",
+      "status": "proposed",
+      "title": "Form 4 opportunistic-insider event primary (Cohen-Malloy-Pomorski filter) via EDGAR",
+      "updated_at": "2026-07-04",
+      "effort": "M",
+      "value": "M",
+      "tags": [
+        "m3",
+        "data",
+        "loop-a",
+        "phase5-custom"
       ],
       "blocks_count": 0,
       "blocked_by_count": 0
