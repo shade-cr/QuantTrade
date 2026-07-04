@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-04T21:14:49Z",
+  "updated_at": "2026-07-04T21:23:05Z",
   "entries": [
     {
       "id": "B0001",
@@ -249,7 +249,7 @@
     },
     {
       "id": "B0018",
-      "status": "proposed",
+      "status": "in_progress",
       "title": "Form 4 opportunistic-insider event primary (Cohen-Malloy-Pomorski filter) via EDGAR",
       "updated_at": "2026-07-04",
       "effort": "M",

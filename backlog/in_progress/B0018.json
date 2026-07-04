@@ -1,7 +1,7 @@
 {
   "id": "B0018",
   "title": "Form 4 opportunistic-insider event primary (Cohen-Malloy-Pomorski filter) via EDGAR",
-  "status": "proposed",
+  "status": "in_progress",
   "effort": "M",
   "value": "M",
   "tags": [
@@ -72,6 +72,18 @@
         "spawned_by": [],
         "spawned_from": []
       }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "pre-registration spec frozen and committed before any data look; spec at docs/superpowers/specs/2026-07-04-b0018-insider-event-preregistration.md",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "preregistration_frozen",
+      "reason": "CMP opportunistic filter (3-prior-year classifiability, routine-month exclusion), P-code officer/director >=10k notional, filing-acceptance knowledge moment, h10 sym 1.5/1.5, one pre-committed plumbing contingency (<500 events -> admit unclassifiable, recorded trial)"
     }
   ]
 }
