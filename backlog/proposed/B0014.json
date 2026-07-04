@@ -172,6 +172,11 @@
       "date": "2026-07-04",
       "event": "t005r2_lineage_closed",
       "reason": "T005R2 (add_feature): FIRST honest floor pass (937.8>799, 18,443 raw). Base criteria FAILED (42<50 trades, no active folds); in-scope split: 83 trades, +0.56 gross but per-trade mean below pooled; regime_in_scope MDA ~zero (clustered) -> meta ignored conditionality -> regime hypothesis NOT supported. Lineage T005 closed at DSR trials>=2, no R3 per DA caveat. Observation (NOT a claim): ungated pooled bollinger loose-count 404 trades gross hit 0.62 mean +1.1pct/trade - candidate for its own pre-registered proposal via a future tick."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "t006_falsified",
+      "reason": "T006 (cusum@1.0 AIG BEAR_STRESSED add_feature): floor passed honestly (964.1>799, 45,708 raw). FALSIFIED decisively: 0 best-model trades; loose count 68 all in 2020/2023 stress, net NEGATIVE both subsets (in-scope -1.2pct/trade n=17 capacity-discard; out-of-scope -2.1pct/trade hit 0.25). cusum@1.0 x stress family 0-for-2 today. Pattern after 6 ticks: no generic parametric primary carries signal, gated or ungated - phase5_custom designed primaries are the next frontier."
     }
   ]
 }
