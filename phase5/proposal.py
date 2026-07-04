@@ -285,10 +285,20 @@ class BarrierGeometryAttestation:
         is_phase5_meanrev = (
             primary_name.startswith("phase5_") and "meanrev" in primary_name.lower()
         )
+        # B0017 — event-premium archetype (name contains "premium" or "event"):
+        # the claim is average drift over a known event window (risk-bearing
+        # compensation), not a payoff-asymmetry claim. Forcing the trend floor
+        # (R:R >= 2.5, built for ~30%-win-rate signals) onto an event-premium
+        # primary mismeasures it the same way it would a fade; symmetric-to-
+        # moderate geometry (0.5 <= R:R <= 2.0) is the honest band.
+        is_phase5_event_premium = primary_name.startswith("phase5_") and any(
+            k in primary_name.lower() for k in ("premium", "event")
+        )
         # Trend-following primaries require R:R >= 2.5
         if (
             primary_name in ("ema_cross", "momentum_zscore")
-            or (primary_name.startswith("phase5_") and not is_phase5_meanrev)
+            or (primary_name.startswith("phase5_")
+                and not is_phase5_meanrev and not is_phase5_event_premium)
         ):
             if rr < 2.5:
                 raise ProposalValidationError(
@@ -311,6 +321,15 @@ class BarrierGeometryAttestation:
                     f"barrier_geometry_attestation R:R={rr:.2f} < 0.5 for mean-rev primary "
                     f"{primary_name!r}. R:R < 0.5 requires >67% win rate to clear "
                     f"break-even — that bar is high enough to flag overfit risk."
+                )
+        # B0017 — event-premium primaries: same moderate band as mean-rev
+        # (the drift claim needs symmetric measurement, not asymmetric payoff).
+        elif is_phase5_event_premium:
+            if not (0.5 <= rr <= 2.0):
+                raise ProposalValidationError(
+                    f"barrier_geometry_attestation R:R={rr:.2f} outside [0.5, 2.0] for "
+                    f"event-premium primary {primary_name!r}. The premium is a drift-"
+                    f"over-window claim; measure it symmetrically."
                 )
 
 

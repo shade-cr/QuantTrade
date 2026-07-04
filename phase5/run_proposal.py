@@ -908,6 +908,13 @@ def build_transient_pooled_config(p: Proposal) -> Path:
     cfg.setdefault("features", {})
     cfg["features"]["cross_sectional"] = True
     cfg["features"]["gld_volume"] = False
+    # B0017: switch the PIT earnings-calendar join on when the proposal needs
+    # it (the earnings primary, or any requested calendar meta-feature).
+    from pipeline.earnings_events import EARNINGS_CALENDAR_FEATURES
+    cfg["features"]["earnings_calendar"] = (
+        p.primary == "phase5_earnings_premium"
+        or any(f in EARNINGS_CALENDAR_FEATURES for f in p.feature_overrides.add)
+    )
 
     # Evaluate every (asset, fold, model) cell at the SAME pre-registered
     # audit threshold (fixed_0.50 -> 0.50, ev_breakeven_v1 -> p*) instead of
