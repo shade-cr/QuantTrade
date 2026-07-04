@@ -1,7 +1,7 @@
 {
   "id": "B0014",
   "title": "Denser bars for pooled equity: intraday (H1/H4-session) data path to clear the effective-N floor",
-  "status": "proposed",
+  "status": "in_progress",
   "effort": "L",
   "value": "H",
   "tags": [
@@ -177,6 +177,18 @@
       "date": "2026-07-04",
       "event": "t006_falsified",
       "reason": "T006 (cusum@1.0 AIG BEAR_STRESSED add_feature): floor passed honestly (964.1>799, 45,708 raw). FALSIFIED decisively: 0 best-model trades; loose count 68 all in 2020/2023 stress, net NEGATIVE both subsets (in-scope -1.2pct/trade n=17 capacity-discard; out-of-scope -2.1pct/trade hit 0.25). cusum@1.0 x stress family 0-for-2 today. Pattern after 6 ticks: no generic parametric primary carries signal, gated or ungated - phase5_custom designed primaries are the next frontier."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "horizon curve + pin + add_feature shipped; denser-bars vendor path parked pending need",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "skeptic_dsr_flag",
+      "reason": "Skeptic finding 4: the ungated-bollinger observation (404 loose trades +1.1pct gross) is data-snooped-origin. Any proposal spawned from it MUST carry a DSR penalty flag and be pre-registered before any further look. Feed-forward line adopted: capacity/plumbing numbers may reach the hypothesizer; performance numbers may NOT."
     }
   ]
 }

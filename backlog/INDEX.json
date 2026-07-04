@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-04T14:01:01Z",
+  "updated_at": "2026-07-04T14:57:42Z",
   "entries": [
     {
       "id": "B0001",
@@ -174,7 +174,7 @@
     },
     {
       "id": "B0013",
-      "status": "proposed",
+      "status": "in_progress",
       "title": "Pooled-path polish: final-review minors + gate/config guards from the 2026-07-03 plan-2 branch",
       "updated_at": "2026-07-04",
       "effort": "S",
@@ -189,7 +189,7 @@
     },
     {
       "id": "B0014",
-      "status": "proposed",
+      "status": "in_progress",
       "title": "Denser bars for pooled equity: intraday (H1/H4-session) data path to clear the effective-N floor",
       "updated_at": "2026-07-04",
       "effort": "L",

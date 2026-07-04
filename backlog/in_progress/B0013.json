@@ -1,7 +1,7 @@
 {
   "id": "B0013",
   "title": "Pooled-path polish: final-review minors + gate/config guards from the 2026-07-03 plan-2 branch",
-  "status": "proposed",
+  "status": "in_progress",
   "effort": "S",
   "value": "M",
   "tags": [
@@ -149,6 +149,18 @@
       "date": "2026-07-04",
       "event": "effective_n_gate_shipped",
       "reason": "Pooled audit now gates on effective_n_rho1 (cheap --effective-n-only subprocess, fail-loud on measurement failure) before the full run; completed records persist pooled_effective_n. Commit 71b36d6."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "effective-N gate scope item shipped (71b36d6); remaining scope items open",
+      "from": "proposed",
+      "to": "in_progress"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "skeptic_accounting_basis",
+      "reason": "Skeptic finding 3 added to scope: pin accounting basis (best-model) into extra_falsification_criteria schema; forbid loose multi-model counts wherever a floor is evaluated (T005R2 evaluated in-scope on loose 83 while base used best-model 42 - inconsistent bases, unexploited only because outcomes were negative)."
     }
   ]
 }
