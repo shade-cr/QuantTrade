@@ -26,7 +26,8 @@
     "related": [
       "B0010",
       "B0006",
-      "B0013"
+      "B0013",
+      "B0014"
     ],
     "supersedes": [],
     "superseded_by": [],
@@ -107,6 +108,41 @@
       "reason": "v2 decoupling shipped, validated (9-test battery), A/B executed and read; readout at docs/superpowers/reports/2026-07-04-b0012-v2-ab-readout.md",
       "from": "proposed",
       "to": "done"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0014",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0010",
+          "B0006",
+          "B0013"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0010",
+          "B0006",
+          "B0013",
+          "B0014"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
     }
   ]
 }

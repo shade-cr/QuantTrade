@@ -276,6 +276,9 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--count-events-only", action="store_true",
                     help="build members, print per-member + pooled event counts, exit")
+    ap.add_argument("--effective-n-only", action="store_true",
+                    help="stop after computing/persisting effective_n_<primary>.json "
+                         "(no model fitting) — cheap floor check before a full run")
     ap.add_argument("--assets", default=None,
                     help="comma-separated subset of universe tickers")
     args = ap.parse_args()
@@ -361,6 +364,11 @@ def main() -> int:
         (out_root / f"effective_n_{primary}.json").write_text(
             json.dumps(diag, indent=2), encoding="utf-8"
         )
+        print(f"  EFFECTIVE-N [{primary}]: raw_n={diag['raw_n']}  "
+              f"effective_n_rho1={diag['effective_n_rho1']:.1f}  "
+              f"fit_weight_mode={diag['fit_weight_mode']}")
+    if args.effective_n_only:
+        return 0
 
     for primary, members in members_by_primary.items():
         if not members:

@@ -1,0 +1,43 @@
+{
+  "id": "B0015",
+  "title": "Loop A: DA objection severity vocabulary mismatch (fatal/major/minor vs counted 'high')",
+  "status": "proposed",
+  "effort": "S",
+  "value": "M",
+  "tags": [
+    "loop-a",
+    "polish"
+  ],
+  "created_at": "2026-07-04",
+  "updated_at": "2026-07-04",
+  "source": "2026-07-04 tick 3: DA returned 2 'fatal' objections; loop_a_tick counted da_objections_high=0",
+  "why": "scripts/loop_a_tick.py run_preflight counts objections with severity=='high', but the DA agent emits fatal/major/minor. Tick 3's two FATAL objections were recorded as da_objections_high=0 — the daily report understates review severity and any future logic keyed on objection counts would silently treat fatal blocks as benign. Fix: normalize the severity vocabulary in the DA dispatch prompt AND accept both in the counter; add a lint.",
+  "value_rationale": "",
+  "scope": [
+    "Pick one canonical severity enum and enforce it in the DA output contract",
+    "loop_a_tick: count {'high','fatal'} (or normalized equivalent) as high-severity",
+    "Backfill-safe: re-derive severity counts when rendering, don't persist the buggy count"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-04",
+      "event": "created",
+      "reason": "logged from tick 3 observation"
+    }
+  ]
+}

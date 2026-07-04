@@ -1,0 +1,96 @@
+# M3-WIDE universe (recorded trial, 2026-07-04): the frozen M3 35 stocks
+# (configs/universe_equity_m3.yaml — untouched) PLUS all 8 deterministic
+# alternates promoted to members. Motivation: B0012 A/B readout — pooled
+# effective-N 654 < floor 799 with 35 names, while the measured panel
+# rho_mean 0.18 (ENB ~26) says the panel is far from saturated; widening is
+# the cheapest honest path to the floor. Selection remains t0-2006
+# information only (the alternates list was frozen 2026-07-03 as
+# next-largest 2006 caps, before any M3 result was observed).
+# This is trial N+1 against the same hypothesis family — recorded in B0003
+# history for the DSR trial count.
+selection_rule: >-
+  The frozen M3 top-35 (see universe_equity_m3.yaml) plus its 8 frozen
+  alternates (next-largest early-2006 caps with continuous history),
+  promoted in their deterministic order on 2026-07-04. No new name-selection
+  freedom was exercised.
+selected_at: "2026-07-04"
+
+stocks:
+  - XOM
+  - GE
+  - MSFT
+  - C
+  - BAC
+  - WMT
+  - PG
+  - JNJ
+  - PFE
+  - AIG
+  - MO
+  - IBM
+  - CVX
+  - JPM
+  - INTC
+  - WFC
+  - CSCO
+  - KO
+  - VZ
+  - PEP
+  - HD
+  - COP
+  - T
+  - ABT
+  - MRK
+  - ORCL
+  - QCOM
+  - MMM
+  - UPS
+  - DIS
+  - MCD
+  - GS
+  - BA
+  - UNH
+  - CAT
+  - AXP
+  - SLB
+  - TXN
+  - LLY
+  - AMGN
+  - BMY
+  - TGT
+  - USB
+
+etfs:
+  - XLB
+  - XLE
+  - XLF
+  - XLI
+  - XLK
+  - XLP
+  - XLU
+  - XLV
+  - XLY
+
+alternates: []
+
+# Same residual-bias enumeration as the frozen M3 universe (see
+# universe_equity_m3.yaml for rationale per name).
+excluded_delistees:
+  LEH: "Lehman Brothers — bankruptcy 2008 (distress)"
+  WB: "Wachovia — distressed sale to Wells Fargo 2008 (distress)"
+  MER: "Merrill Lynch — distressed sale to Bank of America 2009 (distress)"
+  WM: "Washington Mutual — bank failure 2008 (distress)"
+  FNM: "Fannie Mae — conservatorship, delisted 2010 (distress)"
+  FRE: "Freddie Mac — conservatorship, delisted 2010 (distress)"
+  GM: "General Motors — Chapter 11 2009; relisted GM is a different entity (distress)"
+  BUD: "Anheuser-Busch — acquired by InBev 2008 (M&A)"
+  WYE: "Wyeth — acquired by Pfizer 2009 (M&A)"
+  SGP: "Schering-Plough — merged into Merck 2009 (M&A)"
+  BLS: "BellSouth — merged into AT&T 2006 (M&A)"
+  TWX: "Time Warner — acquired by AT&T 2018 (M&A)"
+  DELL: "Dell — LBO 2013; relisted DELL is a different capital structure (going-private)"
+  MOT: "Motorola — 2011 split into MSI/MMI (restructuring)"
+  UTX: "United Technologies — merged into RTX 2020 (ticker discontinuity)"
+  DOW: "Dow Chemical — DowDuPont restructuring 2017-19 (ticker discontinuity)"
+  TYC: "Tyco — merged into Johnson Controls 2016 (M&A)"
+  S: "Sprint — merged into T-Mobile 2020 (M&A)"

@@ -1,0 +1,142 @@
+{
+  "id": "B0014",
+  "title": "Denser bars for pooled equity: intraday (H1/H4-session) data path to clear the effective-N floor",
+  "status": "proposed",
+  "effort": "L",
+  "value": "H",
+  "tags": [
+    "m3",
+    "data",
+    "loop-a"
+  ],
+  "created_at": "2026-07-04",
+  "updated_at": "2026-07-04",
+  "source": "2026-07-04 M3-WIDE trial: effective-N flat at ~654 under rho=1 regardless of breadth; only denser time-sampling or shorter horizons raise it",
+  "why": "The rho=1 pooled effective-N is bounded by (calendar span / event duration) and invariant to universe breadth (verified: 35 names 654.0, 43 names 653.8). Floor is 799. The only honest levers are (i) more bars per unit time (intraday), (ii) shorter triple-barrier horizon at D1 (cheaper but shrinks per-event information), or (iii) re-deriving the inference rule (quant-phd-advisor consult; NOT a config knob). Intraday equity data is the structural fix but yfinance caps 1h history at ~730 days — useless for 2006+ walk-forward. Needs a vendor: Polygon.io (trades/aggs back to ~2003, paid), Databento (2017+), Alpaca (2016+, IEX-only free), Norgate/Sharadar (EOD only — covers B0004 but NOT this). Vendor choice interacts with B0004 PIT-membership: prefer one vendor solving both.",
+  "value_rationale": "",
+  "scope": [
+    "Decide horizon-shortening experiment first (free): D1 horizon 40 -> 15-20, recompute effective-N; if floor clears, denser bars may be unnecessary",
+    "Vendor evaluation matrix (coverage from <=2006, PIT membership, corporate actions, cost) for Polygon vs Databento vs Alpaca vs IQFeed",
+    "Session-aligned H1/H4 bar construction for US equities (RTH only, no synthetic overnight bars)",
+    "Pipeline compatibility audit: bars_per_year, ATR periods, macro .shift(1) alignment at intraday cadence",
+    "Cost decision is the user's: any paid subscription requires explicit approval"
+  ],
+  "recommendation": "",
+  "out_of_scope": "",
+  "links": {
+    "blocks": [],
+    "blocked_by": [],
+    "related": [
+      "B0004",
+      "B0012",
+      "B0003"
+    ],
+    "supersedes": [],
+    "superseded_by": [],
+    "spawned": [],
+    "spawned_by": [],
+    "spawned_from": []
+  },
+  "external_refs": [],
+  "da_reviews": [],
+  "falsification_clock": null,
+  "history": [
+    {
+      "date": "2026-07-04",
+      "event": "created",
+      "reason": "logged from 2026-07-04 M3-WIDE flat effective-N finding"
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0004",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0012",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004",
+          "B0012"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "add_link related->B0003",
+      "field": "links",
+      "from": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004",
+          "B0012"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      },
+      "to": {
+        "blocks": [],
+        "blocked_by": [],
+        "related": [
+          "B0004",
+          "B0012",
+          "B0003"
+        ],
+        "supersedes": [],
+        "superseded_by": [],
+        "spawned": [],
+        "spawned_by": [],
+        "spawned_from": []
+      }
+    }
+  ]
+}

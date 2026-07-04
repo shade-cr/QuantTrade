@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-04T10:30:00Z",
+  "updated_at": "2026-07-04T11:32:00Z",
   "entries": [
     {
       "id": "B0001",
@@ -29,7 +29,7 @@
       "id": "B0003",
       "status": "in_progress",
       "title": "M3 cross-section: equity universe run (OQ1 decided: ~35 t0-selected large-caps + ETF control)",
-      "updated_at": "2026-07-03",
+      "updated_at": "2026-07-04",
       "effort": "M",
       "value": "H",
       "tags": [
@@ -181,6 +181,35 @@
       "value": "M",
       "tags": [
         "m3",
+        "loop-a",
+        "polish"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0014",
+      "status": "proposed",
+      "title": "Denser bars for pooled equity: intraday (H1/H4-session) data path to clear the effective-N floor",
+      "updated_at": "2026-07-04",
+      "effort": "L",
+      "value": "H",
+      "tags": [
+        "m3",
+        "data",
+        "loop-a"
+      ],
+      "blocks_count": 0,
+      "blocked_by_count": 0
+    },
+    {
+      "id": "B0015",
+      "status": "proposed",
+      "title": "Loop A: DA objection severity vocabulary mismatch (fatal/major/minor vs counted 'high')",
+      "updated_at": "2026-07-04",
+      "effort": "S",
+      "value": "M",
+      "tags": [
         "loop-a",
         "polish"
       ],
