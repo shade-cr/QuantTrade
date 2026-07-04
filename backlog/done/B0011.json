@@ -1,7 +1,7 @@
 {
   "id": "B0011",
   "title": "Persist pooled_effective_N to pooled-run artifacts",
-  "status": "proposed",
+  "status": "done",
   "effort": "S",
   "value": "M",
   "tags": [
@@ -77,6 +77,18 @@
       "date": "2026-07-04",
       "event": "field_update",
       "reason": "Absorbed into the B0012 v2 plan Task 3: unconditional effective_n_<primary>.json persistence at every pooled run output root."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "absorbed_by_b0012",
+      "reason": "Closed by B0012 Task 3: effective_n_<primary>.json now persisted unconditionally at every pooled run's output root (raw_n, effective_n_rho1, fit_weight_mode, fit_weight_sum, enb_ceiling, rho_panel_mean_last, computed_at). Verified in results/clf_equity_m3_cusum_cs_v2."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "absorbed by B0012 Task 3 — persistence shipped and verified in the 2026-07-04 v2 A/B run",
+      "from": "proposed",
+      "to": "done"
     }
   ]
 }

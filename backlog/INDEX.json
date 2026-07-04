@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-03T23:05:30Z",
+  "updated_at": "2026-07-04T10:20:09Z",
   "entries": [
     {
       "id": "B0001",
@@ -144,7 +144,7 @@
     },
     {
       "id": "B0011",
-      "status": "proposed",
+      "status": "done",
       "title": "Persist pooled_effective_N to pooled-run artifacts",
       "updated_at": "2026-07-04",
       "effort": "S",

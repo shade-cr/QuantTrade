@@ -85,6 +85,16 @@
       "date": "2026-07-04",
       "event": "field_update",
       "reason": "Promoted to spec (docs/superpowers/specs/2026-07-04-b0012-uniqueness-v2-decoupling.md) + implementation plan (docs/superpowers/plans/2026-07-04-b0012-uniqueness-v2.md). 4 tasks: rho schedule+ENB, corr-discounted uniqueness+validation battery, runner fit_weight modes+unconditional effective-N persistence (absorbs B0011), A/B execution with gate-monotonicity verification."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "field_update",
+      "reason": "Implementation landed (Tasks 1-3: rho schedule+ENB, corr-discounted uniqueness with full validation battery green, runner fit_weight modes + unconditional effective-N persistence). A/B execution starting: configs/equity_m3_cusum_cs_v2.yaml vs the 2026-07-03 rho1 cusum+CS run."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "ab_readout",
+      "reason": "A/B executed and read (docs/superpowers/reports/2026-07-04-b0012-v2-ab-readout.md). Firewall PASS: effective_n_rho1=654.02 identical to rho1 run; stack 0/35 both runs; no v2-only survivor. fit_weight_sum=1714 (2.62x). ENB ceiling 26.1 at panel rho_mean 0.18 (spec guessed 2-3 at 0.4) — panel far less redundant than assumed; universe widening is a viable floor path. OOF skill unchanged (panel ROC-AUC 0.5403 vs 0.5405): starvation fixed but primary uninformative — binding constraint isolated. v2 stays default-recommended for pooled runs."
     }
   ]
 }
