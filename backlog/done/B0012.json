@@ -1,7 +1,7 @@
 {
   "id": "B0012",
   "title": "Methodology consult: cross-asset wall-clock uniqueness redundancy assumption",
-  "status": "proposed",
+  "status": "done",
   "effort": "M",
   "value": "H",
   "tags": [
@@ -95,6 +95,18 @@
       "date": "2026-07-04",
       "event": "ab_readout",
       "reason": "A/B executed and read (docs/superpowers/reports/2026-07-04-b0012-v2-ab-readout.md). Firewall PASS: effective_n_rho1=654.02 identical to rho1 run; stack 0/35 both runs; no v2-only survivor. fit_weight_sum=1714 (2.62x). ENB ceiling 26.1 at panel rho_mean 0.18 (spec guessed 2-3 at 0.4) — panel far less redundant than assumed; universe widening is a viable floor path. OOF skill unchanged (panel ROC-AUC 0.5403 vs 0.5405): starvation fixed but primary uninformative — binding constraint isolated. v2 stays default-recommended for pooled runs."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "final_review",
+      "reason": "Whole-branch review (base c1b56a5): no Critical. Two Important fixed in 1296dd3 (fail-loud fit_weight validation; fit_weight_sum in rho1 mode now records the weights actually fitted == effective_n_rho1). Two Minors logged: fabricated last-day duration for events past grid end (defensive assert pending); trivially-true enb_ceiling<=2 assertion in test_run_pooled_equity_d1. Full suite green."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "status_change",
+      "reason": "v2 decoupling shipped, validated (9-test battery), A/B executed and read; readout at docs/superpowers/reports/2026-07-04-b0012-v2-ab-readout.md",
+      "from": "proposed",
+      "to": "done"
     }
   ]
 }

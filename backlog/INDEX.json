@@ -1,7 +1,7 @@
 {
   "version": 1,
   "schema_version": "1.0",
-  "updated_at": "2026-07-04T10:20:09Z",
+  "updated_at": "2026-07-04T10:30:00Z",
   "entries": [
     {
       "id": "B0001",
@@ -159,7 +159,7 @@
     },
     {
       "id": "B0012",
-      "status": "proposed",
+      "status": "done",
       "title": "Methodology consult: cross-asset wall-clock uniqueness redundancy assumption",
       "updated_at": "2026-07-04",
       "effort": "M",
