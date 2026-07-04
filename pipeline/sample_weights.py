@@ -137,3 +137,61 @@ def _instant_point_uniqueness(s: np.ndarray, e: np.ndarray) -> np.ndarray:
         same = int((s == s[k]).sum())
         weights[k] = 1.0 / same
     return weights
+
+
+# --- B0012 v2: fit-weight/inference decoupling -------------------------------
+# Spec: docs/superpowers/specs/2026-07-04-b0012-uniqueness-v2-decoupling.md.
+# These constants are FROZEN pre-registration values (spec §2) — do not tune
+# against results. The functions below feed FIT WEIGHTS ONLY; every gate/floor
+# keeps consuming the rho=1 `pooled_avg_uniqueness` above (the firewall, §1).
+RHO_WINDOW = 252
+RHO_REFRESH = 21
+RHO_SHRINK_LAMBDA = 0.5
+RHO_FLOOR = 0.15
+
+
+def rolling_panel_rho(
+    close: "pd.DataFrame",
+    window: int = RHO_WINDOW,
+    refresh: int = RHO_REFRESH,
+    shrink_lambda: float = RHO_SHRINK_LAMBDA,
+    rho_floor: float = RHO_FLOOR,
+    min_periods: int = 126,
+) -> list:
+    """Point-in-time shrunk correlation schedule for the pooled panel.
+
+    Returns [(effective_from, rho_star), ...] where each rho_star (assets x
+    assets, diag 1) is estimated from log returns STRICTLY BEFORE
+    effective_from (rows [k-window, k) feed the matrix effective at index[k]),
+    shrunk toward the panel-mean correlation (constant-correlation target,
+    lambda fixed) and clipped to [rho_floor, 1]. Refreshed every `refresh`
+    bars; consumers hold each matrix constant until the next effective_from.
+    Pairs with insufficient overlap fall back to the panel mean, then the floor.
+    """
+    import pandas as pd  # local: keep module import surface unchanged
+
+    r = np.log(close).diff()
+    idx = close.index
+    out = []
+    for k in range(window, len(idx), refresh):
+        sub = r.iloc[k - window:k]
+        rho = sub.corr(min_periods=min_periods)
+        off_mask = ~np.eye(len(rho), dtype=bool)
+        off_vals = rho.values[off_mask]
+        rbar = float(np.nanmean(off_vals)) if np.isfinite(off_vals).any() else rho_floor
+        shrunk = shrink_lambda * rho.values + (1.0 - shrink_lambda) * rbar
+        shrunk = np.where(np.isnan(shrunk), rbar, shrunk)
+        shrunk = np.clip(shrunk, rho_floor, 1.0)
+        np.fill_diagonal(shrunk, 1.0)
+        out.append((idx[k], pd.DataFrame(shrunk, index=rho.index, columns=rho.columns)))
+    return out
+
+
+def effective_number_of_bets(rho: "pd.DataFrame") -> float:
+    """Meucci-style ENB diagnostic: exp(entropy) of normalized eigenvalues of
+    the correlation matrix. Equals N for identity, ->1 as rho->1. DIAGNOSTIC
+    CEILING ONLY — never a gate input (spec §3)."""
+    vals = np.linalg.eigvalsh(np.asarray(rho, dtype=float))
+    vals = np.clip(vals, 1e-12, None)
+    p = vals / vals.sum()
+    return float(np.exp(-(p * np.log(p)).sum()))
