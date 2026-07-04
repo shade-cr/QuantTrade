@@ -142,6 +142,11 @@
       "date": "2026-07-04",
       "event": "horizon_curve_measured",
       "reason": "Free experiment run 2026-07-04 (--effective-n-only, 35 names, cusum, D1): horizon 40 -> 654.0, horizon 20 -> 716.3, horizon 10 -> 904.9. THE FLOOR (799) CLEARS AT HORIZON ~10-15 WITH NO NEW DATA. Caveats before acting: (1) h10 is a different strategy class (TP 3.0 ATR rarely reachable in 10 days -> timeout-dominated labels; barrier geometry must be re-derived, e.g. tp/sl ~1.0-1.5 ATR); (2) each horizon tested is a recorded trial for DSR counting; (3) intraday vendor path stays in scope only if short-horizon D1 audits still starve after regime gating."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "h10_audit_readout",
+      "reason": "h10 full pooled audit executed (results/clf_equity_m3_cusum_cs_v2_h10). FIRST pre-flight PASS in project history: effective_n_rho1=1237.7 > floor 799. Verdict with statistical standing: NO EDGE - panel AUC 0.531, meta keeps 145/19659 trades (0.7%), zero cells reach the 30-trade Sharpe floor, stack 0/35, GE/KO PSR 0.61-0.75 below promote thresholds. Binding constraint now unambiguously the primary (cusum uninformative), not statistical power. Loop A audit path is now passable. Readout: docs/superpowers/reports/2026-07-04-h10-pooled-audit-readout.md"
     }
   ]
 }
