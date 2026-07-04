@@ -257,6 +257,8 @@ def test_registry_regenerates_from_synthetic_build(synth_ohlcv):
     # B0017: earnings-calendar block is likewise config-gated and joined by
     # the pooled runner, not a builder output.
     from pipeline.earnings_events import EARNINGS_CALENDAR_FEATURES
+    # B0018: insider-flow block, same config-gated pattern.
+    from pipeline.insider_events import INSIDER_FLOW_FEATURES
     cols = (
         set(build_technical_features(ohlcv).columns)
         | set(_build_h4_technical(ohlcv).columns)
@@ -264,6 +266,7 @@ def test_registry_regenerates_from_synthetic_build(synth_ohlcv):
         | set(_build_session_one_hot(idx).columns)
         | set(GLD_VOLUME_FEATURES)
         | set(EARNINGS_CALENDAR_FEATURES)
+        | set(INSIDER_FLOW_FEATURES)
     )
     assert cols == set(KNOWN_TIER2_FEATURES)
 

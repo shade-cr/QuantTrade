@@ -901,11 +901,15 @@ def build_transient_pooled_config(p: Proposal) -> Path:
 
     cfg["triple_barrier"]["tp_atr_mult"] = p.barrier_geometry_attestation.tp_atr_mult
     cfg["triple_barrier"]["sl_atr_mult"] = p.barrier_geometry_attestation.sl_atr_mult
-    is_event_premium = p.primary.startswith("phase5_") and any(
-        k in p.primary.lower() for k in ("premium", "event")
-    )
+    # h3 applies ONLY to season-clustered announcement primaries — the reason
+    # for the B0017 amendment was earnings-season entry-day collision.
+    # Idiosyncratic event primaries (phase5_insider_event, B0018) keep the
+    # pinned h10; their pre-registrations freeze it explicitly.
+    is_season_clustered_event = p.primary == "phase5_earnings_premium"
     cfg["triple_barrier"]["horizon"] = (
-        EVENT_PREMIUM_AUDIT_HORIZON if is_event_premium else POOLED_AUDIT_HORIZON
+        EVENT_PREMIUM_AUDIT_HORIZON
+        if is_season_clustered_event
+        else POOLED_AUDIT_HORIZON
     )
 
     cfg["regime_scope"] = list(p.regime_scope)
@@ -925,6 +929,17 @@ def build_transient_pooled_config(p: Proposal) -> Path:
         p.primary == "phase5_earnings_premium"
         or any(f in EARNINGS_CALENDAR_FEATURES for f in p.feature_overrides.add)
     )
+    # B0018: same pattern for the PIT insider-flow features.
+    from pipeline.insider_events import INSIDER_FLOW_FEATURES
+    cfg["features"]["insider_flow"] = (
+        p.primary == "phase5_insider_event"
+        or any(f in INSIDER_FLOW_FEATURES for f in p.feature_overrides.add)
+    )
+    # B0018 Amendment 1 (pre-committed contingency, recorded trial): strict
+    # CMP classifiability leaves 33 events panel-wide (<500 floor) — admit
+    # unclassifiable insiders (still excluding routine). See the B0018 spec.
+    if p.primary == "phase5_insider_event":
+        cfg["insider_admit_unclassifiable"] = True
 
     # Evaluate every (asset, fold, model) cell at the SAME pre-registered
     # audit threshold (fixed_0.50 -> 0.50, ev_breakeven_v1 -> p*) instead of

@@ -91,6 +91,8 @@ KNOWN_TIER2_FEATURES: frozenset[str] = frozenset({
     "amihud_20", "kyle_t_20",
     # B0017: PIT earnings-calendar state (pooled equity path, config-gated)
     "days_since_last_announcement", "days_to_expected_earnings",
+    # B0018: PIT insider-flow state (pooled equity path, config-gated)
+    "opp_insider_buys_21d", "opp_insider_buys_63d",
     "volume_z42", "volume_pct_rank_21", "volume_rel_median_42",
     # B0147: GLD real-volume block (metals-only, config-gated alt-data)
     "gld_dvol_z42", "gld_amihud_z252",

@@ -82,6 +82,20 @@ def build_member_inputs(
         ann = load_earnings_announcements(asset)
         features = features.join(earnings_calendar_features(features.index, ann.index))
 
+    # B0018: PIT insider-flow meta-features (trailing counts of opportunistic
+    # Form 4 purchase filings by effective knowledge day). Same join discipline.
+    if (cfg.get("features") or {}).get("insider_flow"):
+        from pipeline.insider_events import (
+            insider_flow_features,
+            load_insider_purchases,
+            opportunistic_knowledge_days,
+        )
+        kd = opportunistic_knowledge_days(
+            load_insider_purchases(asset),
+            admit_unclassifiable=bool(cfg.get("insider_admit_unclassifiable", False)),
+        )
+        features = features.join(insider_flow_features(features.index, kd))
+
     sig = _select_primary(primary_name, ohlcv, features, cfg)
     events = pd.DataFrame({"side": sig[sig != 0].astype(int)})
     if events.empty:

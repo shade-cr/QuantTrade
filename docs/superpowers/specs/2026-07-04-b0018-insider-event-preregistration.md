@@ -86,6 +86,18 @@ RECORDED TRIAL with the standard DSR haircut. No other relaxation is permitted.
 - DSR: trials counted per `signals/trial_ledger.json` day-aggregate discipline; this
   family starts at trial 1.
 
+## AMENDMENT 1 (2026-07-04, pre-committed contingency EXECUTED — plumbing data only)
+
+The panel-wide census (event counts only, NO returns examined) under the strict
+3-prior-year classifiability rule yields **33 opportunistic events** — far below the
+pre-committed 500 floor. Cause: mega-cap officers/directors rarely purchase in 3
+consecutive years, so almost every filing is UNCLASSIFIABLE (1,111 qualifying filings,
+only ~41 classifiable). The pre-committed contingency is exercised exactly as written:
+rule 4 relaxes to "not routine" (unclassifiable admitted) → **1,103 events, 43/43
+tickers** (8 filings excluded as routine). This is family trial #2 (recorded in
+signals/trial_ledger.json at audit time). No further classification relaxation is
+permitted regardless of outcome.
+
 ## Known caveats (pre-committed reading rules)
 
 1. Post-2012 publication decay — even a confirmed positive mean must beat costs
