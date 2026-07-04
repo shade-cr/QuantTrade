@@ -45,6 +45,20 @@ premium for carrying the position through the disclosure event.
 - DSR: this is trial ≥1 of the earnings family; day-aggregate counting per
   `signals/trial_ledger.json` discipline.
 
+## AMENDMENT 1 (2026-07-04, BEFORE any return was examined — plumbing data only)
+
+The h10 audit died at the effective-N gate: 2,158 events, effective-N 667.7 < 799 —
+earnings-season clustering (43 names announcing in the same ~3 peak weeks each quarter)
+collapses the ρ=1 count. Measured horizon curve (gate diagnostics only, no returns):
+h10→667.7, h5→734.9, **h3→837.0 ✓**; ceiling at duration→0 = 1,281 distinct entry days.
+
+**Horizon amended 10 → 3** for this audit. Justification beyond reachability: a 3-bar
+horizon covers entry (expected−3BD) → announcement (+1 bar) exactly — the premium window
+itself — where h10 held positions ~a week past the event, diluting the claim. tp/sl stay
+1.5/1.5. This amendment is a RECORDED TRIAL (family trial #2 after the h10 gate fail);
+any eventual pass carries the 2-trial DSR haircut. No further horizon adjustment is
+permitted regardless of outcome.
+
 ## Known caveats (pre-committed reading rules)
 
 1. Survivor universe inflates the long side (B0003) — a marginal pass is discounted.

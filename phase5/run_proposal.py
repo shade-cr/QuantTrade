@@ -864,6 +864,11 @@ POOLED_RESULTS_DIR = Path("results/phase5_pooled")
 # calendar-span/event-duration — h40→654, h20→716, h10→905+ vs floor 799.
 # 10 is the only D1 horizon measured to clear the pre-flight floor.
 POOLED_AUDIT_HORIZON = 10
+# B0017 amendment 1: event-premium primaries cluster on announcement-season
+# days (2,158 events → 667.7 effective at h10; ceiling 1,281 distinct days);
+# h3 measured 837.0 > 799 AND covers the premium window exactly
+# (entry −3BD → announcement +1). Applies ONLY to the event archetype.
+EVENT_PREMIUM_AUDIT_HORIZON = 3
 
 
 def build_transient_pooled_config(p: Proposal) -> Path:
@@ -896,7 +901,12 @@ def build_transient_pooled_config(p: Proposal) -> Path:
 
     cfg["triple_barrier"]["tp_atr_mult"] = p.barrier_geometry_attestation.tp_atr_mult
     cfg["triple_barrier"]["sl_atr_mult"] = p.barrier_geometry_attestation.sl_atr_mult
-    cfg["triple_barrier"]["horizon"] = POOLED_AUDIT_HORIZON
+    is_event_premium = p.primary.startswith("phase5_") and any(
+        k in p.primary.lower() for k in ("premium", "event")
+    )
+    cfg["triple_barrier"]["horizon"] = (
+        EVENT_PREMIUM_AUDIT_HORIZON if is_event_premium else POOLED_AUDIT_HORIZON
+    )
 
     cfg["regime_scope"] = list(p.regime_scope)
     # B0014: carry the proposal's gate mode into the pooled runner (which
